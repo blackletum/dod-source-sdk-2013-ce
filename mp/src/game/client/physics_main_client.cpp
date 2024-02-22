@@ -8,7 +8,7 @@
 #include "c_baseentity.h"
 #ifndef SDK2013CE
 #ifdef WIN32
-#include <typeinfo.h>
+#include <typeinfo>
 #endif
 #endif // !SDK2013CE
 #include "tier0/vprof.h"

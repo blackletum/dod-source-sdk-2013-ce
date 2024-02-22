@@ -130,6 +130,8 @@ extern ConVar tf_mm_servermode;
 #include "replay/ireplaysystem.h"
 #endif
 
+#include "dodplus/gamemounter.h"
+
 extern IToolFrameworkServer *g_pToolFrameworkServer;
 extern IParticleSystemQuery *g_pParticleSystemQuery;
 
@@ -637,6 +639,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	// Yes, both the client and game .dlls will try to Connect, the soundemittersystem.dll will handle this gracefully
 	if ( !soundemitterbase->Connect( appSystemFactory ) )
 		return false;
+	
+	AddRequiredSearchPaths();
 
 	// cache the globals
 	gpGlobals = pGlobals;

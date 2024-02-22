@@ -123,7 +123,7 @@ entities. Each one is useful under different conditions.
 #include <typeinfo>
 #else
 #ifdef WIN32
-#include <typeinfo.h>
+#include <typeinfo>
 #else
 #include <typeinfo>
 #endif

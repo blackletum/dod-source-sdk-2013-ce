@@ -14,7 +14,7 @@
 #else
 
 #ifdef _WIN32
-#include "typeinfo.h"
+#include "typeinfo"
 // BUGBUG: typeinfo stomps some of the warning settings (in yvals.h)
 #pragma warning(disable:4244)
 #elif POSIX

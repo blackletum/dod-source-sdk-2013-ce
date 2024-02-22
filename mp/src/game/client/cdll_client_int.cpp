@@ -151,6 +151,8 @@
 #include "fbxsystem/fbxsystem.h"
 #endif
 
+#include "dodplus/gamemounter.h"
+
 extern vgui::IInputInternal *g_InputInternal;
 
 //=============================================================================
@@ -967,6 +969,8 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	InitFbx();
 #endif
 
+	AddRequiredSearchPaths();
+	
 	// it's ok if this is NULL. That just means the sourcevr.dll wasn't found
 	g_pSourceVR = (ISourceVirtualReality *)appSystemFactory(SOURCE_VIRTUAL_REALITY_INTERFACE_VERSION, NULL);
 

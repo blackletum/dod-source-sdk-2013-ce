@@ -3860,21 +3860,16 @@ void CDODPlayer::StopReplayMode()
 	MessageEnd();
 }
 
-void CDODPlayer::PickUpWeapon( CWeaponDODBase *pWeapon )
+void CDODPlayer::PickUpWeapon(CBaseCombatWeapon *pWeapon )
 {
 	// if we have a primary weapon and we are allowed to drop it, drop it and 
 	// pick up the one we +used
 
-	CWeaponDODBase *pCurrentPrimaryWpn = (CWeaponDODBase *)Weapon_GetSlot( WPN_SLOT_PRIMARY );
+	CBaseCombatWeapon *pCurrentPrimaryWpn = (CBaseCombatWeapon*)Weapon_GetSlot( WPN_SLOT_PRIMARY );
 
 	// drop primary if we can
 	if( pCurrentPrimaryWpn )
 	{
-		if ( pCurrentPrimaryWpn->CanDrop() == false )
-		{
-			return;
-		}
-
 		DODWeaponDrop( pCurrentPrimaryWpn, true );
 	}
 

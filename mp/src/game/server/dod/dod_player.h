@@ -295,7 +295,7 @@ public:
 	virtual bool StartReplayMode( float fDelay, float fDuration, int iEntity  );
 	virtual void StopReplayMode();
 
-	void PickUpWeapon( CWeaponDODBase *pWeapon );
+	void PickUpWeapon(CBaseCombatWeapon *pWeapon );
 
 	int GetPriorityForPickUpEnt( CBaseEntity *pEnt );
 	virtual CBaseEntity *FindUseEntity();

@@ -1212,10 +1212,10 @@ END_DATADESC()
 
 
 
-class CWeaponPhysCannon : public CWeaponDODBase
+class CWeaponPhysCannon : public CBaseHLCombatWeapon
 {
 public:
-	DECLARE_CLASS( CWeaponPhysCannon, CWeaponDODBase);
+	DECLARE_CLASS( CWeaponPhysCannon, CBaseHLCombatWeapon);
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
@@ -1295,6 +1295,8 @@ protected:
 	void	PuntNonVPhysics( CBaseEntity *pEntity, const Vector &forward, trace_t &tr );
 	void	PuntVPhysics( CBaseEntity *pEntity, const Vector &forward, trace_t &tr );
 	void	PuntRagdoll( CBaseEntity *pEntity, const Vector &forward, trace_t &tr );
+
+	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 
 	// Velocity-based throw common to punt and launch code.
 	void	ApplyVelocityBasedForce( CBaseEntity *pEntity, const Vector &forward, const Vector &vecHitPos, PhysGunForce_t reason );
@@ -1554,6 +1556,16 @@ void CWeaponPhysCannon::Precache( void )
 	BaseClass::Precache();
 }
 
+
+void CWeaponPhysCannon::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+{
+	CDODPlayer* pPlayer = ToDODPlayer(pActivator);
+
+	if (pPlayer)
+	{
+		pPlayer->PickUpWeapon(this);
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 

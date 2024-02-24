@@ -1293,7 +1293,7 @@ protected:
 
 	// Punt objects - this is pointing at an object in the world and applying a force to it.
 	void	PuntNonVPhysics( CBaseEntity *pEntity, const Vector &forward, trace_t &tr );
-	void	PuntVPhysics( CBaseEntity *pEntity, const Vector &forward, trace_t &tr );
+	void	PuntVPhysics( CBaseEntity *pEntity, const Vector &forward, trace_t &tr ); 
 	void	PuntRagdoll( CBaseEntity *pEntity, const Vector &forward, trace_t &tr );
 
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);

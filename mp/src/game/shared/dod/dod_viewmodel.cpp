@@ -91,9 +91,6 @@ void CDODViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& or
 	Vector vOriginalOrigin = origin;
 	QAngle vOriginalAngles = angles;
 
-	// Calculate our drift
-	Vector	forward;
-	AngleVectors(angles, &forward, NULL, NULL);
 
 	if (gpGlobals->frametime != 0.0f)
 	{
@@ -120,7 +117,6 @@ void CDODViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& or
 		Assert(m_vecLastFacing.IsValid());
 	}
 
-	Vector right, up;
 	AngleVectors(original_angles, &forward, &right, &up);
 
 	float pitch = original_angles[PITCH];

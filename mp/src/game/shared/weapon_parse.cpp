@@ -287,7 +287,7 @@ bool ReadWeaponDataFromFileForSlot( IFileSystem* filesystem, const char *szWeapo
 
 	KeyValues *pKV = ReadEncryptedKVFile( filesystem, sz, pICEKey,
 #if defined( DOD_DLL )
-		true			// Only read .ctx files!
+		false			// Only read .ctx files!
 #else
 		false
 #endif

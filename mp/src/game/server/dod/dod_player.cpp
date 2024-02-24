@@ -43,6 +43,9 @@
 #include "gameinterface.h"
 #include "holiday_gift.h"
 
+EHANDLE g_pLastSpawnPoints[TEAM_MAXCOUNT];
+
+#include "team_spawnpoint.h"
 #include "filesystem.h"
 #include "ammodef.h"
 
@@ -2997,18 +3000,51 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 {
 	CBaseEntity *pSpot = NULL;
 
+	const char* pSpawnPointName = "";
+	CBaseEntity* pSpot = g_pLastSpawnPoints[GetTeamNumber()];
+
 	switch( GetTeamNumber() )
 	{
 	case TEAM_ALLIES:
 		{
 			CUtlVector<EHANDLE> *pSpawnList = DODGameRules()->GetSpawnPointListForTeam( TEAM_ALLIES );
 			pSpot = SelectSpawnSpot( pSpawnList, g_iLastAlliesSpawnIndex );	
+			if (!pSpot) {
+
+				bool bSuccess = false;
+				pSpawnPointName = "info_player_teamspawn";
+				bSuccess = SelectSpawnSpot(pSpawnPointName, pSpot);
+
+				if (bSuccess)
+				{
+					g_pLastSpawnPoints[GetTeamNumber()] = pSpot;
+				}
+
+				// need to save this for later so we can apply and modifiers to the armor and grenades...after the call to InitClass()
+				m_pSpawnPoint = dynamic_cast<CTeamSpawnPoint*>(pSpot);
+
+			}
 		}
 		break;
 	case TEAM_AXIS:
 		{
 			CUtlVector<EHANDLE> *pSpawnList = DODGameRules()->GetSpawnPointListForTeam( TEAM_AXIS );
-			pSpot = SelectSpawnSpot( pSpawnList, g_iLastAxisSpawnIndex );	
+			pSpot = SelectSpawnSpot( pSpawnList, g_iLastAxisSpawnIndex );
+			if (!pSpot) {
+
+				bool bSuccess = false;
+				pSpawnPointName = "info_player_teamspawn";
+				bSuccess = SelectSpawnSpot(pSpawnPointName, pSpot);
+
+				if (bSuccess)
+				{
+					g_pLastSpawnPoints[GetTeamNumber()] = pSpot;
+				}
+
+				// need to save this for later so we can apply and modifiers to the armor and grenades...after the call to InitClass()
+				m_pSpawnPoint = dynamic_cast<CTeamSpawnPoint*>(pSpot);
+
+			}
 		}		
 		break;
 	case TEAM_SPECTATOR:

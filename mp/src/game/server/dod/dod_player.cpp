@@ -3874,7 +3874,7 @@ void CDODPlayer::PickUpWeapon(CBaseCombatWeapon *pWeapon )
 	}
 
 	// pick up the new one
-	if ( BumpWeapon( pWeapon ) )
+	if ( BumpWeapon( pWeapon ) || !V_strcmp(pWeapon->GetClassname(),"weapon_physcannon"))
 	{
 		pWeapon->OnPickedUp( this );
 	}

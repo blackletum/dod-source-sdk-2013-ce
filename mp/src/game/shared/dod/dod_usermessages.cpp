@@ -59,6 +59,9 @@ void RegisterUserMessages()
 	usermessages->Register( "VoteFailed", 2 );
 	usermessages->Register( "VoteSetup", -1 );  // Initiates client-side voting UI
 
+	usermessages->Register("BreakModel", -1);
+	usermessages->Register("CheapBreakModel", -1);
+
 	// NVNT register haptic user messages
 	RegisterHapticMessages();
 }

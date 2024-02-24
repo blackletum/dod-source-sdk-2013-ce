@@ -9,7 +9,7 @@
 
 #include "cbase.h"
 #include "vehicle_base.h"
-#include "hl2_player.h"
+#include "dod/dod_player.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -105,12 +105,12 @@ void CPropVehicleViewController::EnterVehicle( CBasePlayer *pPlayer )
 	m_VehiclePhysics.GetVehicle()->OnVehicleEnter();
 
 	// Stop the player sprint and flashlight.
-	CHL2_Player *pHL2Player = dynamic_cast<CHL2_Player*>( pPlayer );
+	CDODPlayer *pHL2Player = dynamic_cast<CDODPlayer*>( pPlayer );
 	if ( pHL2Player )
 	{
 		if ( pHL2Player->IsSprinting() )
 		{
-			pHL2Player->StopSprinting();
+			pHL2Player->SetSprinting(false);
 		}
 
 		if ( pHL2Player->FlashlightIsOn() )

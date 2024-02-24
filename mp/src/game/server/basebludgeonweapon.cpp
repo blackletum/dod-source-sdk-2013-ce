@@ -7,7 +7,7 @@
 //=============================================================================//
 
 #include "cbase.h"
-#include "basehlcombatweapon.h"
+#include "hl2/basehlcombatweapon.h"
 #include "player.h"
 #include "gamerules.h"
 #include "ammodef.h"

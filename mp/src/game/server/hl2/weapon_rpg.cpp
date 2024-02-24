@@ -24,7 +24,7 @@
 #include "triggers.h"
 #include "smoke_trail.h"
 #include "collisionutils.h"
-#include "hl2_shareddefs.h"
+#include "hl2/hl2_shareddefs.h"
 #include "rumble_shared.h"
 #include "gamestats.h"
 
@@ -32,9 +32,7 @@
 	#include "portal_util_shared.h"
 #endif
 
-#ifdef HL2_DLL
-	extern int g_interactionPlayerLaunchedRPG;
-#endif
+extern int g_interactionPlayerLaunchedRPG;
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

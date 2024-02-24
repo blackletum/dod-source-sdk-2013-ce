@@ -245,7 +245,6 @@ void CTriggerWeaponDissolve::DissolveThink( void )
 				CreateBeam( m_pConduitPoints[i]->GetAbsOrigin(), pWeapon, 4.0f );
 			}
 
-			PhysCannonBeginUpgrade( pWeapon );
 			m_OnChargingPhyscannon.FireOutput( this, this );
 
 			EmitSound( "WeaponDissolve.Beam" );
@@ -456,14 +455,6 @@ void CTriggerPhysicsTrap::Touch( CBaseEntity *pOther )
 	if ( !pAnim )
 		return;
 
-#ifdef HL2_DLL
-	// HACK: Upgrade the physcannon
-	if ( FClassnameIs( pAnim, "weapon_physcannon" ) )
-	{
-		PhysCannonBeginUpgrade( pAnim );
-		return;
-	}
-#endif
 
 	pAnim->Dissolve( NULL, gpGlobals->curtime, false, m_nDissolveType );
 }

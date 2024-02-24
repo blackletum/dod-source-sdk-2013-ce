@@ -10,6 +10,7 @@
 #include "clientmode_dod.h"
 #include "cdll_client_int.h"
 #include "iinput.h"
+#include "vgui_int.h"
 #include "vgui/ISurface.h"
 #include "vgui/IPanel.h"
 #include <vgui_controls/AnimationController.h>
@@ -39,11 +40,19 @@
 #include "vgui/ILocalize.h"
 #include "dod_hud_freezepanel.h"
 #include "dod_hud_chat.h"
+#include <vgui/IInput.h>
+#include <vgui/IPanel.h>
+#include <vgui/ISurface.h>
+#include <vgui_controls/AnimationController.h>
+#include "iinput.h"
+#include "ienginevgui.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 class CHudChat;
+
+vgui::HScheme g_hVGuiCombineScheme = 0;
 
 ConVar default_fov( "default_fov", "90", FCVAR_CHEAT );
 
@@ -157,6 +166,12 @@ void ClientModeDODNormal::Init()
 
 	m_pFreezePanel = ( CDODFreezePanel * )GET_HUDELEMENT( CDODFreezePanel );
 	Assert( m_pFreezePanel );
+	// Load up the combine control panel scheme
+	g_hVGuiCombineScheme = vgui::scheme()->LoadSchemeFromFileEx(enginevgui->GetPanel(PANEL_CLIENTDLL), IsXbox() ? "resource/ClientScheme.res" : "resource/CombinePanelScheme.res", "CombineScheme");
+	if (!g_hVGuiCombineScheme)
+	{
+		Warning("Couldn't load combine panel scheme!\n");
+	}
 }
 void ClientModeDODNormal::InitViewport()
 {

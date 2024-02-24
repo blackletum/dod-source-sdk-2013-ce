@@ -10,7 +10,7 @@
 #include "props.h"
 #include "explode.h"
 #include "saverestore_utlvector.h"
-#include "hl2_shareddefs.h"
+#include "hl2/hl2_shareddefs.h"
 #include "materialsystem/imaterial.h"
 #include "beam_flags.h"
 #include "physics_prop_ragdoll.h"
@@ -584,13 +584,6 @@ void CPropCombineBall::InputSocketed( inputdata_t &inputdata )
 		SetOwnerEntity( NULL );
 	}
 
-	// if our owner is a player, tell them we were socketed
-	CHL2_Player *pPlayer = dynamic_cast<CHL2_Player *>( pOwner );
-	if ( pPlayer )
-	{
-		pPlayer->CombineBallSocketed( this );
-	}
-
 	UTIL_Remove( this );
 
 	NotifySpawnerOfRemoval();
@@ -1112,17 +1105,6 @@ void CPropCombineBall::DoExplosion( )
 	AddSolidFlags( FSOLID_NOT_SOLID );
 
 	m_bEmit = false;
-
-	
-	if( !m_bStruckEntity && hl2_episodic.GetBool() && GetOwnerEntity() != NULL )
-	{
-		// Notify the player proxy that this combine ball missed so that it can fire an output.
-		CHL2_Player *pPlayer = dynamic_cast<CHL2_Player *>( GetOwnerEntity() );
-		if ( pPlayer )
-		{
-			pPlayer->MissedAR2AltFire();
-		}
-	}
 
 	SetContextThink( &CPropCombineBall::SUB_Remove, gpGlobals->curtime + 0.5f, s_pRemoveContext );
 	StopLoopingSounds();

@@ -23,7 +23,7 @@
 #include "antlion_maker.h"
 #include "npc_antlion.h"
 #include "decals.h"
-#include "hl2_shareddefs.h"
+#include "hl2/hl2_shareddefs.h"
 #include "explode.h"
 #include "weapon_physcannon.h"
 #include "baseparticleentity.h"

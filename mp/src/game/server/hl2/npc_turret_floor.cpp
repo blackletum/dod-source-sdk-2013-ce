@@ -15,13 +15,14 @@
 #include "soundenvelope.h"
 #include "physics_saverestore.h"
 #include "IEffects.h"
-#include "basehlcombatweapon_shared.h"
+#include "hl2/basehlcombatweapon_shared.h"
 #include "phys_controller.h"
 #include "ai_interactions.h"
 #include "Sprite.h"
 #include "beam_shared.h"
 #include "props.h"
 #include "particle_parse.h"
+#include "weapon_physcannon.h"
 
 #ifdef PORTAL
 	#include "prop_portal_shared.h"

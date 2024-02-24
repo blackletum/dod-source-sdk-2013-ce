@@ -4,7 +4,7 @@
 //
 //=============================================================================//
 
-#include "basehlcombatweapon_shared.h"
+#include "hl2/basehlcombatweapon_shared.h"
 
 #ifndef BASEHLCOMBATWEAPON_H
 #define BASEHLCOMBATWEAPON_H

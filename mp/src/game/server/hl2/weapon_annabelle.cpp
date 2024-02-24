@@ -6,7 +6,7 @@
 
 #include	"cbase.h"
 #include	"npcevent.h"
-#include	"basehlcombatweapon_shared.h"
+#include	"hl2/basehlcombatweapon_shared.h"
 #include	"basecombatcharacter.h"
 #include	"ai_basenpc.h"
 #include	"player.h"

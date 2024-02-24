@@ -17,7 +17,7 @@
 #include "explode.h"
 #include "IEffects.h"
 #include "animation.h"
-#include "basehlcombatweapon_shared.h"
+#include "hl2/basehlcombatweapon_shared.h"
 #include "iservervehicle.h"
 
 // memdbgon must be the last include file in a .cpp file!!!

@@ -16,7 +16,7 @@
 #include "mathlib/mathlib.h" 
 #include "game.h"			
 #include "ndebugoverlay.h"
-#include "hl2_shareddefs.h"
+#include "hl2/hl2_shareddefs.h"
 #include "vstdlib/random.h"
 #include "engine/IEngineSound.h"
 #include "movevars_shared.h"

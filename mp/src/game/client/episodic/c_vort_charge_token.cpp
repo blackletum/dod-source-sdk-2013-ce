@@ -6,7 +6,7 @@
 
 #include "cbase.h"
 #include "particles_simple.h"
-#include "citadel_effects_shared.h"
+#include "hl2/citadel_effects_shared.h"
 #include "particles_attractor.h"
 #include "iefx.h"
 #include "dlight.h"

@@ -202,7 +202,9 @@ public:
 
 	bool AwaitingReadyRestart( void ) { return m_bAwaitingReadyRestart; }
 	float GetRoundRestartTime( void ) { return m_flRestartRoundTime; }
-
+#ifdef GAME_DLL
+	virtual void	InitDefaultAIRelationships(void);
+#endif
 	bool IsInWarmup( void ) { return m_bInWarmup; }
 
 	bool IsBombingTeam( int team );

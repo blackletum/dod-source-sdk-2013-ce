@@ -8,7 +8,7 @@
 #include "fx_explosion.h"
 #include "tempentity.h"
 #include "c_tracer.h"
-#include "env_headcrabcanister_shared.h"
+#include "hl2/env_headcrabcanister_shared.h"
 #include "baseparticleentity.h"
 
 // memdbgon must be the last include file in a .cpp file!!!

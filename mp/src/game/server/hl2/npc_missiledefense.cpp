@@ -19,7 +19,7 @@
 #include "vstdlib/random.h"
 #include "engine/IEngineSound.h"
 #include "ammodef.h"
-#include "hl2_shareddefs.h"
+#include "hl2/hl2_shareddefs.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

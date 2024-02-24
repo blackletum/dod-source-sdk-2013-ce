@@ -46,7 +46,7 @@
 #include "physics_prop_ragdoll.h"
 #include "vehicle_base.h"
 #include "coordsize.h"
-#include "hl2_shareddefs.h"
+#include "hl2/hl2_shareddefs.h"
 #include "te_effect_dispatch.h"
 #include "beam_flags.h"
 #include "prop_combine_ball.h"

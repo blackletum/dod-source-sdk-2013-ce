@@ -2988,6 +2988,8 @@ CBaseEntity *CDODPlayer::SelectSpawnSpot( CUtlVector<EHANDLE> *pSpawnPoints, int
 }
 
 
+CBaseEntity* FindPlayerStart(const char* pszClassName);
+
 CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 {
 	CBaseEntity *pSpot = NULL;
@@ -3015,10 +3017,13 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 		break;		
 	}
 
-	if ( !pSpot )
+	if (!pSpot)
 	{
-		Warning( "PutClientInServer: no valid spawns on level\n" );
-		return CBaseEntity::Instance( INDEXENT(0) );
+		pSpot = FindPlayerStart("info_player_start");
+		if (pSpot)
+			return pSpot;
+
+		return CBaseEntity::Instance(INDEXENT(0));
 	}
 
 	return pSpot;
@@ -3314,6 +3319,10 @@ int CDODPlayer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 ConVar dod_explosionforcescale( "dod_explosionforcescale", "1.0", FCVAR_CHEAT );
 ConVar dod_bulletforcescale( "dod_bulletforcescale", "1.0", FCVAR_CHEAT );
+
+ConVar hl2_walkspeed("dod_hl2_walkspeed", "150");
+ConVar hl2_normspeed("dod_hl2_normspeed", "190");
+ConVar hl2_sprintspeed("dod_hl2_sprintspeed", "320");
 
 int CDODPlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 {

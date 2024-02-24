@@ -17,7 +17,7 @@
 #include "ai_hint.h"
 #include "ai_motor.h"
 #include "ai_navigator.h"
-#include "hl2_shareddefs.h"
+#include "hl2/hl2_shareddefs.h"
 #include "ai_route.h"
 #include "npcevent.h"
 #include "gib.h"

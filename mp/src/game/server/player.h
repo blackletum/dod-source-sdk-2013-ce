@@ -241,7 +241,6 @@ public:
 protected:
 	// HACK FOR BOTS
 	friend class CBotManager;
-	static edict_t *s_PlayerEdict; // must be set before calling constructor
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
@@ -616,6 +615,8 @@ public:
 	virtual void			HandleAnimEvent( animevent_t *pEvent );
 
 	virtual bool			ShouldAnnounceAchievement( void );
+
+	static edict_t* s_PlayerEdict; // must be set before calling constructor
 
 #if defined USES_ECON_ITEMS
 	// Wearables

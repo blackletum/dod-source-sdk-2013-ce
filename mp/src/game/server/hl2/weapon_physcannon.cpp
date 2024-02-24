@@ -15,7 +15,7 @@
 #include "IEffects.h"
 #include "ndebugoverlay.h"
 #include "shake.h"
-#include "hl2_player.h"
+#include "dod/dod_player.h"
 #include "beam_shared.h"
 #include "Sprite.h"
 #include "util.h"
@@ -33,8 +33,7 @@
 #include "saverestore_utlvector.h"
 #include "prop_combine_ball.h"
 #include "physobj.h"
-#include "hl2_gamerules.h"
-#include "citadel_effects_shared.h"
+#include "hl2/citadel_effects_shared.h"
 #include "eventqueue.h"
 #include "model_types.h"
 #include "ai_interactions.h"
@@ -1024,10 +1023,10 @@ void CPlayerPickupController::Init( CBasePlayer *pPlayer, CBaseEntity *pObject )
 		}
 	}
 
-	CHL2_Player *pOwner = (CHL2_Player *)ToBasePlayer( pPlayer );
+	CDODPlayer *pOwner = (CDODPlayer *)ToBasePlayer( pPlayer );
 	if ( pOwner )
 	{
-		pOwner->EnableSprint( false );
+		pOwner->SetSprinting( false );
 	}
 
 	// If the target is debris, convert it to non-debris
@@ -1084,10 +1083,10 @@ void CPlayerPickupController::Shutdown( bool bThrown )
 
 	if ( m_pPlayer )
 	{
-		CHL2_Player *pOwner = (CHL2_Player *)ToBasePlayer( m_pPlayer );
+		CDODPlayer *pOwner = (CDODPlayer *)ToBasePlayer( m_pPlayer );
 		if ( pOwner )
 		{
-			pOwner->EnableSprint( true );
+			//pOwner->EnableSprint( true );
 		}
 
 		m_pPlayer->SetUseEntity( NULL );
@@ -1457,7 +1456,8 @@ enum
 //-----------------------------------------------------------------------------
 bool PlayerHasMegaPhysCannon()
 {
-	return ( HL2GameRules()->MegaPhyscannonActive() == true );
+	//return ( HL2GameRules()->MegaPhyscannonActive() == true );
+	return false;
 }
 
 
@@ -2398,7 +2398,7 @@ bool CWeaponPhysCannon::AttachObject( CBaseEntity *pObject, const Vector &vPosit
 	if ( !pPhysics )
 		return false;
 
-	CHL2_Player *pOwner = (CHL2_Player *)ToBasePlayer( GetOwner() );
+	CDODPlayer *pOwner = (CDODPlayer *)ToBasePlayer( GetOwner() );
 
 	m_bActive = true;
 	if( pOwner )
@@ -2425,7 +2425,7 @@ bool CWeaponPhysCannon::AttachObject( CBaseEntity *pObject, const Vector &vPosit
 		// NVNT set the players constant force to simulate holding mass
 		HapticSetConstantForce(pOwner,clamp(m_grabController.GetLoadWeight()*0.05,1,5)*Vector(0,-1,0));
 #endif
-		pOwner->EnableSprint( false );
+		pOwner->SetSprinting( false );
 
 		float	loadWeight = ( 1.0f - GetLoadPercentage() );
 		float	maxSpeed = hl2_walkspeed.GetFloat() + ( ( hl2_normspeed.GetFloat() - hl2_walkspeed.GetFloat() ) * loadWeight );
@@ -2746,7 +2746,7 @@ bool CGrabController::UpdateObject( CBasePlayer *pPlayer, float flError )
 	Vector forward, right, up;
 	QAngle playerAngles = pPlayer->EyeAngles();
 	AngleVectors( playerAngles, &forward, &right, &up );
-
+	/*
 	if ( HL2GameRules()->MegaPhyscannonActive() )
 	{
 		Vector los = ( pEntity->WorldSpaceCenter() - pPlayer->Weapon_ShootPosition() );
@@ -2758,7 +2758,8 @@ bool CGrabController::UpdateObject( CBasePlayer *pPlayer, float flError )
 		if ( flDot <= 0.35f )
 			return false;
 	}
-	
+	*/
+
 	float pitch = AngleDistance(playerAngles.x,0);
 
 	if( !m_bAllowObjectOverhead )
@@ -2871,10 +2872,10 @@ void CWeaponPhysCannon::DetachObject( bool playSound, bool wasLaunched )
 	if ( m_bActive == false )
 		return;
 
-	CHL2_Player *pOwner = (CHL2_Player *)ToBasePlayer( GetOwner() );
+	CDODPlayer *pOwner = (CDODPlayer *)ToBasePlayer( GetOwner() );
 	if( pOwner != NULL )
 	{
-		pOwner->EnableSprint( true );
+		//pOwner->EnableSprint( true );
 		pOwner->SetMaxSpeed( hl2_normspeed.GetFloat() );
 		
 		if( wasLaunched )
@@ -3107,7 +3108,7 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 #ifdef HL2_EPISODIC
 			ForceDrop();
 
-			CHL2_Player *pPlayer = dynamic_cast<CHL2_Player*>( pOwner );
+			CDODPlayer *pPlayer = dynamic_cast<CDODPlayer*>( pOwner );
 
 			if ( pPlayer )
 			{

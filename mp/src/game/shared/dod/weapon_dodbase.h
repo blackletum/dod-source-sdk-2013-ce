@@ -22,6 +22,9 @@ extern const char *WeaponIDToAlias( int id );
 extern bool	IsPrimaryWeapon( int id );
 extern bool IsSecondaryWeapon( int id );
 
+float	g_lateralBob = 0;
+float	g_verticalBob = 0;
+
 class CDODPlayer;
 
 // These are the names of the ammo types that go in the CAmmoDefs and that the 

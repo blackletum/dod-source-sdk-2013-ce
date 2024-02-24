@@ -13,6 +13,7 @@
 
 #include "networkvar.h"
 #include "weapon_dodbase.h"
+#include "dod_shareddefs.h"
 
 
 #ifdef CLIENT_DLL

@@ -416,6 +416,14 @@ public:
 
 	virtual void	PlayUseDenySound();
 
+	int FlashlightIsOn(void);
+	void FlashlightTurnOn(void);
+	void FlashlightTurnOff(void);
+
+	void InitSprinting(void);
+	bool IsSprinting(void);
+	bool CanSprint(void);
+
 	int iNumKilledByUnanswered[MAX_PLAYERS+1];		// how many unanswered kills this player has been dealt by every other player
 
 #if !defined(NO_STEAM)
@@ -432,9 +440,6 @@ private:
 
 	IDODPlayerAnimState *m_PlayerAnimState;
 
-	int FlashlightIsOn( void );
-	void FlashlightTurnOn( void );
-	void FlashlightTurnOff( void );
 
 	void ShowClassSelectMenu();
 
@@ -482,10 +487,6 @@ private:
 	float m_flLastMovement;	// Time the player last moved, used for mp_autokick
 
 	void InitProne( void );
-
-	void InitSprinting( void );
-	bool IsSprinting( void );
-	bool CanSprint( void );
 
 	int m_iDeathFlags;		// death notice flags related to domination/revenge
 

@@ -3026,12 +3026,13 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 	}
 
 	if (!pSpot)
+	{
 
 		pSpawnPointName = "info_player_teamspawn";
-		SelectSpawnSpot(pSpawnPointName, pSpot); {
-		if (pSpot)
+		SelectTeamSpawnSpot(pSpawnPointName, pSpot); 
+		if (pSpot) {
 			return pSpot;
-		else {
+		} else {
 
 			pSpot = FindPlayerStart("info_player_start");
 			if (pSpot)
@@ -3046,7 +3047,7 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-bool CDODPlayer::SelectSpawnSpot(const char* pEntClassName, CBaseEntity*& pSpot)
+bool CDODPlayer::SelectTeamSpawnSpot(const char* pEntClassName, CBaseEntity*& pSpot)
 {
 	// Get an initial spawn point.
 	pSpot = gEntList.FindEntityByClassname(pSpot, pEntClassName);

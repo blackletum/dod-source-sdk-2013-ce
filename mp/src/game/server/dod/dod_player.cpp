@@ -3868,13 +3868,13 @@ void CDODPlayer::PickUpWeapon(CBaseCombatWeapon *pWeapon )
 	CBaseCombatWeapon *pCurrentPrimaryWpn = (CBaseCombatWeapon*)Weapon_GetSlot( WPN_SLOT_PRIMARY );
 
 	// drop primary if we can
-	if( pCurrentPrimaryWpn )
+	if( pCurrentPrimaryWpn && V_strcmp(pWeapon->GetClassname(), "weapon_physcannon"))
 	{
 		DODWeaponDrop( pCurrentPrimaryWpn, true );
 	}
 
 	// pick up the new one
-	if ( BumpWeapon( pWeapon ) || !V_strcmp(pWeapon->GetClassname(),"weapon_physcannon"))
+	if ( BumpWeapon( pWeapon ) || !V_strcmp(pWeapon->GetClassname(),"weapon_physcannon") && BaseClass::BumpWeapon( pWeapon ) )
 	{
 		pWeapon->OnPickedUp( this );
 	}

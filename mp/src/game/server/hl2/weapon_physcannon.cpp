@@ -1337,6 +1337,7 @@ protected:
 
 	// What happens when the physgun picks up something 
 	void	Physgun_OnPhysGunPickup( CBaseEntity *pEntity, CBasePlayer *pOwner, PhysGunPickup_t reason );
+	virtual void OnPickedUp(CBaseCombatCharacter* pNewOwner);
 
 	// Wait until we're done upgrading
 	void	WaitForUpgradeThink();
@@ -1556,6 +1557,10 @@ void CWeaponPhysCannon::Precache( void )
 	BaseClass::Precache();
 }
 
+void CWeaponPhysCannon::OnPickedUp(CBaseCombatCharacter* pNewOwner)
+{
+	BaseClass::OnPickedUp(pNewOwner);
+}
 
 void CWeaponPhysCannon::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {

@@ -2307,7 +2307,7 @@ void CTriggerPush::Touch( CBaseEntity *pOther )
 #endif
 
 			Vector vecPush = (m_flPushSpeed * vecAbsDir);
-			if ( ( pOther->GetFlags() & FL_BASEVELOCITY ) && !lagcompensation->IsCurrentlyDoingLagCompensation() )
+			if ( ( pOther->GetFlags() & FL_BASEVELOCITY ) /* && !lagcompensation->IsCurrentlyDoingLagCompensation()*/)
 			{
 				vecPush = vecPush + pOther->GetBaseVelocity();
 			}

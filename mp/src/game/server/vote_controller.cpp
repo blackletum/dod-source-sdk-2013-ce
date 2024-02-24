@@ -76,66 +76,14 @@ public:
 		// Executing the vote controller command needs to happen in the PostEntityThink as it can restart levels and
 		//	blast entities, etc. If you're doing this during a regular think, this can cause entities thinking after
 		//	you in Physics_RunThinkFunctions() to get grumpy and crash.
-		if ( g_voteController )
+		if (g_voteController)
 		{
 			// Vote passed - execute the command
-			if ( g_voteController->m_executeCommandTimer.HasStarted() && g_voteController->m_executeCommandTimer.IsElapsed() )
+			if (g_voteController->m_executeCommandTimer.HasStarted() && g_voteController->m_executeCommandTimer.IsElapsed())
 			{
 				g_voteController->m_executeCommandTimer.Invalidate();
 				g_voteController->m_potentialIssues[g_voteController->m_iActiveIssueIndex]->ExecuteCommand();
-			}
-			
-			// Kick watch
-			if ( m_flNextKickCheckTime < gpGlobals->curtime )
-			{
-				FOR_EACH_MAP( m_mapKickWatchList, i )
-				{
-					if ( gpGlobals->curtime > m_mapKickWatchList[i] )
-					{
-						m_mapKickWatchList.RemoveAt( i );
-						break;	// Constantly called code - resume on next pass
-					}
-
-					CBasePlayer *pTarget = UTIL_PlayerBySteamID( m_mapKickWatchList.Key( i ) );
-					if ( pTarget )
-					{
-						// Welcome back
-						engine->ServerCommand( CFmtStr( "kickid %d %s;", pTarget->GetUserID(), "Kicked by server." ) );
-					}
-				}
-
-				m_flNextKickCheckTime = gpGlobals->curtime + 0.2f;
-			}
-
-			// Name lock management
-			if ( m_flNextNameLockCheckTime < gpGlobals->curtime )
-			{
-				FOR_EACH_MAP( m_mapNameLockedList, i )
-				{
-					CBasePlayer *pPlayer = UTIL_PlayerBySteamID( m_mapNameLockedList.Key( i ) );
-
-					// Time up?
-					if ( gpGlobals->curtime > m_mapNameLockedList[i] )
-					{
-						// Disable the lock if they're still here
-						if ( pPlayer )
-						{
-							engine->ServerCommand( UTIL_VarArgs( "namelockid %d %d\n", pPlayer->GetUserID(), 0 ) );
-						}
-
-						// Remove and break - this will re-run in 1 second
-						m_mapNameLockedList.RemoveAt( i );
-						break;
-					}
-					// See if they reconnected
-					else if ( pPlayer && !engine->IsPlayerNameLocked( pPlayer->edict() ) )
-					{
-						engine->ServerCommand( UTIL_VarArgs( "namelockid %d %d\n", pPlayer->GetUserID(), 1 ) );
-					}
-				}
-
-				m_flNextNameLockCheckTime = gpGlobals->curtime + 1.f;
-			}
+			} 
 		}
 	}
 

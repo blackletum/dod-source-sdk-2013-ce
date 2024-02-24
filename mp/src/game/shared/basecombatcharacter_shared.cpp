@@ -11,6 +11,11 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef GAME_DLL
+#include "player.h"
+#else defined(CLIENT_DLL)
+#include "c_baseplayer.h"
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Switches to the best weapon that is also better than the given weapon.
@@ -100,12 +105,21 @@ bool CBaseCombatCharacter::Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon )
 			if ( m_hActiveWeapon->ForceWeaponSwitch() )
 			{
 				// last weapon wasn't allowed to switch, don't allow to switch to new weapon
+#ifdef CLIENT_DLL
 				CBaseCombatWeapon *pLastWeapon = pPlayer->GetLastWeapon();
 				if ( pLastWeapon && pWeapon != pLastWeapon && !pLastWeapon->CanHolster() && !pWeapon->ForceWeaponSwitch() )
 				{
 					return false;
 				}
+#else				
+				CBaseCombatWeapon *pLastWeapon = pPlayer->Weapon_GetLast();
+				if (pLastWeapon && pWeapon != pLastWeapon && !pLastWeapon->CanHolster() && !pWeapon->ForceWeaponSwitch())
+				{
+					return false;
+				}
+#endif
 			}
+
 		}
 	}
 

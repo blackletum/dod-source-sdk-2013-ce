@@ -1028,7 +1028,6 @@ float CountdownTimer::Now( void ) const
 	return gpGlobals->curtime;
 }
 
-
 #ifdef CLIENT_DLL
 	CBasePlayer *UTIL_PlayerByIndex( int entindex )
 	{

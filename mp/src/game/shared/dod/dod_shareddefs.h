@@ -20,6 +20,17 @@
 #define	TEAM_AXIS			3
 #define TEAM_MAXCOUNT		4	// update this if we ever add teams (unlikely)
 
+
+enum HalloweenBossType
+{
+	HALLOWEEN_BOSS_INVALID = 0,
+	HALLOWEEN_BOSS_HHH = 1,
+	HALLOWEEN_BOSS_MONOCULUS = 2,
+	HALLOWEEN_BOSS_MERASMUS = 3,
+};
+
+#define TF_TEAM_HALLOWEEN	TEAM_UNASSIGNED
+
 enum SubTeam
 {
 	SUBTEAM_NORMAL = 0,

@@ -46,9 +46,34 @@ $Project "Server (DoD)"
 		$File	"team_spawnpoint.cpp"
 		$File	"team_spawnpoint.h"
 		
-		$File	"monstermaker.cpp"
+		$File	"monstermaker.cpp" 
 		$File	"monstermaker.h"
 		
+		$Folder "Halloween"
+		{
+			$File	"tf_halloween\halloween_base_boss.cpp"
+			$File	"tf_halloween\halloween_base_boss.h" 
+			$File	"tf_halloween\headless_hatman.cpp"
+			$File	"tf_halloween\headless_hatman.h"
+			$File	"tf_halloween\headless_hatman_body.cpp"
+			$File	"tf_halloween\headless_hatman_body.h"
+
+			$Folder "Behavior"
+			{
+				$File	"tf_halloween\halloween_behavior\crybaby_boss_attack.cpp"
+				$File	"tf_halloween\halloween_behavior\crybaby_boss_attack.h"
+				$File	"tf_halloween\halloween_behavior\crybaby_boss_escape.cpp"
+				$File	"tf_halloween\halloween_behavior\crybaby_boss_escape.h"
+				$File	"tf_halloween\halloween_behavior\headless_hatman_attack.cpp"
+				$File	"tf_halloween\halloween_behavior\headless_hatman_attack.h"
+				$File	"tf_halloween\halloween_behavior\headless_hatman_dying.cpp"
+				$File	"tf_halloween\halloween_behavior\headless_hatman_dying.h"
+				$File	"tf_halloween\halloween_behavior\headless_hatman_emerge.cpp"
+				$File	"tf_halloween\halloween_behavior\headless_hatman_emerge.h"
+				$File	"tf_halloween\halloween_behavior\headless_hatman_terrify.cpp"
+				$File	"tf_halloween\halloween_behavior\headless_hatman_terrify.h"
+			}
+		}
 		$Folder "NextBot"
 		{
 			$File	"NextBot\NextBot.cpp"

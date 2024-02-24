@@ -81,6 +81,8 @@ $Project "Client (DOD)"
 			$File	"hl2\c_env_starfield.cpp"
 			$File	"hl2\c_info_teleporter_countdown.cpp"
 			$File	"hl2\shieldproxy.cpp"
+			$File	"tf_halloween\c_headless_hatman.cpp"
+			$File	"tf_halloween\c_headless_hatman.h"
 
 			$Folder	"Shared"
 			{

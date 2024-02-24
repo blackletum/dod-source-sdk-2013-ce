@@ -215,6 +215,41 @@ public:
 	float GetPresentDropChance( void );	// holiday 2011, presents instead of ammo boxes
 #endif
 
+#ifdef GAME_DLL
+
+	int GetBossCount() const { return m_activeBosses.Count(); }
+
+	CBaseCombatCharacter* GetActiveBoss(int iBoss = 0)
+	{
+		if (iBoss < 0 || iBoss >= m_activeBosses.Count())
+			return NULL;
+
+		return m_activeBosses[iBoss];
+	}
+
+	void AddActiveBoss(CBaseCombatCharacter* boss)
+	{
+		// don't add the same boss
+		if (m_activeBosses.Find(boss) != m_activeBosses.InvalidIndex())
+			return;
+
+		m_activeBosses.AddToTail(boss);
+	}
+
+	void RemoveActiveBoss(CBaseCombatCharacter* boss)
+	{
+		m_activeBosses.FindAndRemove(boss);
+	}
+
+	CBaseEntity* GetIT(void) const			// who is the boss chasing
+	{
+		return m_itHandle;
+	}
+
+	void SetIT(CBaseEntity* who);
+
+#endif // GAME_DLL
+
 #ifdef CLIENT_DLL
 
 	DECLARE_CLIENTCLASS_NOBASE(); // This makes datatables able to access our private vars.
@@ -380,6 +415,13 @@ public:
 
 	virtual void GetTaggedConVarList( KeyValues *pCvarTagList );
 
+	CUtlVector< CHandle< CBaseCombatCharacter > > m_activeBosses;
+
+	bool IsIT(CBaseEntity* who) const
+	{
+		return (who && who == m_itHandle.Get());
+	}
+
 protected:	
 	virtual void GoToIntermission( void );
 	virtual bool UseSuicidePenalty() { return false; }
@@ -463,6 +505,7 @@ private:
 	int m_iNumAlliesRespawnWaves;
 	int m_iNumAxisRespawnWaves;
 
+	CNetworkHandle(CBaseEntity, m_itHandle);	// entindex of current IT entity (0 = no it)
 	CNetworkVar( bool, m_bInWarmup );
 	CNetworkVar( bool, m_bAwaitingReadyRestart );
 	CNetworkVar( float, m_flRestartRoundTime );

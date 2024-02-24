@@ -27,9 +27,18 @@ $Configuration
 
 $Project "Server (DoD)"
 {
+	$Folder "Header Files"
+	{
+		$File	"$SRCDIR\game\shared\secobmod_shareddefs.h"
+	}
+
 	$Folder	"Source Files"
 	{
 		-$File	"ai_concommands.cpp"
+		
+		$File	"ai_eventresponse.cpp"
+		$File	"ai_eventresponse.h"
+		$File	"ai_relationship.cpp"
 		
 		$File	"$SRCDIR\game\shared\playerclass_info_parse.cpp"
 		$File	"$SRCDIR\game\shared\playerclass_info_parse.h"

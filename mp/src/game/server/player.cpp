@@ -7906,7 +7906,7 @@ void CMovementSpeedMod::InputSpeedMod(inputdata_t &data)
 			// Bring the weapon back
 			if  ( HasSpawnFlags( SF_SPEED_MOD_SUPPRESS_WEAPONS ) && pPlayer->GetActiveWeapon() == NULL )
 			{
-				pPlayer->SetActiveWeapon( pPlayer->GetLastWeapon() );
+				pPlayer->SetActiveWeapon( pPlayer->Weapon_GetLast() );
 				if ( pPlayer->GetActiveWeapon() )
 				{
 					pPlayer->GetActiveWeapon()->Deploy();
@@ -8986,7 +8986,7 @@ void CBasePlayer::HandleAnimEvent( animevent_t *pEvent )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool CBasePlayer::ShouldAnnounceAchievement( void )
+/*bool CBasePlayer::ShouldAnnounceAchievement(void)
 {
 	m_flAchievementTimes.AddToTail( gpGlobals->curtime );
 	if ( m_flAchievementTimes.Count() > 3 )
@@ -9000,7 +9000,7 @@ bool CBasePlayer::ShouldAnnounceAchievement( void )
 
 	return true;
 }
-
+*/
 //-----------------------------------------------------------------------------
 //  CPlayerInfo functions (simple pass-through to get around the CBasePlayer multiple inheritance limitation)
 //-----------------------------------------------------------------------------

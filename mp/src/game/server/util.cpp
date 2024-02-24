@@ -557,107 +557,186 @@ void UTIL_RemoveImmediate( CBaseEntity *oldObj )
 // returns a CBaseEntity pointer to a player by index.  Only returns if the player is spawned and connected
 // otherwise returns NULL
 // Index is 1 based
-CBasePlayer	*UTIL_PlayerByIndex( int playerIndex )
+CBasePlayer* UTIL_PlayerByIndex(int playerIndex)
 {
-	CBasePlayer *pPlayer = NULL;
+	CBasePlayer* pPlayer = NULL;
 
-	if ( playerIndex > 0 && playerIndex <= gpGlobals->maxClients )
+	if (playerIndex > 0 && playerIndex <= gpGlobals->maxClients)
 	{
-		edict_t *pPlayerEdict = INDEXENT( playerIndex );
-		if ( pPlayerEdict && !pPlayerEdict->IsFree() )
+		edict_t* pPlayerEdict = INDEXENT(playerIndex);
+		if (pPlayerEdict && !pPlayerEdict->IsFree())
 		{
-			pPlayer = (CBasePlayer*)GetContainingEntity( pPlayerEdict );
+			pPlayer = (CBasePlayer*)GetContainingEntity(pPlayerEdict);
 		}
 	}
-	
+
 	return pPlayer;
 }
 
-CBasePlayer *UTIL_PlayerBySteamID( const CSteamID &steamID )
+CBasePlayer* UTIL_PlayerByName(const char* name)
 {
-	CSteamID steamIDPlayer;
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
-		if ( !pPlayer )
-			continue;
-
-		if ( !pPlayer->GetSteamID( &steamIDPlayer ) )
-			continue;
-
-		if ( steamIDPlayer == steamID )
-			return pPlayer;
-	}
-	return NULL;
-}
-
-CBasePlayer* UTIL_PlayerByName( const char *name )
-{
-	if ( !name || !name[0] )
+	if (!name || !name[0])
 		return NULL;
 
-	for (int i = 1; i<=gpGlobals->maxClients; i++ )
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
-		
-		if ( !pPlayer )
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+		if (!pPlayer)
 			continue;
 
-		if ( !pPlayer->IsConnected() )
+		if (!pPlayer->IsConnected())
 			continue;
 
-		if ( Q_stricmp( pPlayer->GetPlayerName(), name ) == 0 )
+		if (Q_stricmp(pPlayer->GetPlayerName(), name) == 0)
 		{
 			return pPlayer;
 		}
 	}
-	
+
 	return NULL;
 }
 
-CBasePlayer* UTIL_PlayerByUserId( int userID )
+CBasePlayer* UTIL_PlayerByUserId(int userID)
 {
-	for (int i = 1; i<=gpGlobals->maxClients; i++ )
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
-		
-		if ( !pPlayer )
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+		if (!pPlayer)
 			continue;
 
-		if ( !pPlayer->IsConnected() )
+		if (!pPlayer->IsConnected())
 			continue;
 
-		if ( engine->GetPlayerUserId(pPlayer->edict()) == userID )
+		if (engine->GetPlayerUserId(pPlayer->edict()) == userID)
 		{
 			return pPlayer;
 		}
 	}
-	
+
 	return NULL;
 }
 
 //
 // Return the local player.
 // If this is a multiplayer game, return NULL.
-// 
-CBasePlayer *UTIL_GetLocalPlayer( void )
+//
+
+#ifdef SecobMod__Enable_Fixed_Multiplayer_AI
+CBasePlayer* UTIL_GetLocalPlayer(void)
 {
-	if ( gpGlobals->maxClients > 1 )
+
+	// first try getting the host, failing that, get *ANY* player
+	CBasePlayer* pHost = UTIL_GetListenServerHost();
+	if (pHost)
+		return pHost;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+
 	{
-		if ( developer.GetBool() )
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer)
+			return pPlayer;
+	}
+
+	return NULL;
+}
+
+//SecobMod__Information: This is a new function designed to get the nearest player to a player that called the command, this is used for our respawn where killed code to try and respawn at a near-by player.
+CBasePlayer* UTIL_GetOtherNearestPlayer(const Vector& origin)
+{
+	// End of copied and pasted code.                                    //SecobMod__Information: See the following Null Pointer line.
+	float distToOtherNearest = 128.0f; //SecobMod__Information: We don't want the OtherNearest player to be the player that called this function.
+	CBasePlayer* pOtherNearest = NULL;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer)
+			continue;
+
+		float flDist = (pPlayer->GetAbsOrigin() - origin).LengthSqr();
+		if (flDist >= distToOtherNearest)
+
 		{
-			Assert( !"UTIL_GetLocalPlayer" );
-			
+			pOtherNearest = pPlayer;
+			distToOtherNearest = flDist;
+
+		}
+	}
+
+
+	return pOtherNearest;
+}
+
+CBasePlayer* UTIL_GetNearestPlayer(const Vector& origin)
+{
+	float distToNearest = 99999999999999999999999999999999999999.0f;
+	CBasePlayer* pNearest = NULL;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer)
+			continue;
+
+		float flDist = (pPlayer->GetAbsOrigin() - origin).LengthSqr();
+		if (flDist < distToNearest)
+
+		{
+			pNearest = pPlayer;
+			distToNearest = flDist;
+
+		}
+	}
+
+
+	return pNearest;
+}
+
+CBasePlayer* UTIL_GetNearestVisiblePlayer(CBaseEntity* pLooker, int mask)
+{
+	float distToNearest = 99999999999999999999999999999999999999.0f;
+	CBasePlayer* pNearest = NULL;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer)
+			continue;
+
+		float flDist = (pPlayer->GetAbsOrigin() - pLooker->GetAbsOrigin()).LengthSqr();
+		if (flDist < distToNearest && pLooker->FVisible(pPlayer, mask))
+		{
+			pNearest = pPlayer;
+			distToNearest = flDist;
+		}
+	}
+
+	return pNearest;
+}
+#else
+CBasePlayer* UTIL_GetLocalPlayer(void)
+{
+	if (gpGlobals->maxClients > 1)
+	{
+		if (developer.GetBool())
+		{
+			Assert(!"UTIL_GetLocalPlayer");
+
 #ifdef	DEBUG
-			Warning( "UTIL_GetLocalPlayer() called in multiplayer game.\n" );
+			Warning("UTIL_GetLocalPlayer() called in multiplayer game.\n");
 #endif
 		}
 
 		return NULL;
 	}
 
-	return UTIL_PlayerByIndex( 1 );
+	return UTIL_PlayerByIndex(1);
 }
+#endif //SecobMod__Enable_Fixed_Multiplayer_AI
+
 
 //
 // Get the local player on a listen server - this is for multiplayer use only

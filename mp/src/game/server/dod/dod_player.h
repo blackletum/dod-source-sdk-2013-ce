@@ -327,6 +327,9 @@ public:
 	void StatEvent_ScoredRevenge( void );
 	void StatEvent_WeaponFired( DODWeaponID iWeaponID );
 	void StatEvent_WeaponHit( DODWeaponID iWeaponID, bool bWasHeadshot );
+#ifdef SecobMod__SAVERESTORE
+	virtual void SaveTransitionFile(void);
+#endif //SecobMod__SAVERES
 
 
 // ------------------------------------------------------------------------------------------------ //

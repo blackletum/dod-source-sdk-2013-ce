@@ -39,6 +39,10 @@
 #include "hl2_player.h"
 #endif
 
+#ifdef DOD_DLL
+#include "dod_player.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 

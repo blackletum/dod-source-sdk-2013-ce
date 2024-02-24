@@ -179,7 +179,7 @@ CBaseEntity *CWeaponDODBaseMelee::MeleeAttack( int iDamageAmount, int iDamageTyp
 		int iVictimTeam = tr.m_pEnt->GetTeamNumber();
 
 		// do the mega attack if its a player, and we would do damage
-		if ( (tr.m_pEnt->IsPlayer() || tr.m_pEnt->IsNPC()) &&
+		if ( (tr.m_pEnt->IsPlayer()) &&
 			tr.m_pEnt->m_takedamage == DAMAGE_YES && 
 			( iVictimTeam != iOwnerTeam || ( iVictimTeam == iOwnerTeam && friendlyfire.GetBool() ) ) )
 		{

@@ -51,6 +51,11 @@
 #include "weapon_dodbasegrenade.h"
 // NVNT - for planting bomb effect
 #include "weapon_dodbasebomb.h"
+#include "proxyentity.h"
+#include "functionproxy.h"
+#include "materialsystem/imaterial.h"
+#include "materialsystem/imaterialvar.h"
+
 
 #if defined( CDODPlayer )
 	#undef CDODPlayer
@@ -261,6 +266,43 @@ BEGIN_PREDICTION_DATA( C_DODPlayer )
 	DEFINE_PRED_FIELD( m_flCycle, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_nSequence, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 END_PREDICTION_DATA()
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Used for burning material on player models
+//			Returns 0.0->1.0 for level of burn to show on player skin
+//-----------------------------------------------------------------------------
+class CProxyBurnLevel : public CResultProxy
+{
+public:
+	void OnBind(void* pC_BaseEntity)
+	{
+		Assert(m_pResult);
+
+		m_pResult->SetFloatValue(0.0f);
+		return;
+	}
+};
+
+EXPOSE_INTERFACE(CProxyBurnLevel, IMaterialProxy, "BurnLevel" IMATERIAL_PROXY_INTERFACE_VERSION);
+
+//-----------------------------------------------------------------------------
+// Purpose: Used for jarate
+//			Returns the RGB value for the appropriate tint condition.
+//-----------------------------------------------------------------------------
+class CProxyUrineLevel : public CResultProxy
+{
+public:
+	void OnBind(void* pC_BaseEntity)
+	{
+		Assert(m_pResult);
+
+		m_pResult->SetVecValue(1, 1, 1);
+		return;
+	}
+};
+
+EXPOSE_INTERFACE(CProxyUrineLevel, IMaterialProxy, "YellowLevel" IMATERIAL_PROXY_INTERFACE_VERSION);
 
 
 // ----------------------------------------------------------------------------- //

@@ -1118,7 +1118,7 @@ void CWeaponDODBase::Smack()
 	data.m_fFlags = 0x1;	//IMPACT_NODECAL;
 	data.m_nDamageType = iDamageType;
 
-	bool bHitPlayer = m_trHit.m_pEnt && (m_trHit.m_pEnt->IsPlayer() || .m_pEnt->IsNPC());
+	bool bHitPlayer = m_trHit.m_pEnt && (m_trHit.m_pEnt->IsPlayer() || m_trHit.m_pEnt->IsNPC());
 
 	// don't do any impacts if we hit a teammate and ff is off
 	if ( bHitPlayer && 

@@ -39,6 +39,7 @@
 #include "ai_interactions.h"
 #include "rumble_shared.h"
 #include "gamestats.h"
+#include "dod/weapon_dodbase.h"
 // NVNT haptic utils
 #include "haptics/haptic_utils.h"
 
@@ -1209,10 +1210,10 @@ BEGIN_SIMPLE_DATADESC( thrown_objects_t )
 	DEFINE_FIELD( hEntity,	FIELD_EHANDLE	),
 END_DATADESC()
 
-class CWeaponPhysCannon : public CBaseHLCombatWeapon
+class CWeaponPhysCannon : public CWeaponDODBase
 {
 public:
-	DECLARE_CLASS( CWeaponPhysCannon, CBaseHLCombatWeapon );
+	DECLARE_CLASS( CWeaponPhysCannon, CWeaponDODBase);
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();

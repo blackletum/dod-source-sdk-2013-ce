@@ -13,6 +13,7 @@
 #include "dod_objective_resource.h"
 #include "dod_control_point_master.h"
 
+LINK_ENTITY_TO_CLASS(team_control_point, CControlPoint);
 LINK_ENTITY_TO_CLASS( dod_control_point, CControlPoint );
 
 #define OBJ_ICON_NEUTRAL_FLAG 0

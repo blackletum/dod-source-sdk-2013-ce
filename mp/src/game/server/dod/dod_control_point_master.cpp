@@ -27,6 +27,7 @@ BEGIN_DATADESC( CControlPointMaster )
 
 END_DATADESC()
 
+LINK_ENTITY_TO_CLASS(team_control_point_master, CControlPointMaster);
 LINK_ENTITY_TO_CLASS( dod_control_point_master, CControlPointMaster );
 
 CControlPointMaster::CControlPointMaster()

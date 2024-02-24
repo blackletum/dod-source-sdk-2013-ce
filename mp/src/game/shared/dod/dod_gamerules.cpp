@@ -3847,6 +3847,24 @@ const CDODViewVectors *CDODGameRules::GetDODViewVectors() const
 				}
 			}
 
+			while ((ent = gEntList.FindEntityByClassname(ent, "info_player_start")) != NULL)
+			{
+				if (IsSpawnPointValid(ent, NULL))
+				{
+					m_iSpawnPointCount_Allies++;
+					m_iSpawnPointCount_Axis++;
+
+					// store in a list
+					m_AlliesSpawnPoints.AddToTail(ent);
+					m_AxisSpawnPoints.AddToTail(ent);
+				}
+				else
+				{
+					Warning("Invalid allies spawnpoint at (%.1f,%.1f,%.1f)\n",
+						ent->GetAbsOrigin()[0], ent->GetAbsOrigin()[2], ent->GetAbsOrigin()[2]);
+				}
+			}
+
 			while ( ( ent = gEntList.FindEntityByClassname( ent, "info_player_axis" ) ) != NULL )
 			{
 				if ( IsSpawnPointValid( ent, NULL ) ) 

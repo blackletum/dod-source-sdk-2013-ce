@@ -149,6 +149,13 @@ bool CWeaponDODBaseGun::DODBaseGunFire()
 			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
 		}
 
+		CDODPlayer* p = ToDODPlayer(GetPlayerOwner());
+		if (p && p->GetFlags() & FL_FAKECLIENT) {
+
+			Reload();
+
+		}
+
 		return false;
 	}
 

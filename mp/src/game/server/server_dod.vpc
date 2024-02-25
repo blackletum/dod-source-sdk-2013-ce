@@ -51,6 +51,71 @@ $Project "Server (DoD)"
 		
 		$File	"hl2\Func_Monitor.cpp"
 		
+		$Folder	"TF"
+		{
+			$Folder "Bots"
+			{
+				$Folder "Behavior"
+				{
+					$File "tf\bot\behavior\tf_bot_approach_object.cpp"
+					$File "tf\bot\behavior\tf_bot_approach_object.h"
+					$File "tf\bot\behavior\tf_bot_attack.cpp"
+					$File "tf\bot\behavior\tf_bot_attack.h"
+					$File "tf\bot\behavior\tf_bot_behavior.cpp"
+					$File "tf\bot\behavior\tf_bot_behavior.h"
+					$File "tf\bot\behavior\tf_bot_dead.cpp"
+					$File "tf\bot\behavior\tf_bot_dead.h"
+					$File "tf\bot\behavior\tf_bot_get_ammo.cpp"
+					$File "tf\bot\behavior\tf_bot_get_ammo.h"
+					$File "tf\bot\behavior\tf_bot_melee_attack.cpp"
+					$File "tf\bot\behavior\tf_bot_melee_attack.h"
+					$File "tf\bot\behavior\tf_bot_move_to_vantage_point.cpp"
+					$File "tf\bot\behavior\tf_bot_move_to_vantage_point.h"
+					$File "tf\bot\behavior\tf_bot_retreat_to_cover.cpp"
+					$File "tf\bot\behavior\tf_bot_retreat_to_cover.h"
+					$File "tf\bot\behavior\tf_bot_roam.cpp"
+					$File "tf\bot\behavior\tf_bot_roam.h"
+					$File "tf\bot\behavior\tf_bot_scenario_monitor.cpp"
+					$File "tf\bot\behavior\tf_bot_scenario_monitor.h"
+					$File "tf\bot\behavior\tf_bot_seek_and_destroy.cpp"
+					$File "tf\bot\behavior\tf_bot_seek_and_destroy.h"
+					$File "tf\bot\behavior\tf_bot_tactical_monitor.cpp"
+					$File "tf\bot\behavior\tf_bot_tactical_monitor.h"
+
+					$File "tf\bot\behavior\scenario\capture_point\tf_bot_capture_point.cpp"
+					$File "tf\bot\behavior\scenario\capture_point\tf_bot_capture_point.h"
+					$File "tf\bot\behavior\scenario\capture_point\tf_bot_defend_point.cpp"
+					$File "tf\bot\behavior\scenario\capture_point\tf_bot_defend_point.h"
+					$File "tf\bot\behavior\scenario\capture_point\tf_bot_defend_point_block_capture.cpp"
+					$File "tf\bot\behavior\scenario\capture_point\tf_bot_defend_point_block_capture.h"
+
+					$File "tf\bot\behavior\sniper\tf_bot_sniper_attack.cpp"
+					$File "tf\bot\behavior\sniper\tf_bot_sniper_attack.h"
+					$File "tf\bot\behavior\sniper\tf_bot_sniper_lurk.cpp"
+					$File "tf\bot\behavior\sniper\tf_bot_sniper_lurk.h"
+				}
+
+				$File "tf\bot\tf_bot.cpp"
+				$File "tf\bot\tf_bot.h"
+				$File "tf\bot\tf_bot_components.cpp"
+				$File "tf\bot\tf_bot_components.h"
+				$File "tf\bot\tf_bot_manager.cpp"
+				$File "tf\bot\tf_bot_manager.h"
+				$File "tf\bot\tf_bot_squad.cpp"
+				$File "tf\bot\tf_bot_squad.h"
+				$File "tf\bot\tf_path_follower.cpp"
+				$File "tf\bot\tf_path_follower.h"
+			} 
+		
+			$Folder	"Nav Mesh"
+			{
+				$File "tf\nav_mesh\tf_nav_area.cpp"
+				$File "tf\nav_mesh\tf_nav_area.h"
+				$File "tf\nav_mesh\tf_nav_mesh.cpp"
+				$File "tf\nav_mesh\tf_nav_mesh.h"
+			}
+		}
+		
 		$Folder "Halloween"
 		{
 			$File	"tf_halloween\halloween_base_boss.cpp"

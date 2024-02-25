@@ -108,7 +108,7 @@ void Bot_RunAll( void )
 	{
 		CDODPlayer *pPlayer = ToDODPlayer( UTIL_PlayerByIndex( i ) );
 
-		if ( pPlayer && (pPlayer->GetFlags() & FL_FAKECLIENT) )
+		if ( pPlayer && (pPlayer->GetFlags() & FL_FAKECLIENT) && pPlayer->MyNextBotPointer() == NULL)
 		{
 			Bot_Think( pPlayer );
 		}

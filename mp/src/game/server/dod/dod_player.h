@@ -428,6 +428,8 @@ public:
 	bool CanSprint(void);
 
 	int iNumKilledByUnanswered[MAX_PLAYERS+1];		// how many unanswered kills this player has been dealt by every other player
+	bool HandleCommand_JoinClass(int iClass);
+	bool HandleCommand_JoinTeam(int iTeam);
 
 #if !defined(NO_STEAM)
 	STEAM_GAMESERVER_CALLBACK( CDODPlayer, OnGSStatsReceived, GSStatsReceived_t, m_CallbackGSStatsReceived );
@@ -507,8 +509,6 @@ protected:
 private:
 
 	friend void Bot_Think( CDODPlayer *pBot ); // needs to use the HandleCommand_ stuff.
-	bool HandleCommand_JoinTeam( int iTeam );
-	bool HandleCommand_JoinClass( int iClass );
 	
 	CDODPlayerStateInfo *m_pCurStateInfo;			// This can be NULL if no state info is defined for m_iPlayerState.
 

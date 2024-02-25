@@ -49,6 +49,8 @@ $Project "Server (DoD)"
 		$File	"monstermaker.cpp" 
 		$File	"monstermaker.h"
 		
+		$File	"hl2\Func_Monitor.cpp"
+		
 		$Folder "Halloween"
 		{
 			$File	"tf_halloween\halloween_base_boss.cpp"

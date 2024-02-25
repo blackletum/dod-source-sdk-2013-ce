@@ -30,6 +30,7 @@ $Project "Client (DOD)"
 
 		$File	"$SRCDIR\game\shared\playerclass_info_parse.cpp"
 		$File	"$SRCDIR\game\shared\playerclass_info_parse.h"
+		$File	"hl2\C_Func_Monitor.cpp"
 
 		$Folder "NextBot"
 		{

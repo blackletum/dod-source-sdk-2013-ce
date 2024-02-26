@@ -339,7 +339,7 @@ void CTFBot::PhysicsSimulate( void )
 
 	if ( !IsAlive() && m_bWantsToChangeClass )
 	{
-		HandleCommand_JoinClass(RandomInt(1, 5));
+		HandleCommand_JoinClass(RandomInt(0, 5));
 
 		m_bWantsToChangeClass = false;
 	}
@@ -1895,7 +1895,7 @@ CON_COMMAND_F( tf_bot_add, "Add a bot.", FCVAR_GAMEDLL )
 			else
 				Q_snprintf( szClassName, sizeof szClassName, "random" );
 
-			bot->HandleCommand_JoinClass(RandomInt(1, 5));
+			bot->HandleCommand_JoinClass(RandomInt(0, 5));
 		}
 
 		TheTFBots().OnForceAddedBots( count );

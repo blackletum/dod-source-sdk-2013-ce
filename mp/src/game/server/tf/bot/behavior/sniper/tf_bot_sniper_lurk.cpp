@@ -154,6 +154,10 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 
 			if (pPrimary != nullptr && pPrimary->IsZoomed())
 			{
+				// slow to prone speed
+				me->m_Shared.m_flGoProneTime = 0.0f;
+
+				me->m_Shared.m_flUnProneTime = gpGlobals->curtime + TIME_TO_PRONE;	//reset
 				me->PressAltFireButton();
 			}
 
@@ -170,6 +174,10 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 
 		if (pPrimary != nullptr && !pPrimary->IsZoomed())
 		{
+			// slow to prone speed
+			me->m_Shared.m_flGoProneTime = gpGlobals->curtime + TIME_TO_PRONE;
+
+			me->m_Shared.m_flUnProneTime = 0.0f;	//reset
 			me->PressAltFireButton();
 		}
 	}
@@ -183,6 +191,10 @@ void CTFBotSniperLurk::OnEnd( CTFBot *me, Action<CTFBot> *newAction )
 
 	if (pPrimary != nullptr && pPrimary->IsZoomed())
 	{
+		// slow to prone speed
+		me->m_Shared.m_flGoProneTime = 0.0f;
+
+		me->m_Shared.m_flUnProneTime = gpGlobals->curtime + TIME_TO_PRONE;	//reset
 		me->PressAltFireButton();
 	}
 
@@ -203,6 +215,10 @@ ActionResult<CTFBot> CTFBotSniperLurk::OnSuspend( CTFBot *me, Action<CTFBot> *ne
 
 	if (pPrimary != nullptr && pPrimary->IsZoomed())
 	{
+		// slow to prone speed
+		me->m_Shared.m_flGoProneTime = 0.0f;
+
+		me->m_Shared.m_flUnProneTime = gpGlobals->curtime + TIME_TO_PRONE;	//reset
 		me->PressAltFireButton();
 	}
 

@@ -339,8 +339,7 @@ void CTFBot::PhysicsSimulate( void )
 
 	if ( !IsAlive() && m_bWantsToChangeClass )
 	{
-		int pszClassname = GetNextSpawnClassname();
-		HandleCommand_JoinClass( pszClassname ); 
+		DODGameRules()->ChooseRandomClass(this);
 
 		m_bWantsToChangeClass = false;
 	}
@@ -514,7 +513,6 @@ bool CTFBot::IsHitScanWeapon( CWeaponDODBase *weapon ) const
 		case WEAPON_GARAND:
 		case WEAPON_COLT:
 		case WEAPON_C96:
-		case WEAPON_BAZOOKA:
 		case WEAPON_BAR:
 		case WEAPON_30CAL:
 			return true;
@@ -1897,7 +1895,7 @@ CON_COMMAND_F( tf_bot_add, "Add a bot.", FCVAR_GAMEDLL )
 			else
 				Q_snprintf( szClassName, sizeof szClassName, "random" );
 
-			bot->HandleCommand_JoinClass( RandomInt(0,5) );
+			DODGameRules()->ChooseRandomClass(bot);
 		}
 
 		TheTFBots().OnForceAddedBots( count );

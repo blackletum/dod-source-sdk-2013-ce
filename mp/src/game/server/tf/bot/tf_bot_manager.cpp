@@ -318,29 +318,11 @@ void CTFBotManager::MaintainBotQuota()
 {
 	VPROF_BUDGET(__FUNCTION__, "NextBot");
 
-	if (TheNavMesh->IsGenerating())
-		return;
+	if (TheNavMesh->IsGenerating() || g_fGameOver) return;
+	if (!DODGameRules()) return;
+	if (gpGlobals->curtime < m_flQuotaChangeTime) return;
 
-	if (g_fGameOver)
-		return; 
-
-	// new players can't spawn immediately after the round has been going for some time
-	if (!DODGameRules())
-		return;
-
-	if (gpGlobals->curtime < m_flQuotaChangeTime)
-		return;
-
-	// think every quarter second
 	m_flQuotaChangeTime = gpGlobals->curtime + 0.25f;
-
-	// don't add bots until local player has been registered, to make sure he's player ID #1
-	if (!engine->IsDedicatedServer())
-	{
-		CBasePlayer* pPlayer = UTIL_GetListenServerHost();
-		if (!pPlayer)
-			return;
-	}
 
 	int nPlayersTotal = 0;
 	int nTFBotsTotal = 0;

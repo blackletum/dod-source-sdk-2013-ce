@@ -3028,15 +3028,9 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 	if (!pSpot)
 	{
 
-		SelectTeamSpawnSpot("info_player_teamspawn", pSpot);
-		if (pSpot) {
+		pSpot = FindPlayerStart("info_player_start");
+		if (pSpot)
 			return pSpot;
-		} else {
-
-			pSpot = FindPlayerStart("info_player_start");
-			if (pSpot)
-				return pSpot;
-		}
 		return CBaseEntity::Instance(INDEXENT(0));
 	}
 

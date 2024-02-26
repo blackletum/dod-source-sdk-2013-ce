@@ -3882,6 +3882,28 @@ const CDODViewVectors *CDODGameRules::GetDODViewVectors() const
 						ent->GetAbsOrigin()[0],ent->GetAbsOrigin()[2],ent->GetAbsOrigin()[2] );
 				}
 			}
+			while ((ent = gEntList.FindEntityByClassname(ent, "info_player_teamspawn")) != NULL)
+			{
+				if (IsSpawnPointValid(ent, NULL) && ent->GetTeamNumber() == TEAM_ALLIES)
+				{
+					m_iSpawnPointCount_Allies++;
+
+					// store in a list
+					m_AlliesSpawnPoints.AddToTail(ent);
+				}
+				else if(IsSpawnPointValid(ent, NULL) && ent->GetTeamNumber() == TEAM_AXIS)
+				{
+					m_iSpawnPointCount_Axis++;
+
+					// store in a list
+					m_AlliesSpawnPoints.AddToTail(ent);
+				}
+				else
+				{
+					Warning("Invalid allies spawnpoint at (%.1f,%.1f,%.1f)\n",
+						ent->GetAbsOrigin()[0], ent->GetAbsOrigin()[2], ent->GetAbsOrigin()[2]);
+				}
+			}
 
 			while ((ent = gEntList.FindEntityByClassname(ent, "info_player_start")) != NULL)
 			{

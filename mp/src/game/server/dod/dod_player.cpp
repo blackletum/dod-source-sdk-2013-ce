@@ -3000,8 +3000,6 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 {
 	CBaseEntity *pSpot = NULL;
 
-	const char* pSpawnPointName = "";
-
 	switch( GetTeamNumber() )
 	{
 	case TEAM_ALLIES:

@@ -170,6 +170,9 @@ void CDODBaseRocketWeapon::PrimaryAttack()
 			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
 		}
 
+		if (pPlayer->GetFlags() & FL_FAKECLIENT) {
+			Reload();
+		}
 		return;
 	}
 

@@ -223,7 +223,7 @@ void CDODBaseRocketWeapon::PrimaryAttack()
 		pPlayer->HintMessage( HINT_SHOULDER_WEAPON, true );
 #endif
 		if (pPlayer->GetFlags() & FL_FAKECLIENT) {
-			SecondaryAttack()
+			SecondaryAttack();
 		}
 		m_flNextPrimaryAttack = gpGlobals->curtime + 2.0f;
 	}

@@ -46,7 +46,7 @@ ActionResult<CTFBot> CTFBotRetreatToCover::OnStart( CTFBot *me, Action<CTFBot> *
 		m_flDuration = RandomFloat( tf_bot_wait_in_cover_min_time.GetFloat(),
 									tf_bot_wait_in_cover_max_time.GetFloat() );
 	}
-
+	me->m_Shared.StartSprinting();
 	m_actionDuration.Start( m_flDuration );
 
 	return Action<CTFBot>::Continue();

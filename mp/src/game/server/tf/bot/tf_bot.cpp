@@ -1375,9 +1375,9 @@ bool CTFBot::EquipBestWeaponForThreat( const CKnownEntity *threat )
 {
 	if ( !threat )
 		return false;
+	if (EquipRequiredWeapon())
+		return false;
 
-	if ( !EquipRequiredWeapon() )
-	{
 		CWeaponDODBase *primary = dynamic_cast<CWeaponDODBase *>( Weapon_GetSlot( 0 ) );
 		CWeaponDODBase *secondary = dynamic_cast<CWeaponDODBase *>( Weapon_GetSlot( 1 ) );
 		CWeaponDODBase *melee = dynamic_cast<CWeaponDODBase *>( Weapon_GetSlot( 2 ) );
@@ -1399,7 +1399,6 @@ bool CTFBot::EquipBestWeaponForThreat( const CKnownEntity *threat )
 
 		if ( pWeapon )
 			return Weapon_Switch( pWeapon );
-	}
 
 	return false;
 }
@@ -1436,18 +1435,18 @@ void CTFBot::PopRequiredWeapon( void )
 //-----------------------------------------------------------------------------
 bool CTFBot::EquipRequiredWeapon( void )
 {
-	if ( m_requiredEquipStack.Count() <= 0 )
-		return false;
-
-	CHandle<CWeaponDODBase> &hndl = m_requiredEquipStack.Tail();
-	CWeaponDODBase *weapon = hndl.Get();
-
 	if (TheTFBots().IsMeleeOnly())
 	{
 		// force use of melee weapons
 		Weapon_Switch(Weapon_GetSlot(WPN_SLOT_MELEE));
 		return true;
 	}
+
+	if ( m_requiredEquipStack.Count() <= 0 )
+		return false;
+
+	CHandle<CWeaponDODBase> &hndl = m_requiredEquipStack.Tail();
+	CWeaponDODBase *weapon = hndl.Get();
 
 	return Weapon_Switch( weapon );
 }

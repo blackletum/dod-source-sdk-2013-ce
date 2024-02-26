@@ -449,7 +449,10 @@ void CTFBotManager::MaintainBotQuota()
 			CTFBot* pBot = GetAvailableBotFromPool();
 			if (pBot == NULL)
 			{
-				pBot = NextBotCreatePlayerBot< CTFBot >(GetRandomBotName());
+				char szBotName[64];
+				V_strcpy_safe(szBotName, TheTFBots().GetRandomBotName());
+
+				CTFBot* pBot = NextBotCreatePlayerBot<CTFBot>(szBotName);
 			}
 			if (pBot)
 			{

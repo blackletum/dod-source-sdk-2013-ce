@@ -124,7 +124,7 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 
 			if ( FindNewHome( me ) )
 			{
-				me->VoiceCommand(14);
+				me->VoiceCommand(17);
 
 				m_patienceDuration.Start( RandomFloat( 0.9f, 1.1f ) * tf_bot_sniper_patience_duration.GetFloat() );
 			}

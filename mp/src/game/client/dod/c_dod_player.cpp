@@ -45,6 +45,7 @@
 #include "c_team.h"
 #include "collisionutils.h"
 #include "weapon_dodsniper.h"
+#include "decals.h"
 // NVNT - haptics system for spectating and grenades
 #include "haptics/haptic_utils.h"
 // NVNT - for grenade effects
@@ -1052,6 +1053,190 @@ C_BaseAnimating * C_DODPlayer::BecomeRagdollOnClient()
 	return NULL;
 }
 
+#define SURFACE_SNOW		 91
+#define PLAYER_HALFWIDTH	 10
+
+void C_DODPlayer::UpdateStepSound(surfacedata_t* psurface, const Vector& vecOrigin, const Vector& vecVelocity)
+{
+	Vector knee;
+	Vector feet;
+	float height;
+	int	fLadder;
+
+	if (m_flStepSoundTime > 0)
+	{
+		m_flStepSoundTime -= 1000.0f * gpGlobals->frametime;
+		if (m_flStepSoundTime < 0)
+		{
+			m_flStepSoundTime = 0;
+		}
+	}
+
+	if (m_flStepSoundTime > 0)
+		return;
+
+	if (GetFlags() & (FL_FROZEN | FL_ATCONTROLS))
+		return;
+
+	if (GetMoveType() == MOVETYPE_NOCLIP || GetMoveType() == MOVETYPE_OBSERVER)
+		return;
+
+	float speed = VectorLength(vecVelocity);
+	float groundspeed = Vector2DLength(vecVelocity.AsVector2D());
+
+	// determine if we are on a ladder
+	fLadder = (GetMoveType() == MOVETYPE_LADDER);
+
+	float flDuck;
+
+	if ((GetFlags() & FL_DUCKING) || fLadder)
+	{
+		flDuck = 100;
+	}
+	else
+	{
+		flDuck = 0;
+	}
+
+	static float flMinProneSpeed = 10.0f;
+	static float flMinSpeed = 70.0f;
+	static float flRunSpeed = 110.0f;
+
+	bool onground = (GetFlags() & FL_ONGROUND);
+	bool movingalongground = (groundspeed > 0.0f);
+	bool moving_fast_enough = (speed >= flMinSpeed);
+
+	// always play a step sound if we are moving faster than 
+
+	// To hear step sounds you must be either on a ladder or moving along the ground AND
+	// You must be moving fast enough
+
+	CheckProneMoveSound(groundspeed, onground);
+
+	if (!moving_fast_enough || !(fLadder || (onground && movingalongground)))
+	{
+		return;
+	}
+
+	bool bWalking = (speed < flRunSpeed);		// or ducking!
+
+	VectorCopy(vecOrigin, knee);
+	VectorCopy(vecOrigin, feet);
+
+	height = GetPlayerMaxs()[2] - GetPlayerMins()[2];
+
+	knee[2] = vecOrigin[2] + 0.2 * height;
+
+	float flVol;
+
+	// find out what we're stepping in or on...
+	if (fLadder)
+	{
+		psurface = physprops->GetSurfaceData(physprops->GetSurfaceIndex("ladder"));
+		flVol = 1.0;
+		m_flStepSoundTime = 350;
+	}
+	else if (enginetrace->GetPointContents(knee) & MASK_WATER)
+	{
+		static int iSkipStep = 0;
+
+		if (iSkipStep == 0)
+		{
+			iSkipStep++;
+			return;
+		}
+
+		if (iSkipStep++ == 3)
+		{
+			iSkipStep = 0;
+		}
+		psurface = physprops->GetSurfaceData(physprops->GetSurfaceIndex("wade"));
+		flVol = 0.65;
+		m_flStepSoundTime = 600;
+	}
+	else if (enginetrace->GetPointContents(feet) & MASK_WATER)
+	{
+		psurface = physprops->GetSurfaceData(physprops->GetSurfaceIndex("water"));
+		flVol = bWalking ? 0.2 : 0.5;
+		m_flStepSoundTime = bWalking ? 400 : 300;
+	}
+	else
+	{
+		if (!psurface)
+			return;
+
+		if (bWalking)
+		{
+			m_flStepSoundTime = 400;
+		}
+		else
+		{
+			if (speed > 200)
+			{
+				int speeddiff = PLAYER_SPEED_SPRINT - PLAYER_SPEED_RUN;
+				int diff = speed - PLAYER_SPEED_RUN;
+
+				float percent = (float)diff / (float)speeddiff;
+
+				m_flStepSoundTime = 300.0f - 30.0f * percent;
+			}
+			else
+			{
+				m_flStepSoundTime = 400;
+			}
+		}
+
+		switch (psurface->game.material)
+		{
+		default:
+		case CHAR_TEX_CONCRETE:
+			flVol = bWalking ? 0.2 : 0.5;
+			break;
+
+		case CHAR_TEX_METAL:
+			flVol = bWalking ? 0.2 : 0.5;
+			break;
+
+		case CHAR_TEX_DIRT:
+			flVol = bWalking ? 0.25 : 0.55;
+			break;
+
+		case CHAR_TEX_VENT:
+			flVol = bWalking ? 0.4 : 0.7;
+			break;
+
+		case CHAR_TEX_GRATE:
+			flVol = bWalking ? 0.2 : 0.5;
+			break;
+
+		case CHAR_TEX_TILE:
+			flVol = bWalking ? 0.2 : 0.5;
+			break;
+
+		case CHAR_TEX_SLOSH:
+			flVol = bWalking ? 0.2 : 0.5;
+			break;
+		}
+	}
+
+	m_flStepSoundTime += flDuck; // slower step time if ducking
+
+	if (GetFlags() & FL_DUCKING)
+	{
+		flVol *= 0.65;
+	}
+
+	// protect us from prediction errors a little bit
+	if (m_flMinNextStepSoundTime > gpGlobals->curtime)
+	{
+		return;
+	}
+
+	m_flMinNextStepSoundTime = gpGlobals->curtime + 0.1f;
+
+	PlayStepSound(feet, psurface, flVol, false);
+}
+
 void C_DODPlayer::FireEvent( const Vector& origin, const QAngle& angles, int event, const char *options )
 {
 	if( event == 7002 )
@@ -1082,63 +1267,42 @@ void C_DODPlayer::FireEvent( const Vector& origin, const QAngle& angles, int eve
 	else
 		BaseClass::FireEvent( origin, angles, event, options );
 
-	/*
-	// MATTTODO: water footstep effects
-	if( event == 7001 )
+	if (event == 7001)
 	{
-		bool bInWater = ( enginetrace->GetPointContents(origin) & CONTENTS_WATER );
+		// Force a footstep sound
+		m_flStepSoundTime = 0;
+		Vector vel;
+		EstimateAbsVelocity(vel);
+		surfacedata_t* t_pSurface = GetGroundSurface();
+		UpdateStepSound(t_pSurface, GetAbsOrigin(), vel);
 
-		if( bInWater )
+		if (t_pSurface && ((vel.x < -150 || vel.x > 150) || (vel.y < -150 || vel.y > 150)))
 		{
-			//run splash
-			CEffectData data;
+			// check for snow underfoot and trigger particle and decal fx
+			if (t_pSurface->game.material == SURFACE_SNOW)
+			{
+				ParticleProp()->Create("snow_steppuff01", PATTACH_ABSORIGIN, 0);
+				Vector right;
+				AngleVectors(angles, 0, &right, 0);
 
-			//trace up from foot position to the water surface
-			trace_t tr;
-			Vector vecTrace(0,0,1024);
-			UTIL_TraceLine( origin, origin + vecTrace, MASK_WATER, NULL, COLLISION_GROUP_NONE, &tr );
-			if ( tr.fractionleftsolid )
-			{
-				data.m_vOrigin = origin + (vecTrace * tr.fractionleftsolid);
-			}
-			else
-			{
-				data.m_vOrigin = origin;
-			}
-			
-			data.m_vNormal = Vector( 0,0,1 );
-			data.m_flScale = random->RandomFloat( 4.0f, 5.0f );
-			DispatchEffect( "watersplash", data );
-		}		
-	}
-	else if( event == 7002 )
-	{
-		bool bInWater = ( enginetrace->GetPointContents(origin) & CONTENTS_WATER );
-		
-		if( bInWater )
-		{
-			//walk ripple
-			CEffectData data;
+				// Figure out where the top of the stepping leg is 
+				trace_t tr;
+				Vector hipOrigin;
+				VectorMA(origin, m_IsFootprintOnLeft ? -PLAYER_HALFWIDTH : PLAYER_HALFWIDTH, right, hipOrigin);
 
-			//trace up from foot position to the water surface
-			trace_t tr;
-			Vector vecTrace(0,0,1024);
-			UTIL_TraceLine( origin, origin + vecTrace, MASK_WATER, NULL, COLLISION_GROUP_NONE, &tr );
-			if ( tr.fractionleftsolid )
-			{
-				data.m_vOrigin = origin + (vecTrace * tr.fractionleftsolid);
+				// Find where that leg hits the ground
+				UTIL_TraceLine(hipOrigin, hipOrigin + Vector(0, 0, -COORD_EXTENT * 1.74),
+					MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &tr);
+
+				// Create the decal
+				CPVSFilter filter(tr.endpos);
+				UTIL_DecalTrace(&tr, m_IsFootprintOnLeft ? "footprintL_snow" : "footprintR_snow");
+
+				m_IsFootprintOnLeft = !m_IsFootprintOnLeft;
 			}
-			else
-			{
-				data.m_vOrigin = origin;
-			}
-	
-			data.m_vNormal = Vector( 0,0,1 );
-			data.m_flScale = random->RandomFloat( 4.0f, 7.0f );
-			DispatchEffect( "waterripple", data );
 		}
 	}
-	*/
+	
 }
 // NVNT gate for spectating.
 static bool inSpectating_Haptics = false;
@@ -1401,12 +1565,55 @@ public:
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
+Vector C_DODPlayer::GetDeathViewPosition()
+{
+	Vector origin = EyePosition();
+
+	C_DODRagdoll* pRagdoll = static_cast<C_DODRagdoll*>(m_hRagdoll.Get());
+	if (pRagdoll)
+	{
+		IRagdoll* pIRagdoll = GetRepresentativeRagdoll();
+		if (pIRagdoll)
+		{
+			origin = pIRagdoll->GetRagdollOrigin();
+			origin.z += VEC_DEAD_VIEWHEIGHT_SCALED(this).z; // look over ragdoll, not through
+		}
+	}
+
+	return origin;
+}
+
+static Vector WALL_MIN(-WALL_OFFSET, -WALL_OFFSET, -WALL_OFFSET);
+static Vector WALL_MAX(WALL_OFFSET, WALL_OFFSET, WALL_OFFSET);
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void C_DODPlayer::CalcDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov)
 {
+	CBaseEntity* killer = GetObserverTarget();
+	C_BaseAnimating* pKillerAnimating = killer ? killer->GetBaseAnimating() : NULL;
+
 	// Swing to face our killer within half the death anim time
 	float interpolation = (gpGlobals->curtime - m_flDeathTime) / (1.6f * 0.5);
 	interpolation = clamp(interpolation, 0.0f, 1.0f);
 	interpolation = SimpleSpline(interpolation);
+
+	float flMinChaseDistance = CHASE_CAM_DISTANCE_MIN;
+	float flMaxChaseDistance = CHASE_CAM_DISTANCE_MAX;
+
+	if (pKillerAnimating)
+	{
+		float flScaleSquared = pKillerAnimating->GetModelScale() * pKillerAnimating->GetModelScale();
+		flMinChaseDistance *= flScaleSquared;
+		flMaxChaseDistance *= flScaleSquared;
+	}
+
+	m_flObserverChaseDistance += gpGlobals->frametime * 48.0f;
+	m_flObserverChaseDistance = clamp(m_flObserverChaseDistance, flMinChaseDistance, flMaxChaseDistance);
+
+	QAngle aForward = eyeAngles = EyeAngles();
+	Vector origin = GetDeathViewPosition();
 
 	if (m_hHeadGib)
 	{
@@ -1437,7 +1644,34 @@ void C_DODPlayer::CalcDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, float& 
 			return;
 		}
 	}
-	BaseClass::CalcDeathCamView(eyeOrigin, eyeAngles, fov);
+
+	if (killer && (killer != this))
+	{
+		Vector vKiller = killer->EyePosition() - origin;
+		QAngle aKiller;
+		VectorAngles(vKiller, aKiller);
+		InterpolateAngles(aForward, aKiller, eyeAngles, interpolation);
+	}
+
+	Vector vForward;
+	AngleVectors(eyeAngles, &vForward);
+
+	VectorNormalize(vForward);
+
+	VectorMA(origin, -m_flObserverChaseDistance, vForward, eyeOrigin);
+
+	trace_t trace; // clip against world
+	C_BaseEntity::PushEnableAbsRecomputations(false); // HACK don't recompute positions while doing RayTrace
+	UTIL_TraceHull(origin, eyeOrigin, WALL_MIN, WALL_MAX, MASK_SOLID, this, COLLISION_GROUP_NONE, &trace);
+	C_BaseEntity::PopEnableAbsRecomputations();
+
+	if (trace.fraction < 1.0)
+	{
+		eyeOrigin = trace.endpos;
+		m_flObserverChaseDistance = VectorLength(origin - eyeOrigin);
+	}
+
+	fov = GetFOV();
 }
 void C_DODPlayer::PopHelmet( Vector vecDir, Vector vecForceOrigin, int iModel )
 {
@@ -2025,9 +2259,6 @@ void C_DODPlayer::CalcObserverView( Vector& eyeOrigin, QAngle& eyeAngles, float&
 		BaseClass::CalcObserverView( eyeOrigin, eyeAngles, fov );
 }
 
-static Vector WALL_MIN(-WALL_OFFSET,-WALL_OFFSET,-WALL_OFFSET);
-static Vector WALL_MAX(WALL_OFFSET,WALL_OFFSET,WALL_OFFSET);
-
 void C_DODPlayer::CalcDODDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov)
 {
 	CBaseEntity	* killer = GetObserverTarget();
@@ -2077,6 +2308,37 @@ void C_DODPlayer::CalcDODDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, floa
 		VectorAngles( vecToKiller, aKiller );
 		InterpolateAngles( aForward, aKiller, eyeAngles, interpolation );
 	}
+
+	if (m_hHeadGib)
+	{
+		// View from our decapitated head.
+		IPhysicsObject* pPhysicsObject = m_hHeadGib->VPhysicsGetObject();
+		if (pPhysicsObject)
+		{
+			Vector vecMassCenter = pPhysicsObject->GetMassCenterLocalSpace();
+			Vector vecWorld;
+			m_hHeadGib->CollisionProp()->CollisionToWorldSpace(vecMassCenter, &vecWorld);
+			m_hHeadGib->AddEffects(EF_NODRAW);
+
+			eyeOrigin = vecWorld + Vector(0, 0, 6);
+
+			QAngle aHead = m_hHeadGib->GetAbsAngles();
+			Vector vBody;
+			if (m_hRagdoll)
+			{
+				// Turn to face our ragdoll.
+				vBody = m_hRagdoll->GetAbsOrigin() - eyeOrigin;
+			}
+			else
+			{
+				vBody = m_hHeadGib->GetAbsOrigin();
+			}
+			QAngle aBody; VectorAngles(vBody, aBody);
+			InterpolateAngles(aHead, aBody, eyeAngles, interpolation);
+			return;
+		}
+	}
+
 
 	Vector vForward; AngleVectors( eyeAngles, &vForward );
 

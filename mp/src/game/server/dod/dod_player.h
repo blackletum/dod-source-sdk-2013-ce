@@ -179,7 +179,6 @@ public:
 	virtual void	SharedSpawn();
 
 	void CheckProneMoveSound( int groundspeed, bool onground );
-	virtual void UpdateStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity  );
 	virtual void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
 
 	virtual const Vector	GetPlayerMins( void ) const; // uses local player

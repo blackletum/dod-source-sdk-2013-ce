@@ -65,6 +65,7 @@ public:
 
 	virtual C_BaseAnimating * BecomeRagdollOnClient();
 	virtual IRagdoll* GetRepresentativeRagdoll() const;
+	virtual Vector GetDeathViewPosition();
 
 	virtual void ReceiveMessage( int classID, bf_read &msg );
 	virtual void CalcDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov);

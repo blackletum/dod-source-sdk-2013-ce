@@ -47,7 +47,12 @@ ActionResult<CTFBot> CTFBotMeleeAttack::Update( CTFBot *me, float dt )
 	{
 		return Action<CTFBot>::Done( "Threat is too far away for a melee attack" );
 	}
+	if (me->m_Shared.IsProne()) {
+		// slow to prone speed
+		me->m_Shared.m_flGoProneTime = 0.0f;
 
+		me->m_Shared.m_flUnProneTime = gpGlobals->curtime + TIME_TO_PRONE;	//reset
+	}
 	CBaseCombatWeapon *melee = me->Weapon_GetSlot( WPN_SLOT_MELEE );
 	if ( melee != nullptr )
 	{

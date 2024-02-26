@@ -2261,53 +2261,29 @@ void C_DODPlayer::CalcObserverView( Vector& eyeOrigin, QAngle& eyeAngles, float&
 
 void C_DODPlayer::CalcDODDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov)
 {
-	CBaseEntity	* killer = GetObserverTarget();
+	CBaseEntity* killer = GetObserverTarget();
+	C_BaseAnimating* pKillerAnimating = killer ? killer->GetBaseAnimating() : NULL;
 
-	//float interpolation = ( gpGlobals->curtime - m_flDeathTime ) / DEATH_ANIMATION_TIME;
+	// Swing to face our killer within half the death anim time
+	float interpolation = (gpGlobals->curtime - m_flDeathTime) / (1.6f * 0.5);
+	interpolation = clamp(interpolation, 0.0f, 1.0f);
+	interpolation = SimpleSpline(interpolation);
 
-	// Interpolate very quickly to the killer and follow
-	float interpolation = ( gpGlobals->curtime - m_flDeathTime ) / 0.2f;
-	interpolation = clamp( interpolation, 0.0f, 1.0f );
+	float flMinChaseDistance = CHASE_CAM_DISTANCE_MIN;
+	float flMaxChaseDistance = CHASE_CAM_DISTANCE_MAX;
 
-	m_flObserverChaseDistance += gpGlobals->frametime*48.0f;
-	m_flObserverChaseDistance = clamp( m_flObserverChaseDistance, CHASE_CAM_DISTANCE_MIN, CHASE_CAM_DISTANCE_MAX );
+	if (pKillerAnimating)
+	{
+		float flScaleSquared = pKillerAnimating->GetModelScale() * pKillerAnimating->GetModelScale();
+		flMinChaseDistance *= flScaleSquared;
+		flMaxChaseDistance *= flScaleSquared;
+	}
+
+	m_flObserverChaseDistance += gpGlobals->frametime * 48.0f;
+	m_flObserverChaseDistance = clamp(m_flObserverChaseDistance, flMinChaseDistance, flMaxChaseDistance);
 
 	QAngle aForward = eyeAngles = EyeAngles();
-	Vector origin = EyePosition();			
-
-	IRagdoll *pRagdoll = GetRepresentativeRagdoll();
-	if ( pRagdoll )
-	{
-		origin = pRagdoll->GetRagdollOrigin();
-		origin.z += VEC_DEAD_VIEWHEIGHT_SCALED( this ).z; // look over ragdoll, not through
-	}
-
-	if ( killer && (killer != this) ) 
-	{
-		Vector vecKiller = killer->GetAbsOrigin();
-		
-		C_DODPlayer *player = ToDODPlayer( killer );
-		if ( player && player->IsAlive() )
-		{
-			if ( player->m_Shared.IsProne() )
-			{
-				VectorAdd( vecKiller, VEC_PRONE_VIEW_SCALED( this ), vecKiller );
-			}
-			else if( player->GetFlags() & FL_DUCKING )
-			{
-				VectorAdd( vecKiller, VEC_DUCK_VIEW_SCALED( this ), vecKiller );
-			}
-			else
-			{
-				VectorAdd( vecKiller, VEC_VIEW_SCALED( this ), vecKiller );
-			}
-		}
-
-		Vector vecToKiller = vecKiller - origin;
-		QAngle aKiller;
-		VectorAngles( vecToKiller, aKiller );
-		InterpolateAngles( aForward, aKiller, eyeAngles, interpolation );
-	}
+	Vector origin = GetDeathViewPosition();
 
 	if (m_hHeadGib)
 	{
@@ -2339,16 +2315,24 @@ void C_DODPlayer::CalcDODDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, floa
 		}
 	}
 
+	if (killer && (killer != this))
+	{
+		Vector vKiller = killer->EyePosition() - origin;
+		QAngle aKiller;
+		VectorAngles(vKiller, aKiller);
+		InterpolateAngles(aForward, aKiller, eyeAngles, interpolation);
+	}
 
-	Vector vForward; AngleVectors( eyeAngles, &vForward );
+	Vector vForward;
+	AngleVectors(eyeAngles, &vForward);
 
-	VectorNormalize( vForward );
+	VectorNormalize(vForward);
 
-	VectorMA( origin, -m_flObserverChaseDistance, vForward, eyeOrigin );
+	VectorMA(origin, -m_flObserverChaseDistance, vForward, eyeOrigin);
 
 	trace_t trace; // clip against world
-	C_BaseEntity::PushEnableAbsRecomputations( false ); // HACK don't recompute positions while doing RayTrace
-	UTIL_TraceHull( origin, eyeOrigin, WALL_MIN, WALL_MAX, MASK_SOLID, this, COLLISION_GROUP_NONE, &trace );
+	C_BaseEntity::PushEnableAbsRecomputations(false); // HACK don't recompute positions while doing RayTrace
+	UTIL_TraceHull(origin, eyeOrigin, WALL_MIN, WALL_MAX, MASK_SOLID, this, COLLISION_GROUP_NONE, &trace);
 	C_BaseEntity::PopEnableAbsRecomputations();
 
 	if (trace.fraction < 1.0)

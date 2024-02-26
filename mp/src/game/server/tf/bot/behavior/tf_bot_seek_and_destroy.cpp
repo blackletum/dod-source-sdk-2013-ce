@@ -57,14 +57,14 @@ ActionResult<CTFBot> CTFBotSeekAndDestroy::Update( CTFBot *me, float dt )
 	const CKnownEntity *threat = me->GetVisionInterface()->GetPrimaryKnownThreat();
 	if ( threat != nullptr )
 	{
-		if ( me->IsRangeLessThan( threat->GetLastKnownPosition(), 1000.0f ) )
-		{
-			return Action<CTFBot>::SuspendFor( new CTFBotAttack(), "Going after an enemy" );
-		}
 		if (threat->IsVisibleInFOVNow())
 		{
 			if (threat->GetLastKnownPosition().DistToSqr(me->GetAbsOrigin()) < Square(200.0f))
 				return Action<CTFBot>::SuspendFor(new CTFBotMeleeAttack(1.25f * 200.0f), "Melee attacking nearby threat");
+		}
+		if ( me->IsRangeLessThan( threat->GetLastKnownPosition(), 1000.0f ) )
+		{
+			return Action<CTFBot>::SuspendFor( new CTFBotAttack(), "Going after an enemy" );
 		}
 	}
 

@@ -194,6 +194,7 @@ public:
 
 	bool IsFriendlyFireOn( void );
 	bool IsInBonusRound( void );
+	bool WouldChangeUnbalanceTeams(int iNewTeam, int iCurrentTeam);
 
 	// Get the view vectors for this mod.
 	virtual const CViewVectors* GetViewVectors() const;

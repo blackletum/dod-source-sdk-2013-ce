@@ -393,6 +393,53 @@ void CTFBotManager::MaintainBotQuota()
 	{
 		nDesired = Min(nDesired, gpGlobals->maxClients - nHumansTotal);
 	}
+
+	if (nDesired > nTFBotsTeamed)
+	{
+		if (!DODGameRules()->WouldChangeUnbalanceTeams(TEAM_AXIS, TEAM_UNASSIGNED) ||
+			!DODGameRules()->WouldChangeUnbalanceTeams(TEAM_ALLIES, TEAM_UNASSIGNED))
+		{
+			extern ConVar tf_bot_force_class;
+
+			CTFBot* pBot = NextBotCreatePlayerBot<CTFBot>(GetRandomBotName());
+			if (pBot != nullptr)
+			{
+				pBot->HandleCommand_JoinTeam(DODGameRules()->SelectDefaultTeam());
+
+				pBot->HandleCommand_JoinClass(RandomInt(1, 5));
+
+				char szName[256];
+				CreateBotName(pBot->GetTeamNumber(), pBot->m_Shared.PlayerClass(), tf_bot_difficulty.GetInt(), szName, sizeof(szName));
+				engine->SetFakeClientConVarValue(pBot->edict(), "name", szName);
+			}
+		}
+	}
+	else if (nDesired < nTFBotsTeamed)
+	{
+		if (!UTIL_KickBotFromTeam(TEAM_UNASSIGNED))
+		{
+			CTeam* pRedTeam = GetGlobalTeam(TEAM_ALLIES);
+			CTeam* pBluTeam = GetGlobalTeam(TEAM_AXIS);
+
+			int iTeamToKick;
+			if (pRedTeam->GetNumPlayers() > pBluTeam->GetNumPlayers())
+				iTeamToKick = TEAM_ALLIES;
+			else if (pRedTeam->GetNumPlayers() < pBluTeam->GetNumPlayers())
+				iTeamToKick = TEAM_AXIS;
+			else if (pRedTeam->GetScore() > pBluTeam->GetScore())
+				iTeamToKick = TEAM_ALLIES;
+			else if (pRedTeam->GetScore() < pBluTeam->GetScore())
+				iTeamToKick = TEAM_AXIS;
+			else
+				iTeamToKick = RandomInt(0, 1) == 1 ? TEAM_ALLIES : TEAM_AXIS;
+
+			if (!UTIL_KickBotFromTeam(iTeamToKick))
+			{
+				UTIL_KickBotFromTeam(iTeamToKick == TEAM_ALLIES ? TEAM_AXIS : TEAM_ALLIES);
+			}
+		}
+	}
+
 }
 
 const char* CTFBotManager::GetRandomBotName()

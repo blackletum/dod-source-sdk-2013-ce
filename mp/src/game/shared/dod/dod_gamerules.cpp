@@ -6357,6 +6357,62 @@ bool CDODGameRules::IsBombingTeam( int team )
 	return false;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: returns true if the passed team change would cause unbalanced teams
+//-----------------------------------------------------------------------------
+bool CDODGameRules::WouldChangeUnbalanceTeams(int iNewTeam, int iCurrentTeam)
+{
+#ifdef GAME_DLL
+	// players are allowed to change to their own team
+	if (iNewTeam == iCurrentTeam)
+		return false;
+
+#if defined( _DEBUG ) || defined( STAGING_ONLY )
+	if (mp_developer.GetBool())
+		return false;
+#endif // _DEBUG || STAGING_ONLY
+
+	// if they are joining a non-playing team, allow
+	if (iNewTeam < FIRST_GAME_TEAM)
+		return false;
+
+	CTeam* pNewTeam = GetGlobalTeam(iNewTeam);
+
+	if (!pNewTeam)
+	{
+		Assert(0);
+		return true;
+	}
+
+	// add one because we're joining this team
+	int iNewTeamPlayers = pNewTeam->GetNumPlayers() + 1;
+
+	// for each game team
+	int i = FIRST_GAME_TEAM;
+
+	CTeam* pTeam;
+
+	for (pTeam = GetGlobalTeam(i); pTeam != NULL; pTeam = GetGlobalTeam(++i))
+	{
+		if (pTeam == pNewTeam)
+			continue;
+
+		int iNumPlayers = pTeam->GetNumPlayers();
+
+		if (i == iCurrentTeam)
+		{
+			iNumPlayers = MAX(0, iNumPlayers - 1);
+		}
+
+		if ((iNewTeamPlayers - iNumPlayers) > 1)
+		{
+			return true;
+		}
+	}
+#endif
+	return false;
+}
+
 bool CDODGameRules::IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer )
 {
 #ifdef GAME_DLL

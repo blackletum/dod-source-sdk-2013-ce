@@ -339,7 +339,7 @@ void CTFBot::PhysicsSimulate( void )
 
 	if ( !IsAlive() && m_bWantsToChangeClass )
 	{
-		DODGameRules()->ChooseRandomClass(this);
+		HandleCommand_JoinClass(RandomInt(1, 5));
 
 		m_bWantsToChangeClass = false;
 	}
@@ -1879,7 +1879,7 @@ CON_COMMAND_F( tf_bot_add, "Add a bot.", FCVAR_GAMEDLL )
 			else
 				Q_snprintf( szTeam, sizeof szTeam, "auto" );
 
-			bot->HandleCommand_JoinTeam( RandomInt(TEAM_ALLIES,TEAM_AXIS) );
+			bot->HandleCommand_JoinTeam( RandomInt(2,3) );
 
 			char szClassName[16];
 			if ( args.ArgC() > 3 )
@@ -1895,7 +1895,7 @@ CON_COMMAND_F( tf_bot_add, "Add a bot.", FCVAR_GAMEDLL )
 			else
 				Q_snprintf( szClassName, sizeof szClassName, "random" );
 
-			DODGameRules()->ChooseRandomClass(bot);
+			bot->HandleCommand_JoinClass(RandomInt(1, 5));
 		}
 
 		TheTFBots().OnForceAddedBots( count );
@@ -1969,7 +1969,7 @@ CON_COMMAND_F(tf_bot_add_new, "Add a bot. (currently crashes the game)", FCVAR_G
 			if (pBot == nullptr)
 				break;
 			
-			pBot->HandleCommand_JoinTeam( RandomInt(TEAM_ALLIES,TEAM_AXIS) );
+			pBot->HandleCommand_JoinTeam( RandomInt(2,3) );
 			pBot->m_iSkill = (CTFBot::DifficultyType)nSkill;
 
 			nCount++;

@@ -142,7 +142,6 @@ CNavArea *CTFBotSeekAndDestroy::ChooseGoalArea( CTFBot *actor )
 {
 	CUtlVector<CNavArea *> areas; 
 
-	CControlPoint *point = actor->GetMyControlPoint();
 	FOR_EACH_VEC(TheNavAreas, it)
 	{
 		CNavArea* area = TheNavAreas[it];

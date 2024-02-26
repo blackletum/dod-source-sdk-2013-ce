@@ -532,9 +532,6 @@ void CTFNavMesh::ComputeIncursionDistances()
 		area->SetIncursionDistance( TEAM_AXIS, -1.0f );
 	}
 
-	bool bFoundRedSpawn = false;
-	bool bFoundBluSpawn = false;
-
 	/*if ( !bFoundRedSpawn )
 	{
 		Warning(

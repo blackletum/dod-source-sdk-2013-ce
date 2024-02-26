@@ -3002,7 +3002,7 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 
 	switch( GetTeamNumber() )
 	{
-	case TEAM_ALLIES:
+	case TEAM_ALLIES: 
 		{
 			CUtlVector<EHANDLE> *pSpawnList = DODGameRules()->GetSpawnPointListForTeam( TEAM_ALLIES );
 			pSpot = SelectSpawnSpot( pSpawnList, g_iLastAlliesSpawnIndex );	

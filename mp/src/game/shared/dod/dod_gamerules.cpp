@@ -3882,25 +3882,26 @@ const CDODViewVectors *CDODGameRules::GetDODViewVectors() const
 						ent->GetAbsOrigin()[0],ent->GetAbsOrigin()[2],ent->GetAbsOrigin()[2] );
 				}
 			}
-			while ((ent = gEntList.FindEntityByClassname(ent, "info_player_teamspawn")) != NULL)
+			for (int i = 0; i < ITFTeamSpawnAutoList::AutoList().Count(); ++i)
 			{
-				if (IsSpawnPointValid(ent, NULL) && ent->GetTeamNumber() == TEAM_ALLIES)
+				CTFTeamSpawn* pCTFSpawn = static_cast<CTFTeamSpawn*>(ITFTeamSpawnAutoList::AutoList()[i]);;
+				if (IsSpawnPointValid(pCTFSpawn, NULL) && pCTFSpawn->GetTeamNumber() == TEAM_ALLIES)
 				{
 					m_iSpawnPointCount_Allies++;
 
 					// store in a list
 					m_AlliesSpawnPoints.AddToTail(ent);
 				}
-				else if(IsSpawnPointValid(ent, NULL) && ent->GetTeamNumber() == TEAM_AXIS)
+				else if(IsSpawnPointValid(pCTFSpawn, NULL) && pCTFSpawn->GetTeamNumber() == TEAM_AXIS)
 				{
 					m_iSpawnPointCount_Axis++;
 
 					// store in a list
-					m_AlliesSpawnPoints.AddToTail(ent);
+					m_AxisSpawnPoints.AddToTail(ent);
 				}
 				else
 				{
-					Warning("Invalid allies spawnpoint at (%.1f,%.1f,%.1f)\n",
+					Warning("Invalid spawnpoint at (%.1f,%.1f,%.1f)\n",
 						ent->GetAbsOrigin()[0], ent->GetAbsOrigin()[2], ent->GetAbsOrigin()[2]);
 				}
 			}

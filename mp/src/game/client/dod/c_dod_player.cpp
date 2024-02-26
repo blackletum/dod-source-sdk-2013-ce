@@ -1398,6 +1398,47 @@ public:
 	}
 };
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void C_DODPlayer::CalcDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov)
+{
+	// Swing to face our killer within half the death anim time
+	float interpolation = (gpGlobals->curtime - m_flDeathTime) / (1.6f * 0.5);
+	interpolation = clamp(interpolation, 0.0f, 1.0f);
+	interpolation = SimpleSpline(interpolation);
+
+	if (m_hHeadGib)
+	{
+		// View from our decapitated head.
+		IPhysicsObject* pPhysicsObject = m_hHeadGib->VPhysicsGetObject();
+		if (pPhysicsObject)
+		{
+			Vector vecMassCenter = pPhysicsObject->GetMassCenterLocalSpace();
+			Vector vecWorld;
+			m_hHeadGib->CollisionProp()->CollisionToWorldSpace(vecMassCenter, &vecWorld);
+			m_hHeadGib->AddEffects(EF_NODRAW);
+
+			eyeOrigin = vecWorld + Vector(0, 0, 6);
+
+			QAngle aHead = m_hHeadGib->GetAbsAngles();
+			Vector vBody;
+			if (m_hRagdoll)
+			{
+				// Turn to face our ragdoll.
+				vBody = m_hRagdoll->GetAbsOrigin() - eyeOrigin;
+			}
+			else
+			{
+				vBody = m_hHeadGib->GetAbsOrigin();
+			}
+			QAngle aBody; VectorAngles(vBody, aBody);
+			InterpolateAngles(aHead, aBody, eyeAngles, interpolation);
+			return;
+		}
+	}
+	BaseClass::CalcDeathCamView(eyeOrigin, eyeAngles, fov);
+}
 void C_DODPlayer::PopHelmet( Vector vecDir, Vector vecForceOrigin, int iModel )
 {
 	if ( IsDormant() )
@@ -1459,6 +1500,7 @@ void C_DODPlayer::PopHelmet( Vector vecDir, Vector vecForceOrigin, int iModel )
 	}
 
 	pEntity->StartFadeOut( 10.0 );
+	m_hHeadGib = pEntity;
 }
 
 void C_DODPlayer::ReceiveMessage( int classID, bf_read &msg )

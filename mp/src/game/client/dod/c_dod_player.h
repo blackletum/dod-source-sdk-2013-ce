@@ -67,7 +67,9 @@ public:
 	virtual IRagdoll* GetRepresentativeRagdoll() const;
 
 	virtual void ReceiveMessage( int classID, bf_read &msg );
+	virtual void CalcDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov);
 	void PopHelmet( Vector vecDir, Vector vecForceOffset, int model );
+	EHANDLE					m_hHeadGib;
 
 	// Get the ID target entity index. The ID target is the player that is behind our crosshairs, used to
 	// display the player's name.

@@ -50,5 +50,10 @@ Action<CTFBot> *CTFBotScenarioMonitor::DesiredScenarioAndClassAction( CTFBot *ac
 	if ( TheNavAreas.IsEmpty() )
 		return nullptr;
 
+	if (actor->m_Shared.PlayerClass() == 3)
+	{
+		return new CTFBotSniperLurk;
+	}
+
 	return new CTFBotSeekAndDestroy( -1.0f );
 }

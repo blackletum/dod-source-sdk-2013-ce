@@ -6,8 +6,8 @@
 //=============================================================================
 
 #include "cbase.h"
-#include "nav_mesh/tf_nav_mesh.h"
-#include "tf_bot.h"
+#include "tf/nav_mesh/tf_nav_mesh.h"
+#include "../tf_bot.h"
 #include "tf_hint.h"
 
 

@@ -5,8 +5,7 @@
 #include "tf/bot/tf_bot.h"
 #include "tf_bot_sniper_lurk.h"
 #include "tf/bot/behavior/tf_bot_melee_attack.h"
-
-#if 0
+#include "dod/weapon_dodsniper.h"
 
 ConVar tf_bot_debug_sniper( "tf_bot_debug_sniper", "0", FCVAR_CHEAT );
 ConVar tf_bot_sniper_patience_duration( "tf_bot_sniper_patience_duration", "10", FCVAR_CHEAT, "How long a Sniper bot will wait without seeing an enemy before picking a new spot" );
@@ -125,7 +124,7 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 
 			if ( FindNewHome( me ) )
 			{
-				me->SpeakConceptIfAllowed( MP_CONCEPT_PLAYER_NEGATIVE );
+				me->VoiceCommand(14);
 
 				m_patienceDuration.Start( RandomFloat( 0.9f, 1.1f ) * tf_bot_sniper_patience_duration.GetFloat() );
 			}
@@ -151,7 +150,9 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 
 			m_PathFollower.Update( me );
 
-			if ( me->m_Shared.InCond( TF_COND_ZOOMED ) )
+			CDODSniperWeapon* pPrimary = (CDODSniperWeapon*)me->Weapon_GetSlot(0);
+
+			if (pPrimary != nullptr && pPrimary->IsZoomed())
 			{
 				me->PressAltFireButton();
 			}
@@ -165,7 +166,9 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 	{
 		me->Weapon_Switch( pPrimary );
 
-		if ( !me->m_Shared.InCond( TF_COND_ZOOMED ))
+		CDODSniperWeapon* pPrimary = (CDODSniperWeapon*)me->Weapon_GetSlot(0);
+
+		if (pPrimary != nullptr && !pPrimary->IsZoomed())
 		{
 			me->PressAltFireButton();
 		}
@@ -176,7 +179,9 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 
 void CTFBotSniperLurk::OnEnd( CTFBot *me, Action<CTFBot> *newAction )
 {
-	if ( me->m_Shared.InCond( TF_COND_ZOOMED ) )
+	CDODSniperWeapon* pPrimary = (CDODSniperWeapon*)me->Weapon_GetSlot(0);
+
+	if (pPrimary != nullptr && pPrimary->IsZoomed())
 	{
 		me->PressAltFireButton();
 	}
@@ -194,7 +199,9 @@ void CTFBotSniperLurk::OnEnd( CTFBot *me, Action<CTFBot> *newAction )
 
 ActionResult<CTFBot> CTFBotSniperLurk::OnSuspend( CTFBot *me, Action<CTFBot> *newAction )
 {
-	if ( me->m_Shared.InCond( TF_COND_ZOOMED ) )
+	CDODSniperWeapon* pPrimary = (CDODSniperWeapon*)me->Weapon_GetSlot(0);
+
+	if (pPrimary != nullptr && pPrimary->IsZoomed())
 	{
 		me->PressAltFireButton();
 	}
@@ -258,7 +265,7 @@ bool CTFBotSniperLurk::FindHint( CTFBot *actor )
 	CTFBotHint *pSelected = nullptr;
 	if ( !m_hHint || m_Hints.Count() > 1 )
 	{
-		CUtlVector<CTFPlayer *> enemies;
+		CUtlVector<CDODPlayer *> enemies;
 		CollectPlayers( &enemies, GetEnemyTeam( actor ), true );
 
 		CUtlVector<CTFBotHint *> emptyHints;
@@ -269,7 +276,7 @@ bool CTFBotSniperLurk::FindHint( CTFBot *actor )
 			{
 				emptyHints.AddToTail( pHint );
 
-				for ( CTFPlayer *pPlayer : enemies )
+				for ( CDODPlayer *pPlayer : enemies )
 				{
 					if ( !pPlayer->IsLineOfSightClear( pHint->WorldSpaceCenter(), CBaseCombatCharacter::IGNORE_ACTORS ) )
 						continue;
@@ -376,38 +383,31 @@ bool CTFBotSniperLurk::FindNewHome( CTFBot *actor )
 	{
 		m_bHasHome = false;
 
-		CControlPoint *pPoint = actor->GetMyControlPoint();
-		if ( pPoint )
-		{
-			CCopyableUtlVector<CTFNavArea *> areas( (const CCopyableUtlVector<CTFNavArea *> &)TFNavMesh()->GetControlPointAreas( pPoint->GetPointIndex() ) );
+			CUtlVector<CNavArea*> areas;
+
 			if ( areas.IsEmpty() )
 			{
-				TFNavMesh()->CollectSpawnRoomThresholdAreas( &areas, actor->GetTeamNumber() );
-				if ( areas.IsEmpty() )
+
+				FOR_EACH_VEC(TheNavAreas, it)
 				{
-					m_vecHome = actor->GetAbsOrigin();
+					CNavArea* area = TheNavAreas[it];
+					areas.AddToHead(area);
 				}
-				else
-				{
-					CTFNavArea *area = areas.Random();
-					m_vecHome = area->GetRandomPoint();
-				}
+				CNavArea* area = areas.Random();
+				m_vecHome = area->GetRandomPoint();
+				m_bHasHome = true;
+				return true;
 			}
 			else
 			{
-				CTFNavArea *area = areas.Random();
+				CNavArea *area = areas.Random();
 				m_vecHome = area->GetRandomPoint();
+				m_bHasHome = true;
+				return true; 
 			}
-		}
 
 		return false;
 	}
 
-	CTFBot::SniperSpotInfo const& info = actor->m_sniperSpots.Random();
-	m_vecHome = info.m_vecHome;
-	m_bHasHome = true;
-
-	return true;
+	return false;
 }
-
-#endif

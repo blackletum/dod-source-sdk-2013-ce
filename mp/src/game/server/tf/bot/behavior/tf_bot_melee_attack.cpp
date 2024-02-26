@@ -48,7 +48,7 @@ ActionResult<CTFBot> CTFBotMeleeAttack::Update( CTFBot *me, float dt )
 		return Action<CTFBot>::Done( "Threat is too far away for a melee attack" );
 	}
 
-	CBaseCombatWeapon *melee = me->Weapon_GetSlot( 2 );
+	CBaseCombatWeapon *melee = me->Weapon_GetSlot( WPN_SLOT_MELEE );
 	if ( melee != nullptr )
 	{
 		me->Weapon_Switch( melee );

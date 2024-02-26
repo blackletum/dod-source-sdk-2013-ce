@@ -4,8 +4,7 @@
 //#include "tf_obj_sentrygun.h"
 #include "tf_bot_sniper_attack.h"
 #include "../tf_bot_retreat_to_cover.h"
-
-#if 0
+#include "weapon_dodsniper.h"
 
 ConVar tf_bot_sniper_flee_range( "tf_bot_sniper_flee_range", "400", FCVAR_CHEAT, "If threat is closer than this, retreat" );
 ConVar tf_bot_sniper_melee_range( "tf_bot_sniper_melee_range", "200", FCVAR_CHEAT, "If threat is closer than this, attack with melee weapon" );
@@ -34,7 +33,7 @@ ActionResult<CTFBot> CTFBotSniperAttack::OnStart( CTFBot *me, Action<CTFBot> *pr
 
 ActionResult<CTFBot> CTFBotSniperAttack::Update( CTFBot *me, float dt )
 {
-	CBaseCombatWeapon *pPrimary = me->Weapon_GetSlot( 0 );
+	CDODSniperWeapon*pPrimary = (CDODSniperWeapon *)me->Weapon_GetSlot( 0 );
 	if ( pPrimary != nullptr )
 	{
 		me->Weapon_Switch( pPrimary );
@@ -43,7 +42,7 @@ ActionResult<CTFBot> CTFBotSniperAttack::Update( CTFBot *me, float dt )
 	const CKnownEntity *threat = me->GetVisionInterface()->GetPrimaryKnownThreat( false );
 	if ( threat == nullptr || !threat->GetEntity()->IsAlive() || !threat->IsVisibleInFOVNow() )
 	{
-		if ( m_lingerDuration.IsElapsed() && !me->m_Shared.InCond( TF_COND_ZOOMED ) )
+		if ( m_lingerDuration.IsElapsed() && !pPrimary->IsZoomed() )
 			return Action<CTFBot>::Done( "No threat for a while" );
 
 		return Action<CTFBot>::Continue();
@@ -63,7 +62,7 @@ ActionResult<CTFBot> CTFBotSniperAttack::Update( CTFBot *me, float dt )
 
 	m_lingerDuration.Start( RandomFloat( 0.75f, 1.25f ) * tf_bot_sniper_linger_time.GetFloat() );
 
-	if ( !me->m_Shared.InCond( TF_COND_ZOOMED ) )
+	if (!pPrimary->IsZoomed())
 	{
 		me->PressAltFireButton();
 	}
@@ -73,7 +72,9 @@ ActionResult<CTFBot> CTFBotSniperAttack::Update( CTFBot *me, float dt )
 
 void CTFBotSniperAttack::OnEnd( CTFBot *me, Action<CTFBot> *newAction )
 {
-	if ( me->m_Shared.InCond( TF_COND_ZOOMED ) )
+	CDODSniperWeapon* pPrimary = (CDODSniperWeapon*)me->Weapon_GetSlot(0);
+
+	if (pPrimary->IsZoomed())
 	{
 		me->PressAltFireButton();
 	}
@@ -81,7 +82,9 @@ void CTFBotSniperAttack::OnEnd( CTFBot *me, Action<CTFBot> *newAction )
 
 ActionResult<CTFBot> CTFBotSniperAttack::OnSuspend( CTFBot *me, Action<CTFBot> *newAction )
 {
-	if ( me->m_Shared.InCond( TF_COND_ZOOMED ) )
+	CDODSniperWeapon* pPrimary = (CDODSniperWeapon*)me->Weapon_GetSlot(0);
+
+	if (pPrimary->IsZoomed())
 	{
 		me->PressAltFireButton();
 	}
@@ -144,7 +147,7 @@ const CKnownEntity *CTFBotSniperAttack::SelectMoreDangerousThreat( const INextBo
 
 bool CTFBotSniperAttack::IsPossible( CTFBot *actor )
 {
-	if ( actor->IsPlayerClass( TF_CLASS_SNIPER ) && actor->GetVisionInterface()->GetPrimaryKnownThreat() &&
+	if ( actor->m_Shared.PlayerClass() == 3 && actor->GetVisionInterface()->GetPrimaryKnownThreat() &&
 		 actor->GetVisionInterface()->GetPrimaryKnownThreat()->IsVisibleRecently() )
 	{
 		return true;
@@ -169,11 +172,11 @@ bool CTFBotSniperAttack::IsImmediateThreat( const CBaseCombatCharacter *who, con
 	Vector vecToThreat = ( who->GetAbsOrigin() - threat->GetLastKnownPosition() );
 	vecToThreat.NormalizeInPlace();
 
-	CTFPlayer *pPlayer = ToTFPlayer( threat->GetEntity() );
+	CDODPlayer *pPlayer = ToDODPlayer( threat->GetEntity() );
 	if ( pPlayer )
 	{
 		// Counter-sniping is primary concern
-		if ( pPlayer->IsPlayerClass( TF_CLASS_SNIPER ) )
+		if ( pPlayer->m_Shared.PlayerClass() == 3 )
 			return true;
 
 		pPlayer->EyeVectors( &vecFwd );
@@ -181,20 +184,8 @@ bool CTFBotSniperAttack::IsImmediateThreat( const CBaseCombatCharacter *who, con
 			return true;
 
 		// Always go for the healer
-		return pPlayer->IsPlayerClass( TF_CLASS_MEDIC );
-	}
-
-	CObjectSentrygun *pSentry = dynamic_cast<CObjectSentrygun *>( threat->GetEntity() );
-	if ( pSentry )
-	{
-		QAngle turretAng = pSentry->GetTurretAngles();
-		AngleVectors( turretAng, &vecFwd );
-
-		if ( vecToThreat.Dot( vecFwd ) > 0.8f )
-			return true;
+		return pPlayer->m_Shared.PlayerClass() == 2;
 	}
 
 	return false;
 }
-
-#endif

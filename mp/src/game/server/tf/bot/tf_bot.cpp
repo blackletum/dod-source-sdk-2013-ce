@@ -1442,6 +1442,13 @@ bool CTFBot::EquipRequiredWeapon( void )
 	CHandle<CWeaponDODBase> &hndl = m_requiredEquipStack.Tail();
 	CWeaponDODBase *weapon = hndl.Get();
 
+	if (TheTFBots().IsMeleeOnly())
+	{
+		// force use of melee weapons
+		Weapon_Switch(Weapon_GetSlot(WPN_SLOT_MELEE));
+		return true;
+	}
+
 	return Weapon_Switch( weapon );
 }
 

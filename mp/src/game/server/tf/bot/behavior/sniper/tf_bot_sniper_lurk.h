@@ -4,8 +4,8 @@
 #pragma once
 #endif
 
-#if 0
 #include "NextBotBehavior.h"
+#include "tf/bot/map_entities/tf_hint.h"
 
 class CTFBotSniperLurk : public Action<CTFBot>
 {
@@ -41,5 +41,4 @@ private:
 	CHandle<CTFBotHint> m_hHint;
 };
 
-#endif
 #endif

@@ -55,6 +55,11 @@ $Project "Server (DoD)"
 		{
 			$Folder "Bots"
 			{
+				$Folder "Hints"
+				{
+					$File "tf\bot\map_entities\tf_hint.cpp"
+					$File "tf\bot\map_entities\tf_hint.h"
+				}
 				$Folder "Behavior"
 				{
 					$File "tf\bot\behavior\tf_bot_approach_object.cpp"

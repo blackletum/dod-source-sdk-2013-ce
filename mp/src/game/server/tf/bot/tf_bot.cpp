@@ -607,7 +607,20 @@ bool CTFBot::IsBarrageAndReloadWeapon( CWeaponDODBase *weapon ) const
 //-----------------------------------------------------------------------------
 bool CTFBot::IsAmmoLow( void ) const
 {
+
+	CWeaponDODBase* weapon = GetActiveDODWeapon();
+	if (weapon == nullptr)
+		return false;
+
+	if (!weapon->IsMeleeWeapon())
+	{
+		// int ammoType = weapon->GetPrimaryAmmoType();
+		int current = weapon->GetPrimaryAmmoCount();
+		return current / weapon->GetMaxClip1() < 0.2f;
+	}
+
 	return false;
+
 }
 
 //-----------------------------------------------------------------------------

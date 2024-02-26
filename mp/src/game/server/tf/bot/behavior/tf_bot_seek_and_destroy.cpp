@@ -4,6 +4,7 @@
 #include "tf_bot_attack.h"
 #include "tf/nav_mesh/tf_nav_mesh.h"
 #include "dod/dod_gamerules.h"
+#include "tf_bot_melee_attack.h"
 
 
 ConVar tf_bot_debug_seek_and_destroy( "tf_bot_debug_seek_and_destroy", "0", FCVAR_CHEAT, "", true, 0.0f, true, 1.0f );
@@ -59,6 +60,11 @@ ActionResult<CTFBot> CTFBotSeekAndDestroy::Update( CTFBot *me, float dt )
 		if ( me->IsRangeLessThan( threat->GetLastKnownPosition(), 1000.0f ) )
 		{
 			return Action<CTFBot>::SuspendFor( new CTFBotAttack(), "Going after an enemy" );
+		}
+		if (threat->IsVisibleInFOVNow())
+		{
+			if (threat->GetLastKnownPosition().DistToSqr(me->GetAbsOrigin()) < Square(200.0f))
+				return Action<CTFBot>::SuspendFor(new CTFBotMeleeAttack(1.25f * 200.0f), "Melee attacking nearby threat");
 		}
 	}
 

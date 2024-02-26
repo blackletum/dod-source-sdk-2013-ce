@@ -313,130 +313,201 @@ bool CTFBotManager::IsMeleeOnly() const
 	return tf_bot_melee_only.GetBool();
 }
 
+//----------------------------------------------------------------------------------------------------------------
+CTFBot* CTFBotManager::GetAvailableBotFromPool()
+{
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	{
+		CDODPlayer* pPlayer = ToDODPlayer(UTIL_PlayerByIndex(i));
+		CTFBot* pBot = dynamic_cast<CTFBot*>(pPlayer);
+
+		if (pBot == NULL)
+			continue;
+
+		if ((pBot->GetFlags() & FL_FAKECLIENT) == 0)
+			continue;
+
+		if (pBot->GetTeamNumber() == TEAM_SPECTATOR || pBot->GetTeamNumber() == TEAM_UNASSIGNED)
+		{
+			return pBot;
+		}
+	}
+	return NULL;
+}
+
 
 void CTFBotManager::MaintainBotQuota()
 {
-	VPROF_BUDGET(__FUNCTION__, "NextBot");
+	if (TheNavMesh->IsGenerating())
+		return;
 
-	if (TheNavMesh->IsGenerating() || g_fGameOver) return;
-	if (!DODGameRules()) return;
-	if (gpGlobals->curtime < m_flQuotaChangeTime) return;
+	if (g_fGameOver)
+		return;
 
+	// new players can't spawn immediately after the round has been going for some time
+	if (!DODGameRules())
+		return;
+
+
+	// if it is not time to do anything...
+	if (gpGlobals->curtime < m_flQuotaChangeTime)
+		return;
+
+	// think every quarter second
 	m_flQuotaChangeTime = gpGlobals->curtime + 0.25f;
 
-	int nPlayersTotal = 0;
-	int nTFBotsTotal = 0;
-	int nTFBotsTeamed = 0;
-	int nHumansTeamed = 0;
-	int nHumansSpec = 0;
-
-	for (int i = 1; i < gpGlobals->maxClients; ++i)
+	// don't add bots until local player has been registered, to make sure he's player ID #1
+	if (!engine->IsDedicatedServer())
 	{
-		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+		CBasePlayer* pPlayer = UTIL_GetListenServerHost();
+		if (!pPlayer)
+			return;
+	}
 
-		if (pPlayer == nullptr || FNullEnt(pPlayer->edict()))
-			continue;
-		if (!pPlayer->IsPlayer() || !pPlayer->IsConnected())
+	// We want to balance based on who's playing on game teams not necessary who's on team spectator, etc.
+	int nConnectedClients = 0;
+	int nTFBots = 0;
+	int nTFBotsOnGameTeams = 0;
+	int nNonTFBotsOnGameTeams = 0;
+	int nSpectators = 0;
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	{
+		CDODPlayer* pPlayer = ToDODPlayer(UTIL_PlayerByIndex(i));
+
+		if (pPlayer == NULL)
 			continue;
 
-		CTFBot* pBot = ToTFBot(pPlayer);
-		if (pBot != nullptr)
+		if (FNullEnt(pPlayer->edict()))
+			continue;
+
+		if (!pPlayer->IsConnected())
+			continue;
+
+		CTFBot* pBot = dynamic_cast<CTFBot*>(pPlayer);
+		if (pBot)
 		{
-			++nTFBotsTotal;
+			nTFBots++;
 			if (pPlayer->GetTeamNumber() == TEAM_ALLIES || pPlayer->GetTeamNumber() == TEAM_AXIS)
 			{
-				++nTFBotsTeamed;
+				nTFBotsOnGameTeams++;
 			}
 		}
 		else
 		{
 			if (pPlayer->GetTeamNumber() == TEAM_ALLIES || pPlayer->GetTeamNumber() == TEAM_AXIS)
 			{
-				++nHumansTeamed;
+				nNonTFBotsOnGameTeams++;
 			}
 			else if (pPlayer->GetTeamNumber() == TEAM_SPECTATOR)
 			{
-				++nHumansSpec;
+				nSpectators++;
 			}
 		}
 
-		++nPlayersTotal;
+		nConnectedClients++;
 	}
 
-	int nHumansTotal = nPlayersTotal - nTFBotsTotal;
-
-	int nDesired = tf_bot_quota.GetInt();
+	int desiredBotCount = tf_bot_quota.GetInt();
+	int nTotalNonTFBots = nConnectedClients - nTFBots;
 
 	if (FStrEq(tf_bot_quota_mode.GetString(), "fill"))
 	{
-		nDesired = Max(0, nDesired - nHumansTeamed);
+		desiredBotCount = MAX(0, desiredBotCount - nNonTFBotsOnGameTeams);
 	}
 	else if (FStrEq(tf_bot_quota_mode.GetString(), "match"))
 	{
-		nDesired = Max(0, tf_bot_quota.GetInt() * nHumansTeamed);
+		// If bot_quota_mode is 'match', we want the number of bots to be bot_quota * total humans
+		desiredBotCount = (int)MAX(0, tf_bot_quota.GetFloat() * nNonTFBotsOnGameTeams);
 	}
 
+	// wait for a player to join, if necessary
 	if (tf_bot_join_after_player.GetBool())
 	{
-		if (nHumansTeamed == 0 && nHumansSpec == 0)
+		if ((nNonTFBotsOnGameTeams == 0) && (nSpectators == 0))
 		{
-			nDesired = 0;
+			desiredBotCount = 0;
 		}
 	}
 
+	// if bots will auto-vacate, we need to keep one slot open to allow players to join
 	if (tf_bot_auto_vacate.GetBool())
 	{
-		nDesired = Min(nDesired, gpGlobals->maxClients - (nHumansTotal - 1));
+		desiredBotCount = MIN(desiredBotCount, gpGlobals->maxClients - nTotalNonTFBots - 1);
 	}
 	else
 	{
-		nDesired = Min(nDesired, gpGlobals->maxClients - nHumansTotal);
+		desiredBotCount = MIN(desiredBotCount, gpGlobals->maxClients - nTotalNonTFBots);
 	}
 
-	if (nDesired > nTFBotsTeamed)
+	// add bots if necessary
+	if (desiredBotCount > nTFBotsOnGameTeams)
 	{
+		// don't try to add a bot if it would unbalance
 		if (!DODGameRules()->WouldChangeUnbalanceTeams(TEAM_AXIS, TEAM_UNASSIGNED) ||
 			!DODGameRules()->WouldChangeUnbalanceTeams(TEAM_ALLIES, TEAM_UNASSIGNED))
 		{
-			extern ConVar tf_bot_force_class;
-
-			CTFBot* pBot = NextBotCreatePlayerBot<CTFBot>(GetRandomBotName());
-			if (pBot != nullptr)
+			CTFBot* pBot = GetAvailableBotFromPool();
+			if (pBot == NULL)
+			{
+				pBot = NextBotCreatePlayerBot< CTFBot >(GetRandomBotName());
+			}
+			if (pBot)
 			{
 				pBot->HandleCommand_JoinTeam(DODGameRules()->SelectDefaultTeam());
 
 				pBot->HandleCommand_JoinClass(RandomInt(1, 5));
 
-				char szName[256];
-				CreateBotName(pBot->GetTeamNumber(), pBot->m_Shared.PlayerClass(), tf_bot_difficulty.GetInt(), szName, sizeof(szName));
-				engine->SetFakeClientConVarValue(pBot->edict(), "name", szName);
+				// give the bot a proper name
+				char name[256];
+				CTFBot::DifficultyType skill = pBot->m_iSkill;
+				CreateBotName(pBot->GetTeamNumber(), pBot->m_Shared.PlayerClass(), skill, name, sizeof(name));
+				engine->SetFakeClientConVarValue(pBot->edict(), "name", name);
 			}
 		}
 	}
-	else if (nDesired < nTFBotsTeamed)
+	else if (desiredBotCount < nTFBotsOnGameTeams)
 	{
-		if (!UTIL_KickBotFromTeam(TEAM_UNASSIGNED))
+		// kick a bot to maintain quota
+
+		// first remove any unassigned bots
+		if (UTIL_KickBotFromTeam(TEAM_UNASSIGNED))
+			return;
+
+		int kickTeam;
+
+		CTeam* pRed = GetGlobalTeam(TEAM_ALLIES);
+		CTeam* pBlue = GetGlobalTeam(TEAM_AXIS);
+
+		// remove from the team that has more players
+		if (pBlue->GetNumPlayers() > pRed->GetNumPlayers())
 		{
-			CTeam* pRedTeam = GetGlobalTeam(TEAM_ALLIES);
-			CTeam* pBluTeam = GetGlobalTeam(TEAM_AXIS);
-
-			int iTeamToKick;
-			if (pRedTeam->GetNumPlayers() > pBluTeam->GetNumPlayers())
-				iTeamToKick = TEAM_ALLIES;
-			else if (pRedTeam->GetNumPlayers() < pBluTeam->GetNumPlayers())
-				iTeamToKick = TEAM_AXIS;
-			else if (pRedTeam->GetScore() > pBluTeam->GetScore())
-				iTeamToKick = TEAM_ALLIES;
-			else if (pRedTeam->GetScore() < pBluTeam->GetScore())
-				iTeamToKick = TEAM_AXIS;
-			else
-				iTeamToKick = RandomInt(0, 1) == 1 ? TEAM_ALLIES : TEAM_AXIS;
-
-			if (!UTIL_KickBotFromTeam(iTeamToKick))
-			{
-				UTIL_KickBotFromTeam(iTeamToKick == TEAM_ALLIES ? TEAM_AXIS : TEAM_ALLIES);
-			}
+			kickTeam = TEAM_AXIS;
 		}
+		else if (pBlue->GetNumPlayers() < pRed->GetNumPlayers())
+		{
+			kickTeam = TEAM_ALLIES;
+		}
+		// remove from the team that's winning
+		else if (pBlue->GetScore() > pRed->GetScore())
+		{
+			kickTeam = TEAM_AXIS;
+		}
+		else if (pBlue->GetScore() < pRed->GetScore())
+		{
+			kickTeam = TEAM_ALLIES;
+		}
+		else
+		{
+			// teams and scores are equal, pick a team at random
+			kickTeam = (RandomInt(0, 1) == 0) ? TEAM_AXIS : TEAM_ALLIES;
+		}
+
+		// attempt to kick a bot from the given team
+		if (UTIL_KickBotFromTeam(kickTeam))
+			return;
+
+		// if there were no bots on the team, kick a bot from the other team
+		UTIL_KickBotFromTeam(kickTeam == TEAM_AXIS ? TEAM_ALLIES : TEAM_AXIS);
 	}
 
 }

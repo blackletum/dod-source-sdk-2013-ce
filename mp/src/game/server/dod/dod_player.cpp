@@ -3028,8 +3028,7 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 	if (!pSpot)
 	{
 
-		pSpawnPointName = "info_player_teamspawn";
-		SelectTeamSpawnSpot(pSpawnPointName, pSpot); 
+		SelectTeamSpawnSpot("info_player_teamspawn", pSpot);
 		if (pSpot) {
 			return pSpot;
 		} else {
@@ -3085,7 +3084,7 @@ bool CDODPlayer::SelectTeamSpawnSpot(const char* pEntClassName, CBaseEntity*& pS
 				}
 
 				// Found a valid spawn point.
-				return true;
+				return pSpot;
 			}
 		}
 

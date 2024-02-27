@@ -948,43 +948,64 @@ float CTFBot::GetTimeLeftToCapture( void )
 //-----------------------------------------------------------------------------
 CControlPoint *CTFBot::SelectPointToCapture( CUtlVector<CControlPoint *> const &candidates )
 {
-	if ( candidates.IsEmpty() )
+	if (candidates.IsEmpty())
 		return nullptr;
 
-	if ( candidates.Count() == 1 )
+	if (candidates.Count() == 1)
 		return candidates[0];
+
+	if (IsCapturingPoint())
+	{
+		CAreaCapture* pCapArea = GetControlPointStandingOn();
+		if (pCapArea)
+			return pCapArea->GetControlPoint();
+	}
+
+	CControlPoint* pClose = SelectClosestPointByTravelDistance(candidates);
+	if (pClose && IsPointBeingContested(pClose))
+		return pClose;
 
 	float flMaxDanger = FLT_MIN;
 	bool bInCombat = false;
-	CControlPoint *pDangerous = nullptr;
+	CControlPoint* pDangerous = nullptr;
 
-	for ( int i=0; i<candidates.Count(); ++i )
+	for (int i = 0; i < candidates.Count(); ++i)
 	{
-		CControlPoint *pPoint = candidates[i];
-		if ( IsPointBeingContested( pPoint ) )
+		CControlPoint* pPoint = candidates[i];
+		if (IsPointBeingContested(pPoint))
 			return pPoint;
 
-		CTFNavArea *pCPArea = TFNavMesh()->GetMainControlPointArea( pPoint->GetPointIndex() );
-		if ( pCPArea == nullptr )
+		CTFNavArea* pCPArea = TFNavMesh()->GetMainControlPointArea(pPoint->GetPointIndex());
+		if (pCPArea == nullptr)
 			continue;
+
+		float flDanger = pCPArea->GetCombatIntensity();
+		bInCombat = flDanger > 0.1f ? true : false;
+
+		if (flMaxDanger < flDanger)
+		{
+			flMaxDanger = flDanger;
+			pDangerous = pPoint;
+		}
 	}
 
-	if ( bInCombat )
+	if (bInCombat)
 		return pDangerous;
 
 	// Probaly some Min/Max going on here
 	int iSelection = candidates.Count() - 1;
-	if ( iSelection >= 0 )
+	if (iSelection >= 0)
 	{
-		int iRandSel = candidates.Count() * TransientlyConsistentRandomValue( 60.0f, 0 );
-		if ( iRandSel < 0 )
+		int iRandSel = candidates.Count() * TransientlyConsistentRandomValue(60.0f, 0);
+		if (iRandSel < 0)
 			return candidates[0];
 
-		if ( iRandSel <= iSelection )
+		if (iRandSel <= iSelection)
 			iSelection = iRandSel;
 	}
 
 	return candidates[iSelection];
+
 }
 
 //-----------------------------------------------------------------------------

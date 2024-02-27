@@ -380,8 +380,6 @@ bool CTFBotSniperLurk::FindNewHome( CTFBot *actor )
 	{
 		m_bHasHome = false;
 
-		m_bHasHome = false;
-
 		CUtlVector<CNavArea*> areas;
 
 		if (areas.IsEmpty())

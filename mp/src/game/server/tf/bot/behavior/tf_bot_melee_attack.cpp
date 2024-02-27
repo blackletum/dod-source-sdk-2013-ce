@@ -42,18 +42,36 @@ ActionResult<CTFBot> CTFBotMeleeAttack::Update( CTFBot *me, float dt )
 	{
 		return Action<CTFBot>::Done( "No threat" );
 	}
-
+	bool bPrimaryExists = false;
 	if ( ( threat->GetLastKnownPosition() - me->GetAbsOrigin() ).LengthSqr() > Square( m_flAbandonRange ) )
 	{
 		return Action<CTFBot>::Done( "Threat is too far away for a melee attack" );
 	}
+	CBaseCombatWeapon* primary = me->Weapon_GetSlot(WPN_SLOT_PRIMARY);
+
+	if (primary != nullptr)
+	{
+		if (!V_strcmp(primary->GetClassname(), "weapon_thompson") || !V_strcmp(primary->GetClassname(), "weapon_mp40")) {
+
+			bPrimaryExists = true;
+
+		}
+	}
 	CBaseCombatWeapon *melee = me->Weapon_GetSlot( WPN_SLOT_MELEE );
-	if ( melee != nullptr )
+	if ( melee != nullptr && !bPrimaryExists)
 	{
 		me->Weapon_Switch( melee );
 	}
+	if (!bPrimaryExists) {
 
-	me->PressFireButton();
+		me->PressFireButton();
+
+	}
+	else {
+
+		me->PressAltFireButton();
+
+	}
 
 	CTFBotPathCost cost( me, FASTEST_ROUTE );
 	m_ChasePath.Update( me, threat->GetEntity(), cost );

@@ -379,32 +379,33 @@ bool CTFBotSniperLurk::FindNewHome( CTFBot *actor )
 	if ( FindHint( actor ) )
 		return true;
 
-	if ( actor->m_sniperSpots.IsEmpty() )
+	if (actor->m_sniperSpots.IsEmpty())
 	{
 		m_bHasHome = false;
 
-			CUtlVector<CNavArea*> areas;
-
-			if ( areas.IsEmpty() )
+		CControlPoint* pPoint = actor->GetMyControlPoint();
+		if (pPoint)
+		{
+			CCopyableUtlVector<CTFNavArea*> areas((const CCopyableUtlVector<CTFNavArea*> &)TFNavMesh()->GetControlPointAreas(pPoint->GetPointIndex()));
+			if (areas.IsEmpty())
 			{
-
-				FOR_EACH_VEC(TheNavAreas, it)
+				TFNavMesh()->CollectSpawnRoomThresholdAreas(&areas, actor->GetTeamNumber());
+				if (areas.IsEmpty())
 				{
-					CNavArea* area = TheNavAreas[it];
-					areas.AddToHead(area);
+					m_vecHome = actor->GetAbsOrigin();
 				}
-				CNavArea* area = areas.Random();
-				m_vecHome = area->GetRandomPoint();
-				m_bHasHome = true;
-				return true;
+				else
+				{
+					CTFNavArea* area = areas.Random();
+					m_vecHome = area->GetRandomPoint();
+				}
 			}
 			else
 			{
-				CNavArea *area = areas.Random();
+				CTFNavArea* area = areas.Random();
 				m_vecHome = area->GetRandomPoint();
-				m_bHasHome = true;
-				return true; 
 			}
+		}
 
 		return false;
 	}

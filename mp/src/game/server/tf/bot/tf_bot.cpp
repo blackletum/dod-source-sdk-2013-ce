@@ -379,7 +379,7 @@ void CTFBot::CollectCapturePoints(CUtlVector<CControlPoint*>* controlPointVector
 	if (g_hControlPointMasters.IsEmpty())
 		return;
 
-	CControlPointMaster* pMaster = g_hControlPointMasters[0];
+	CControlPointMaster* pMaster = g_hControlPointMasters[0];	
 	if (!pMaster || !pMaster->IsActive())
 		return;
 

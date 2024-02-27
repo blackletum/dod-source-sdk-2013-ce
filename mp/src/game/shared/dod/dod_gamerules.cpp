@@ -2538,8 +2538,8 @@ const CDODViewVectors *CDODGameRules::GetDODViewVectors() const
 		InitTeams();
 
 		sv_stopspeed.SetValue( 100.0f );
-		sv_friction.SetValue( 4.0f );
-
+		sv_friction.SetValue( 4.0f ); 
+		 
 		ResetMapTime();
 	}
 

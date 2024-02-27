@@ -55,5 +55,23 @@ Action<CTFBot> *CTFBotScenarioMonitor::DesiredScenarioAndClassAction( CTFBot *ac
 		return new CTFBotSniperLurk;
 	}
 
-	return new CTFBotSeekAndDestroy( -1.0f );
+	CUtlVector<CControlPoint*> capture_points;
+	actor->CollectCapturePoints(&capture_points);
+
+	if (!capture_points.IsEmpty())
+		return new CTFBotCapturePoint;
+
+	CUtlVector<CControlPoint*> defend_points;
+	actor->CollectDefendPoints(&defend_points);
+
+	if (!defend_points.IsEmpty())
+		return new CTFBotDefendPoint;
+
+	DevMsg("%3.2f: %s: Gametype is CP, but I can't find a point to capture or defend!\n", gpGlobals->curtime, actor->GetDebugIdentifier());
+	if (actor->m_Shared.PlayerClass() == 5 || actor->m_Shared.PlayerClass() == 1 || actor->m_Shared.PlayerClass() == 2) {
+		return new CTFBotSeekAndDestroy(-1.0f);
+	}
+	else {
+		return new CTFBotCapturePoint;
+	}
 }

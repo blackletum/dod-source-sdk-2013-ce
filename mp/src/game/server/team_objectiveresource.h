@@ -230,11 +230,12 @@ private:
 	CNetworkArray( bool, m_bHillIsDownhill, TEAM_TRAIN_MAX_HILLS*TEAM_TRAIN_MAX_TEAMS );
 };
 
+#ifndef DOD_DLL 
 extern CBaseTeamObjectiveResource *g_pObjectiveResource;
 
 inline CBaseTeamObjectiveResource *ObjectiveResource()
 {
 	return g_pObjectiveResource;
 }
-
+#endif 
 #endif // TEAM_OBJECTIVERESOURCE_H

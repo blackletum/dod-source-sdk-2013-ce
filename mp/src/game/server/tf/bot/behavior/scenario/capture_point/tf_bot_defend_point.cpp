@@ -7,6 +7,8 @@
 #include "tf_bot_capture_point.h"
 #include "../../tf_bot_seek_and_destroy.h"
 #include "../../demoman/tf_bot_prepare_stickybomb_trap.h"
+#include "dod_control_point.h"
+#include "dod_control_point_master.h"
 
 
 ConVar tf_bot_defense_must_defend_time( "tf_bot_defense_must_defend_time", "300", FCVAR_CHEAT, "If timer is less than this, bots will stay near point and guard" );
@@ -45,8 +47,24 @@ ActionResult<CTFBot> CTFBotDefendPoint::OnStart( CTFBot *me, Action<CTFBot> *pri
 	return Action<CTFBot>::Continue();
 }
 
+extern CUtlVector< CHandle<CControlPointMaster> >		g_hControlPointMasters;
+
 ActionResult<CTFBot> CTFBotDefendPoint::Update( CTFBot *me, float dt )
 {
+	if ( !g_hControlPointMasters.IsEmpty() )
+	{
+		CControlPointMaster *master = g_hControlPointMasters[0];
+		if ( master != nullptr && master->GetNumPoints() == 1 )
+		{
+			CControlPoint *point = master->GetControlPoint( 0 );
+			if ( point != nullptr && point->GetPointIndex() == 0 &&
+				 point->GetOwner() != me->GetTeamNumber() )
+			{
+				return Action<CTFBot>::ChangeTo( new CTFBotCapturePoint, "We need to capture the point!" );
+			}
+		}
+	}
+
 	CControlPoint *point = me->GetMyControlPoint();
 	if ( point == nullptr )
 		return Action<CTFBot>::SuspendFor( new CTFBotSeekAndDestroy( 10.0f ), "Seek and destroy until a point becomes available" );
@@ -67,7 +85,6 @@ ActionResult<CTFBot> CTFBotDefendPoint::Update( CTFBot *me, float dt )
 	{
 		m_reselectDefenseAreaTimer.Reset();
 
-
 		CWeaponDODBase *pWeapon = me->GetActiveDODWeapon();
 		if ( pWeapon && pWeapon->IsMeleeWeapon() )
 		{
@@ -84,6 +101,12 @@ ActionResult<CTFBot> CTFBotDefendPoint::Update( CTFBot *me, float dt )
 
 	if ( m_DefenseArea )
 	{
+		if ( me->GetLastKnownArea() == m_DefenseArea )
+		{
+
+		}
+		else
+		{
 			if ( m_pathRecomputeTimer.IsElapsed() )
 			{
 				m_pathRecomputeTimer.Start( RandomFloat( 2.0f, 3.0f ) );
@@ -97,7 +120,7 @@ ActionResult<CTFBot> CTFBotDefendPoint::Update( CTFBot *me, float dt )
 				m_PathFollower.Update( me );
 				m_reselectDefenseAreaTimer.Reset();
 			}
-
+		}
 	}
 	
 	return Action<CTFBot>::Continue();
@@ -169,6 +192,13 @@ bool CTFBotDefendPoint::IsPointThreatened( CTFBot *actor )
 	CControlPoint *point = actor->GetMyControlPoint();
 	if ( point == nullptr )
 		return false;
+
+	if ( !(point->LastContestedAt() > 0.0f) || gpGlobals->curtime - point->LastContestedAt() >= 5.0f )
+	{
+		if ( !actor->m_cpChangedTimer.HasStarted() || actor->m_cpChangedTimer.IsElapsed() )
+			return false;
+	}
+
 	return true;
 }
 

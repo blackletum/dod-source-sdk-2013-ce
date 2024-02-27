@@ -140,30 +140,36 @@ QueryResultType CTFBotSeekAndDestroy::ShouldRetreat( const INextBot *me ) const
 
 CNavArea *CTFBotSeekAndDestroy::ChooseGoalArea( CTFBot *actor )
 {
-	CUtlVector<CNavArea *> areas; 
+	CUtlVector< CTFNavArea* > goalVector;
 
-	FOR_EACH_VEC(TheNavAreas, it)
-	{
-		CNavArea* area = TheNavAreas[it];
-		areas.AddToHead(area);
-	}
+	TheTFNavMesh()->CollectSpawnRoomThresholdAreas(&goalVector, GetEnemyTeam(actor));
 
-	if ( tf_bot_debug_seek_and_destroy.GetBool() )
+	CControlPoint* point = actor->GetMyControlPoint();
+	if (point)
 	{
-		FOR_EACH_VEC( areas, i )
+		// add current control point as a seek goal
+		const CUtlVector< CTFNavArea* >* controlPointAreas = TheTFNavMesh()->GetControlPointAreas2(point->GetPointIndex());
+		if (controlPointAreas && controlPointAreas->Count() > 0)
 		{
-			TheNavMesh->AddToSelectedSet( areas[i] );
+			goalVector.AddToTail(controlPointAreas->Element(RandomInt(0, controlPointAreas->Count() - 1)));
 		}
 	}
 
-	if ( !areas.IsEmpty() )
+	if (tf_bot_debug_seek_and_destroy.GetBool())
 	{
-		return areas.Random();
+		for (int i = 0; i < goalVector.Count(); ++i)
+		{
+			TheNavMesh->AddToSelectedSet(goalVector[i]);
+		}
 	}
-	else
+
+	// pick a new goal
+	if (goalVector.Count() > 0)
 	{
-		return nullptr;
+		return goalVector[RandomInt(0, goalVector.Count() - 1)];
 	}
+
+	return NULL;
 }
 
 void CTFBotSeekAndDestroy::RecomputeSeekPath( CTFBot *actor )

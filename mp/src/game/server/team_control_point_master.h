@@ -214,6 +214,8 @@ private:
 	float m_flLastOwnershipChangeTime;
 };
 
+#ifndef DOD_DLL
 extern CUtlVector< CHandle<CTeamControlPointMaster> >		g_hControlPointMasters;
+#endif
 
 #endif // TEAM_CONTROL_POINT_MASTER_H

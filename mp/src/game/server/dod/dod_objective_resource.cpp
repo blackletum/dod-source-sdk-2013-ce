@@ -150,6 +150,34 @@ void CDODObjectiveResource::SetCPRequiredCappers( int index, int iReqAllies, int
 	m_iAxisReqCappers.Set( index, iReqAxis );
 }
 
+float CDODObjectiveResource::GetCPCapPercentage(int index)
+{
+	Assert(0 <= index && index <= m_iNumControlPoints);
+
+	float flCapLength = m_flCapEndTimes[index] - m_flCapStartTimes[index];
+
+	if (flCapLength <= 0)
+		return 0.0f;
+
+	float flElapsedTime = gpGlobals->curtime - m_flCapStartTimes[index];
+
+	if (flElapsedTime > flCapLength)
+		return 1.0f;
+
+	return (flElapsedTime / flCapLength);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+int CDODObjectiveResource::GetOwningTeam(int index)
+{
+	if (index >= m_iNumControlPoints)
+		return TEAM_UNASSIGNED;
+
+	return m_iOwner[index];
+}
+
 void CDODObjectiveResource::SetCPCapTime( int index, float flAlliesCapTime, float flAxisCapTime )
 {
 	AssertValidIndex(index);
@@ -198,7 +226,22 @@ void CDODObjectiveResource::SetOwningTeam( int index, int team )
 void CDODObjectiveResource::SetCappingTeam( int index, int team )
 {
 	AssertValidIndex(index);
+	int caplength = 0;
+
+	switch (team)
+	{
+	case TEAM_ALLIES:
+		caplength = m_flAlliesCapTime[index];
+		break;
+	case TEAM_AXIS:
+		caplength = m_flAxisCapTime[index];
+		break;
+	}
+
 	m_iCappingTeam.Set( index, team );
+	// start the cap
+	m_flCapStartTimes[index] = gpGlobals->curtime;
+	m_flCapEndTimes[index] = gpGlobals->curtime + caplength;
 }
 
 void CDODObjectiveResource::SetBombPlanted( int index, bool bPlanted )

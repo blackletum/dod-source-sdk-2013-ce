@@ -6,7 +6,6 @@
 #include "cbase.h"
 
 #include "particle_parse.h"
-#include "team_control_point_master.h"
 #include "../headless_hatman.h"
 #include "headless_hatman_attack.h"
 #include "headless_hatman_terrify.h"

@@ -42,6 +42,20 @@ public:
 	void SetBombsRequired( int index, int iBombsRequired );
 	void SetBombsRemaining( int index, int iBombsRemaining );
 	void SetBombBeingDefused( int index, bool bBeingDefused );
+	int  GetOwningTeam(int index);
+	float	GetCPCapPercentage(int index);
+	bool TeamCanCapPoint(int index, int team) 
+	{
+		return GetTeamNumber() != team;
+	}
+
+	int GetCappingTeam(int index)
+	{
+		if (index >= m_iNumControlPoints)
+			return TEAM_UNASSIGNED;
+
+		return m_iCappingTeam[index];
+	}
 
 	void AssertValidIndex( int index )
 	{
@@ -49,6 +63,9 @@ public:
 	}
 
 private:
+	// client calculated state
+	float	m_flCapStartTimes[MAX_CONTROL_POINTS];
+	float	m_flCapEndTimes[MAX_CONTROL_POINTS];
 	CNetworkVar( int,	m_iNumControlPoints );	
 
 	// data variables

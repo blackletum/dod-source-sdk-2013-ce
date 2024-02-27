@@ -17,8 +17,10 @@
 #include "NextBotUtil.h"
 #include <viewport_panel_names.h>
 #include "dod_shareddefs.h"
+#include "dod_gamerules.h"
 #include "dod/dod_control_point.h"
 #include "dod/dod_control_point_master.h"
+#include "dod/dod_objective_resource.h"
 
 void DifficultyChanged( IConVar *var, const char *pOldValue, float flOldValue );
 void PrefixNameChanged( IConVar *var, const char *pOldValue, float flOldValue );
@@ -345,12 +347,20 @@ void CTFBot::PhysicsSimulate( void )
 	}
 }
 
+extern CUtlVector< CHandle<CControlPointMaster> >		g_hControlPointMasters;
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 bool CTFBot::IsPointInRound(CControlPoint* pPoint, CControlPointMaster* pMaster)
 {
-	return false;
+	if (g_hControlPointMasters.IsEmpty())
+		return false;
+
+	if (!pMaster || !pMaster->IsActive())
+		return false;
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -360,7 +370,39 @@ bool CTFBot::IsPointInRound(CControlPoint* pPoint, CControlPointMaster* pMaster)
 //-----------------------------------------------------------------------------
 void CTFBot::CollectCapturePoints(CUtlVector<CControlPoint*>* controlPointVector)
 {
-	return;
+	Assert(ObjectiveResource());
+	if (!controlPointVector)
+		return;
+
+	controlPointVector->RemoveAll();
+
+	if (g_hControlPointMasters.IsEmpty())
+		return;
+
+	CControlPointMaster* pMaster = g_hControlPointMasters[0];
+	if (!pMaster || !pMaster->IsActive())
+		return;
+
+	if (pMaster->GetNumPoints() == 1)
+	{
+		CControlPoint* pPoint = pMaster->GetControlPoint(0);
+		if (pPoint && pPoint->GetPointIndex() == 0)
+			controlPointVector->AddToTail(pPoint);
+
+		return;
+	}
+
+	for (int i = 0; i < pMaster->GetNumPoints(); ++i)
+	{
+		CControlPoint* pPoint = pMaster->GetControlPoint(i);
+		if (IsPointInRound(pPoint, pMaster) &&
+			g_pObjectiveResource->GetOwningTeam(pPoint->GetPointIndex()) != GetTeamNumber() &&
+			g_pObjectiveResource->TeamCanCapPoint(pPoint->GetPointIndex(), GetTeamNumber()))
+		{
+			controlPointVector->AddToTail(pPoint);
+		}
+	}
+
 }
 
 //-----------------------------------------------------------------------------
@@ -370,7 +412,30 @@ void CTFBot::CollectCapturePoints(CUtlVector<CControlPoint*>* controlPointVector
 //-----------------------------------------------------------------------------
 void CTFBot::CollectDefendPoints(CUtlVector<CControlPoint*>* controlPointVector)
 {
-	return;
+	Assert(ObjectiveResource());
+	if (!controlPointVector)
+		return;
+
+	controlPointVector->RemoveAll();
+
+	if (g_hControlPointMasters.IsEmpty())
+		return;
+
+	CControlPointMaster* pMaster = g_hControlPointMasters[0];
+	if (!pMaster || !pMaster->IsActive())
+		return;
+
+	for (int i = 0; i < pMaster->GetNumPoints(); ++i)
+	{
+		CControlPoint* pPoint = pMaster->GetControlPoint(i);
+		if (IsPointInRound(pPoint, pMaster) &&
+			g_pObjectiveResource->GetOwningTeam(pPoint->GetPointIndex()) == GetTeamNumber() &&
+			g_pObjectiveResource->TeamCanCapPoint(pPoint->GetPointIndex(), GetEnemyTeam(this)))
+		{
+			controlPointVector->AddToTail(pPoint);
+		}
+	}
+
 }
 
 //-----------------------------------------------------------------------------
@@ -634,8 +699,13 @@ bool CTFBot::IsAmmoFull( void ) const
 //-----------------------------------------------------------------------------
 bool CTFBot::AreAllPointsUncontestedSoFar( void ) const
 {
+	if (g_hControlPointMasters.IsEmpty())
+		return true;
 
-	return true;
+	if (!g_hControlPointMasters[0].IsValid())
+		return true;
+
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -668,17 +738,28 @@ bool CTFBot::IsNearPoint( CControlPoint *point ) const
 //-----------------------------------------------------------------------------
 CControlPoint *CTFBot::GetMyControlPoint( void )
 {
-	if ( !m_hMyControlPoint || m_myCPValidDuration.IsElapsed() )
+	if (!m_hMyControlPoint || m_myCPValidDuration.IsElapsed())
 	{
-		m_myCPValidDuration.Start( RandomFloat( 1.0f, 2.0f ) );
+		m_myCPValidDuration.Start(RandomFloat(1.0f, 2.0f));
 
-		CUtlVector<CControlPoint *> defensePoints;
-		CUtlVector<CControlPoint *> attackPoints;
-		CollectDefendPoints( &defensePoints );
-		CollectCapturePoints( &attackPoints );
-		
-			CControlPoint *pPoint = SelectPointToCapture( attackPoints );
-			if ( pPoint )
+		CUtlVector<CControlPoint*> defensePoints;
+		CUtlVector<CControlPoint*> attackPoints;
+		CollectDefendPoints(&defensePoints);
+		CollectCapturePoints(&attackPoints);
+
+		if ((m_Shared.PlayerClass() == 3) && !defensePoints.IsEmpty())
+		{
+			CControlPoint* pPoint = SelectPointToDefend(defensePoints);
+			if (pPoint)
+			{
+				m_hMyControlPoint = pPoint;
+				return pPoint;
+			}
+		}
+		else
+		{
+			CControlPoint* pPoint = SelectPointToCapture(attackPoints);
+			if (pPoint)
 			{
 				m_hMyControlPoint = pPoint;
 				return pPoint;
@@ -687,13 +768,14 @@ CControlPoint *CTFBot::GetMyControlPoint( void )
 			{
 				m_myCPValidDuration.Invalidate();
 
-				pPoint = SelectPointToDefend( defensePoints );
-				if ( pPoint )
+				pPoint = SelectPointToDefend(defensePoints);
+				if (pPoint)
 				{
 					m_hMyControlPoint = pPoint;
 					return pPoint;
 				}
 			}
+		}
 
 		m_myCPValidDuration.Invalidate();
 
@@ -701,6 +783,7 @@ CControlPoint *CTFBot::GetMyControlPoint( void )
 	}
 
 	return m_hMyControlPoint;
+
 }
 
 //-----------------------------------------------------------------------------
@@ -708,6 +791,20 @@ CControlPoint *CTFBot::GetMyControlPoint( void )
 //-----------------------------------------------------------------------------
 bool CTFBot::IsAnyPointBeingCaptured( void ) const
 {
+	if (g_hControlPointMasters.IsEmpty())
+		return false;
+
+	CControlPointMaster* pMaster = g_hControlPointMasters[0];
+	if (pMaster)
+	{
+		for (int i = 0; i < pMaster->GetNumPoints(); ++i)
+		{
+			CControlPoint* pPoint = pMaster->GetControlPoint(i);
+			if (IsPointBeingContested(pPoint))
+				return true;
+		}
+	}
+
 	return false;
 }
 
@@ -795,7 +892,47 @@ const Vector& CTFBot::EstimateProjectileImpactPosition(float pitch, float yaw, f
 //-----------------------------------------------------------------------------
 bool CTFBot::IsCapturingPoint(void)
 {
+	CAreaCapture* pCapArea = GetControlPointStandingOn();
+	if (pCapArea)
+	{
+		CControlPoint* pPoint = pCapArea->GetControlPoint();
+		if (pPoint && DODGameRules()->TeamMayCapturePoint(GetTeamNumber(), pPoint->GetPointIndex()) &&
+			DODGameRules()->PlayerMayCapturePoint(this, pPoint->GetPointIndex()))
+		{
+			return pPoint->GetOwner() != GetTeamNumber();
+		}
+	}
+
 	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CAreaCapture * CTFBot::GetControlPointStandingOn(void)
+{
+	touchlink_t* root = (touchlink_t*)GetDataObject(TOUCHLINK);
+	if (root)
+	{
+		touchlink_t* next = root->nextLink;
+		while (next != root)
+		{
+			CBaseEntity* pEntity = next->entityTouched;
+			if (!pEntity)
+				return NULL;
+
+			if (pEntity->IsSolidFlagSet(FSOLID_TRIGGER) && pEntity->IsBSPModel())
+			{
+				CAreaCapture* pCapArea = dynamic_cast<CAreaCapture*>(pEntity);
+				if (pCapArea)
+					return pCapArea;
+			}
+
+			next = next->nextLink;
+		}
+	}
+
+	return NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -817,10 +954,6 @@ CControlPoint *CTFBot::SelectPointToCapture( CUtlVector<CControlPoint *> const &
 	if ( candidates.Count() == 1 )
 		return candidates[0];
 
-	CControlPoint *pClose = SelectClosestPointByTravelDistance( candidates );
-	if ( pClose && IsPointBeingContested( pClose ) )
-		return pClose;
-
 	float flMaxDanger = FLT_MIN;
 	bool bInCombat = false;
 	CControlPoint *pDangerous = nullptr;
@@ -834,15 +967,6 @@ CControlPoint *CTFBot::SelectPointToCapture( CUtlVector<CControlPoint *> const &
 		CTFNavArea *pCPArea = TFNavMesh()->GetMainControlPointArea( pPoint->GetPointIndex() );
 		if ( pCPArea == nullptr )
 			continue;
-
-		float flDanger = pCPArea->GetCombatIntensity();
-		bInCombat = flDanger > 0.1f ? true : false;
-
-		if ( flMaxDanger < flDanger )
-		{
-			flMaxDanger = flDanger;
-			pDangerous = pPoint;
-		}
 	}
 
 	if ( bInCombat )
@@ -891,17 +1015,21 @@ CControlPoint *CTFBot::SelectClosestPointByTravelDistance( CUtlVector<CControlPo
 		for ( int i=0; i<candidates.Count(); ++i )
 		{
 			CTFNavArea *pCPArea = TFNavMesh()->GetMainControlPointArea( candidates[i]->GetPointIndex() );
-			float flDist = NavAreaTravelDistance( GetLastKnownArea(), pCPArea, cost );
+			if (pCPArea) {
 
-			if ( flDist >= 0.0f && flMinDist > flDist )
-			{
-				flMinDist = flDist;
-				pClosest = candidates[i];
+				float flDist = NavAreaTravelDistance(GetLastKnownArea(), pCPArea, cost);
+
+				if (flDist >= 0.0f && flMinDist > flDist)
+				{
+					flMinDist = flDist;
+					pClosest = candidates[i];
+				}
+
+				return pClosest;
 			}
 		}
 	}
-
-	return pClosest;
+	return NULL;
 }
 
 //-----------------------------------------------------------------------------

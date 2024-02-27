@@ -24,6 +24,7 @@
 #ifdef CLIENT_DLL
 	#include "c_baseplayer.h"
 #else
+	#include "modelentities.h" 
 	#include "player.h"
 	#include "dod_player.h"
 	#include "utlqueue.h"
@@ -41,8 +42,48 @@
 #endif
 
 #ifndef CLIENT_DLL
+	
+	DECLARE_AUTO_LIST(IFuncRespawnRoomAutoList);
 
-	class CSpawnPoint : public CPointEntity
+	//-----------------------------------------------------------------------------
+	// Purpose: Visualizes a respawn room to the enemy team
+	//-----------------------------------------------------------------------------
+	class CFuncNewTeamWall : public CFuncBrush, public IFuncRespawnRoomAutoList
+	{
+		DECLARE_CLASS( CFuncNewTeamWall, CFuncBrush);
+	public:
+		DECLARE_DATADESC();
+		DECLARE_SERVERCLASS();
+
+		virtual void Spawn( void );
+
+		virtual int		UpdateTransmitState( void );
+		virtual int		ShouldTransmit( const CCheckTransmitInfo *pInfo );
+		virtual bool	ShouldCollide( int collisionGroup, int contentsMask ) const;
+
+		//-----------------------------------------------------------------------------
+		// Purpose: Return true if the specified point is within this zone
+		//-----------------------------------------------------------------------------
+		virtual bool PointIsWithin(const Vector& vecPoint)
+		{
+			Ray_t ray;
+			trace_t tr;
+			ICollideable* pCollide = CollisionProp();
+			ray.Init(vecPoint, vecPoint);
+			enginetrace->ClipRayToCollideable(ray, MASK_ALL, pCollide, &tr);
+			return (tr.startsolid);
+		}
+
+		void WallTouch( CBaseEntity *pOther );
+
+		void SetActive( bool bActive );
+
+	private:
+		float m_flNextHintTime;
+	};
+	DECLARE_AUTO_LIST(IRespawnPointAutoList);
+
+	class CSpawnPoint : public CPointEntity, public IRespawnPointAutoList
 	{
 	public:
 		bool IsDisabled() { return m_bDisabled; }
@@ -569,5 +610,5 @@ inline CDODGameRules* DODGameRules()
 	bool EntityPlacementTest( CBaseEntity *pMainEnt, const Vector &vOrigin, Vector &outPos, bool bDropToGround );
 #endif //CLIENT_DLL
 
-
+	 
 #endif // DOD_GAMERULES_H

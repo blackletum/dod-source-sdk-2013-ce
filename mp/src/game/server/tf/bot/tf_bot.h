@@ -80,6 +80,7 @@ public:
 
 	CTFBot( CDODPlayer *player=nullptr );
 	virtual ~CTFBot();
+	CAreaCapture* GetControlPointStandingOn(void);
 
 	DECLARE_INTENTION_INTERFACE( CTFBot )
 	ILocomotion *m_locomotor;

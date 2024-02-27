@@ -50,6 +50,10 @@
 
 #ifndef CLIENT_DLL
 
+CUtlVector< CHandle<CControlPointMaster> >		g_hControlPointMasters;
+
+IMPLEMENT_AUTO_LIST(IRespawnPointAutoList);
+
 BEGIN_DATADESC(CSpawnPoint)
 
 	// Keyfields
@@ -6654,38 +6658,15 @@ void CFuncTeamWall::DrawThink( void )
 
 	#define SF_TEAM_WALL_NO_HINT	(1<<1)
 
-	//-----------------------------------------------------------------------------
-	// Purpose: Visualizes a respawn room to the enemy team
-	//-----------------------------------------------------------------------------
-	class CFuncNewTeamWall : public CFuncBrush
-	{
-		DECLARE_CLASS( CFuncNewTeamWall, CFuncBrush );
-	public:
-		DECLARE_DATADESC();
-		DECLARE_SERVERCLASS();
-
-		virtual void Spawn( void );
-
-		virtual int		UpdateTransmitState( void );
-		virtual int		ShouldTransmit( const CCheckTransmitInfo *pInfo );
-		virtual bool	ShouldCollide( int collisionGroup, int contentsMask ) const;
-		
-		void WallTouch( CBaseEntity *pOther );
-
-		void SetActive( bool bActive );
-
-	private:
-		float m_flNextHintTime;
-	};
-
 	//===========================================================================================================
+	IMPLEMENT_AUTO_LIST(IFuncRespawnRoomAutoList);
 
 	LINK_ENTITY_TO_CLASS( func_teamblocker, CFuncNewTeamWall );
 
 	BEGIN_DATADESC( CFuncNewTeamWall )
 	END_DATADESC()
 
-	IMPLEMENT_SERVERCLASS_ST( CFuncNewTeamWall, DT_FuncNewTeamWall )
+	IMPLEMENT_SERVERCLASS_ST(CFuncNewTeamWall, DT_FuncNewTeamWall)
 	END_SEND_TABLE()
 
 	//-----------------------------------------------------------------------------
@@ -6847,3 +6828,4 @@ void CFuncTeamWall::DrawThink( void )
 	}
 
 #endif 
+

@@ -47,6 +47,7 @@ public:
 
 	void RoundRespawn( void );
 
+	void	UpdateOnRemove(void);
 	int CountAdvantageFlags( int team );
 
 	bool IsActive( void ) { return ( m_bDisabled == false ); }
@@ -61,6 +62,20 @@ public:
 	bool WouldNewCPOwnerWinGame( CControlPoint *pPoint, int iNewOwner );
 
 	CControlPoint *GetCPByIndex( int index );
+	CControlPoint* GetControlPoint(int point)
+	{
+		Assert(point >= 0);
+		Assert(point < MAX_CONTROL_POINTS);
+
+		for (unsigned int i = 0; i < m_ControlPoints.Count(); i++)
+		{
+			CControlPoint* pPoint = m_ControlPoints[i];
+			if (pPoint && pPoint->GetPointIndex() == point)
+				return pPoint;
+		}
+
+		return NULL;
+	}
 
 private:
 	void BecomeActive( void );
@@ -218,5 +233,7 @@ private:
 	int m_iTickLength;			// time between point gives
 	int m_iNumPointGives;		// number of times we're planning on giving out points
 };
+
+extern CUtlVector< CHandle<CControlPointMaster> >		g_hControlPointMasters;
 
 #endif //DOD_CONTROL_POINT_MASTER_H

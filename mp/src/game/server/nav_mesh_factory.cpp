@@ -20,6 +20,10 @@
 #include "tf/nav_mesh/tf_nav_mesh.h"
 #endif
 
+#ifdef DOD_DLL
+#include "tf/nav_mesh/tf_nav_mesh.h"
+#endif
+
 #ifdef CSTRIKE_DLL
 #include "cstrike/cs_nav_mesh.h"
 #endif
@@ -34,6 +38,10 @@ CNavMesh *NavMeshFactory( void )
 #endif
 
 #ifdef TF_DLL
+	return new CTFNavMesh;
+#endif
+
+#ifdef DOD_DLL
 	return new CTFNavMesh;
 #endif
 

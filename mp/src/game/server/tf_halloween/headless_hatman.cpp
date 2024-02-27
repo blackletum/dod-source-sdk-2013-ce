@@ -6,11 +6,11 @@
 #include "cbase.h"
 #include "headless_hatman.h"
 #include "NextBot/Path/NextBotChasePath.h"
-#include "team_control_point_master.h"
 #include "particle_parse.h"
 #include "dod_shareddefs.h"
 #include "dod_gamerules.h"
 #include "props_shared.h"
+#include "team.h"
 
 #include "halloween_behavior/headless_hatman_emerge.h"
 #include "halloween_behavior/headless_hatman_dying.h"

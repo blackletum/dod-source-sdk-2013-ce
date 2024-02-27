@@ -35,6 +35,7 @@ public:
 	void CollectSpawnRoomThresholdAreas( CUtlVector<CTFNavArea *> *areas, int teamNum ) const;
 	bool IsSentryGunHere( CTFNavArea *area ) const;
 
+	const CUtlVector< CTFNavArea* >* GetControlPointAreas2(int pointIndex) const;		// return vector of areas overlapping the given control point
 	const CUtlVector<CTFNavArea *> &GetControlPointAreas( int iPointIndex ) const
 	{
 		Assert( iPointIndex >= 0 && iPointIndex < MAX_CONTROL_POINTS );
@@ -108,6 +109,21 @@ private:
 inline CTFNavMesh *TFNavMesh( void )
 {
 	return assert_cast<CTFNavMesh *>( TheNavMesh );
+}
+
+inline CTFNavMesh* TheTFNavMesh(void)
+{
+	return reinterpret_cast<CTFNavMesh*>(TheNavMesh);
+}
+
+inline const CUtlVector< CTFNavArea* >* CTFNavMesh::GetControlPointAreas2(int pointIndex) const
+{
+	if (pointIndex < 0 || pointIndex >= MAX_CONTROL_POINTS)
+	{
+		return NULL;
+	}
+
+	return &m_CPAreas[pointIndex];
 }
 
 #endif

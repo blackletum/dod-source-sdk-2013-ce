@@ -48,6 +48,7 @@ public:
 
 	void		InputShowModel( inputdata_t &input );
 	void		InputHideModel( inputdata_t &input );
+	float		GetTeamCapPercentage(int iTeam);
 
 	int			PointValue( void );
 	
@@ -63,8 +64,11 @@ public:
 	void		SetOwner( int team, bool bMakeSound = true, int iNumCappers = 0, int *iCappingPlayers = NULL );
 	int			GetOwner( void ) const;
 
-	int			GetDefaultOwner( void ) const;
+	bool		HasBeenContested(void) const;				// return true if this point has ever been contested, false if the enemy has never contested this point yet
+	float		LastContestedAt(void);
+	void		SetLastContestedAt(float flTime);
 
+	int			GetDefaultOwner( void ) const;
 	inline const char *GetName( void ) { return STRING(m_iszPrintName); }
 	int			GetCPGroup( void );
 	int			GetPointIndex( void ) { return m_iPointIndex; }	//the mapper set index
@@ -113,6 +117,7 @@ private:
 	int			m_iAlliesModelBodygroup;//which bodygroup to use in the model
 	int			m_iAxisModelBodygroup;
 	int			m_iResetModelBodygroup;
+	float		m_flLastContestedAt;
 
 	COutputEvent	m_AlliesCapOutput;	//outputs to fire when capped
 	COutputEvent	m_AxisCapOutput;

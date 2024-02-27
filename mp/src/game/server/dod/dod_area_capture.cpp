@@ -25,7 +25,7 @@
 BEGIN_DATADESC(CAreaCapture)
 
 	// Touch functions
-	DEFINE_FUNCTION( AreaTouch ),
+	DEFINE_FUNCTION(CAreaCaptureShim::Touch),
 
 	// Think functions
 	DEFINE_THINKFUNC( Think ),
@@ -66,6 +66,8 @@ BEGIN_DATADESC(CAreaCapture)
 //	DEFINE_OUTPUT( m_OnEnterNoObj, "OnEnterNoObj" );
 
 END_DATADESC();
+
+IMPLEMENT_AUTO_LIST(IDODTriggerAreaCaptureAutoList);
 
 LINK_ENTITY_TO_CLASS( dod_capture_area, CAreaCapture );
 

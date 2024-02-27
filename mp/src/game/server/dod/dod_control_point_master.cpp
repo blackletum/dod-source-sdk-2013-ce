@@ -43,6 +43,11 @@ void CControlPointMaster::Spawn( void )
 	SetTouch( NULL );
 	m_bFoundPoints = false;
 	BaseClass::Spawn();
+
+	if (g_hControlPointMasters.Find(this) == g_hControlPointMasters.InvalidIndex())
+	{
+		g_hControlPointMasters.AddToTail(this);
+	}
 }
 
 ConVar mp_tickpointinterval( "mp_tickpointinterval", "30", FCVAR_GAMEDLL, "Delay between point gives.", true, 1, false, 0 );
@@ -52,6 +57,15 @@ void CControlPointMaster::RoundRespawn( void )
 	m_fGivePointsTime = gpGlobals->curtime + mp_tickpointinterval.GetInt();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CControlPointMaster::UpdateOnRemove(void)
+{
+	BaseClass::UpdateOnRemove();
+
+	g_hControlPointMasters.FindAndRemove(this);
+}
 
 // KeyValue
 // ========

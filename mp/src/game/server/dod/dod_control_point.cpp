@@ -629,6 +629,54 @@ void CControlPoint::BombPlanted( float flTimerLength, CDODPlayer *pPlantingPlaye
 	g_pObjectiveResource->SetBombPlanted( GetPointIndex(), true );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Return true if this point has ever been contested, false if the enemy has never contested this point yet
+//-----------------------------------------------------------------------------
+bool CControlPoint::HasBeenContested(void) const
+{
+	return m_flLastContestedAt > 0.0f;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+float CControlPoint::LastContestedAt(void)
+{
+	return m_flLastContestedAt;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CControlPoint::SetLastContestedAt(float flTime)
+{
+	m_flLastContestedAt = flTime;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+float CControlPoint::GetTeamCapPercentage(int iTeam)
+{
+	int iCappingTeam = g_pObjectiveResource->GetCappingTeam(GetPointIndex());
+	if (iCappingTeam == TEAM_UNASSIGNED)
+	{
+		// No-one's capping this point.
+		if (iTeam == m_iTeam)
+			return 1.0;
+
+		return 0.0;
+	}
+
+	float flCapPerc = g_pObjectiveResource->GetCPCapPercentage(GetPointIndex());
+	if (iTeam == iCappingTeam)
+		return (1.0 - flCapPerc);
+	if (iTeam == m_iTeam)
+		return flCapPerc;
+
+	return 0.0;
+}
+
 void CControlPoint::BombExploded( CDODPlayer *pPlantingPlayer /* = NULL */, int iPlantingTeam /* = TEAM_UNASSIGNED */ )
 {
 	m_bBombPlanted = false;

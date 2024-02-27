@@ -4,7 +4,6 @@
 #include "tf/nav_mesh/tf_nav_mesh.h"
 #include "tf_bot_capture_point.h"
 #include "tf_bot_defend_point.h"
-#include "dod/dod_control_point.h"
 #include "../../tf_bot_seek_and_destroy.h"
 
 

@@ -156,6 +156,44 @@ private:
 };
 
 
+class CollectAndLabelSpawnRooms
+{
+public:
+	CollectAndLabelSpawnRooms(CFuncNewTeamWall* respawnRoom, int teamNum, CUtlVector<CTFNavArea*>* vector)
+		: m_vector(vector)
+	{
+		m_respawn = respawnRoom;
+		m_team = teamNum;
+	};
+
+	inline bool operator()(CNavArea* area)
+	{
+		if (dynamic_cast<CTFNavArea*>(area) == nullptr)
+			return false;
+
+		Vector nwCorner = area->GetCorner(NORTH_WEST) + Vector(0, 0, StepHeight);
+		Vector neCorner = area->GetCorner(NORTH_EAST) + Vector(0, 0, StepHeight);
+		Vector swCorner = area->GetCorner(SOUTH_WEST) + Vector(0, 0, StepHeight);
+		Vector seCorner = area->GetCorner(SOUTH_EAST) + Vector(0, 0, StepHeight);
+
+		if (m_respawn->PointIsWithin(nwCorner) ||
+			m_respawn->PointIsWithin(neCorner) ||
+			m_respawn->PointIsWithin(swCorner) ||
+			m_respawn->PointIsWithin(seCorner))
+		{
+			((CTFNavArea*)area)->AddTFAttributes(m_team == TEAM_ALLIES ? RED_SPAWN_ROOM : BLUE_SPAWN_ROOM);
+			m_vector->AddToTail((CTFNavArea*)area);
+		}
+
+		return true;
+	}
+
+private:
+	CFuncNewTeamWall* m_respawn;
+	int m_team;
+	CUtlVector<CTFNavArea*>* m_vector;
+};
+
 class ScanSelectAmbushAreas
 {
 public:
@@ -443,11 +481,47 @@ void CTFNavMesh::CollectAndMarkSpawnRoomExits( CTFNavArea *area, CUtlVector<CTFN
 
 void CTFNavMesh::CollectControlPointAreas()
 {
-	VPROF_BUDGET( __FUNCTION__, "NextBot" );
-
-	for ( int i=0; i < MAX_CONTROL_POINTS; ++i )
+	for (int i = 0; i < MAX_CONTROL_POINTS; ++i)
 		m_CPAreas[i].RemoveAll();
 
+	if (!g_hControlPointMasters.IsEmpty())
+	{
+		CControlPointMaster* pMaster = g_hControlPointMasters[0].Get();
+		if (pMaster)
+		{
+			for (int i = 0; i < IDODTriggerAreaCaptureAutoList::AutoList().Count(); ++i)
+			{
+				CAreaCapture* pCaptureArea = static_cast<CAreaCapture*>(IDODTriggerAreaCaptureAutoList::AutoList()[i]);
+
+				CControlPoint* pPoint = pCaptureArea->GetControlPoint();
+				if (pPoint)
+				{
+					Extent captureExtent;
+					captureExtent.Init(pCaptureArea);
+
+					captureExtent.lo -= 35.5f;
+					captureExtent.hi += 35.5f;
+
+					int iIndex = pPoint->GetPointIndex();
+
+					CollectAreasOverlappingExtent(captureExtent, &m_CPAreas[iIndex]);
+
+					float flMinDist = FLT_MAX;
+					Vector vOrigin = pCaptureArea->WorldSpaceCenter();
+					for (int j = 0; j < m_CPAreas[iIndex].Count(); ++j)
+					{
+						Vector vCenter = m_CPAreas[iIndex][j]->GetCenter();
+						float flDistance = (vCenter - vOrigin).AsVector2D().LengthSqr();
+						if (flMinDist > flDistance)
+						{
+							flMinDist = flDistance;
+							m_CPArea[iIndex] = m_CPAreas[iIndex][j];
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void CTFNavMesh::ComputeBlockedAreas()
@@ -597,14 +671,48 @@ void CTFNavMesh::DecorateMesh()
 	m_spawnExitsTeam1.RemoveAll();
 	m_spawnExitsTeam2.RemoveAll();
 
-	for ( int i=0; i<m_spawnAreasTeam1.Count(); ++i )
+	for (int i = 0; i < IFuncRespawnRoomAutoList::AutoList().Count(); ++i)
 	{
-		CollectAndMarkSpawnRoomExits( m_spawnAreasTeam1[i], &m_spawnExitsTeam1 );
+		CFuncNewTeamWall* respawnRoom = static_cast<CFuncNewTeamWall*>(IFuncRespawnRoomAutoList::AutoList()[i]);
+			for (int j = 0; j < IFuncRespawnRoomAutoList::AutoList().Count(); ++j)
+			{
+				CBaseEntity* pSightEnt = NULL;
+				for (CEntitySphereQuery sphere(respawnRoom->GetAbsOrigin(), 800); (pSightEnt = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
+				{
+					CSpawnPoint* teamSpawn = static_cast<CSpawnPoint*>(IRespawnPointAutoList::AutoList()[j]);
+					if (pSightEnt == teamSpawn)
+					{
+
+						if (teamSpawn->IsTriggered(NULL) && !teamSpawn->IsDisabled() && respawnRoom->PointIsWithin(teamSpawn->GetAbsOrigin()))
+						{
+							Extent ext;
+							ext.Init(respawnRoom);
+
+							if (teamSpawn->GetTeamNumber() == TEAM_ALLIES)
+							{
+								CollectAndLabelSpawnRooms func(respawnRoom, TEAM_ALLIES, &m_spawnAreasTeam1);
+								ForAllAreasOverlappingExtent(func, ext);
+							}
+							else
+							{
+								CollectAndLabelSpawnRooms func(respawnRoom, TEAM_AXIS, &m_spawnAreasTeam2);
+								ForAllAreasOverlappingExtent(func, ext);
+							}
+						}
+
+					}
+				}
+			}
 	}
 
-	for ( int i=0; i<m_spawnAreasTeam2.Count(); ++i )
+	for (int i = 0; i < m_spawnAreasTeam1.Count(); ++i)
 	{
-		CollectAndMarkSpawnRoomExits( m_spawnAreasTeam2[i], &m_spawnExitsTeam2 );
+		CollectAndMarkSpawnRoomExits(m_spawnAreasTeam1[i], &m_spawnExitsTeam1);
+	}
+
+	for (int i = 0; i < m_spawnAreasTeam2.Count(); ++i)
+	{
+		CollectAndMarkSpawnRoomExits(m_spawnAreasTeam2[i], &m_spawnExitsTeam2);
 	}
 
 	for ( CBaseEntity *pEnt = gEntList.FirstEnt(); pEnt; pEnt = gEntList.NextEnt( pEnt ) )

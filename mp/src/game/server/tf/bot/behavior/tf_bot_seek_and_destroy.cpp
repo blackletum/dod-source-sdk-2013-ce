@@ -140,6 +140,7 @@ QueryResultType CTFBotSeekAndDestroy::ShouldRetreat( const INextBot *me ) const
 
 CNavArea *CTFBotSeekAndDestroy::ChooseGoalArea( CTFBot *actor )
 {
+	CUtlVector<CNavArea*> areas;
 	CUtlVector< CTFNavArea* > goalVector;
 
 	TheTFNavMesh()->CollectSpawnRoomThresholdAreas(&goalVector, GetEnemyTeam(actor));
@@ -154,8 +155,17 @@ CNavArea *CTFBotSeekAndDestroy::ChooseGoalArea( CTFBot *actor )
 			goalVector.AddToTail(controlPointAreas->Element(RandomInt(0, controlPointAreas->Count() - 1)));
 		}
 	}
+	else {
 
-	if (tf_bot_debug_seek_and_destroy.GetBool())
+		FOR_EACH_VEC(TheNavAreas, it)
+		{
+			CNavArea* area = TheNavAreas[it];
+			areas.AddToHead(area);
+		}
+
+	}
+
+	if (tf_bot_debug_seek_and_destroy.GetBool() || !point)
 	{
 		for (int i = 0; i < goalVector.Count(); ++i)
 		{

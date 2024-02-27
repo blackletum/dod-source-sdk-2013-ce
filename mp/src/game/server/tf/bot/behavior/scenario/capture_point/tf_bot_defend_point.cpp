@@ -9,6 +9,7 @@
 #include "../../demoman/tf_bot_prepare_stickybomb_trap.h"
 #include "dod_control_point.h"
 #include "dod_control_point_master.h"
+#include "tf/bot/behavior/tf_bot_melee_attack.h"
 
 
 ConVar tf_bot_defense_must_defend_time( "tf_bot_defense_must_defend_time", "300", FCVAR_CHEAT, "If timer is less than this, bots will stay near point and guard" );
@@ -81,6 +82,14 @@ ActionResult<CTFBot> CTFBotDefendPoint::Update( CTFBot *me, float dt )
 	const CKnownEntity *threat = me->GetVisionInterface()->GetPrimaryKnownThreat();
 	me->EquipBestWeaponForThreat( threat );
 
+	if (threat != nullptr && threat->GetEntity()->IsAlive() && me->GetIntentionInterface()->ShouldAttack(me, threat))
+	{
+		if (threat->IsVisibleInFOVNow())
+		{
+			if (threat->GetLastKnownPosition().DistToSqr(me->GetAbsOrigin()) < Square(200.0f))
+				return Action<CTFBot>::SuspendFor(new CTFBotMeleeAttack(1.25f * 200.0f), "Melee attacking nearby threat");
+		}
+	}
 	if ( threat && threat->IsVisibleRecently() )
 	{
 		m_reselectDefenseAreaTimer.Reset();

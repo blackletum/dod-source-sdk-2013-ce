@@ -6,6 +6,7 @@
 #include "../../demoman/tf_bot_prepare_stickybomb_trap.h"
 #include "dod_control_point.h"
 #include "dod_control_point_master.h"
+#include "tf/bot/behavior/tf_bot_melee_attack.h"
 
 
 ConVar tf_bot_defend_owned_point_percent( "tf_bot_defend_owned_point_percent", "0.5", FCVAR_CHEAT, "Stay on the contested point we own until enemy cap percent falls below this" );
@@ -55,6 +56,15 @@ ActionResult<CTFBot> CTFBotDefendPointBlockCapture::Update( CTFBot *me, float dt
 
 	const CKnownEntity *threat = me->GetVisionInterface()->GetPrimaryKnownThreat();
 	me->EquipBestWeaponForThreat( threat );
+
+	if (threat != nullptr && threat->GetEntity()->IsAlive() && me->GetIntentionInterface()->ShouldAttack(me, threat))
+	{
+		if (threat->IsVisibleInFOVNow())
+		{
+			if (threat->GetLastKnownPosition().DistToSqr(me->GetAbsOrigin()) < Square(200.0f))
+				return Action<CTFBot>::SuspendFor(new CTFBotMeleeAttack(1.25f * 200.0f), "Melee attacking nearby threat");
+		}
+	}
 
 	bool bNearPoint = true;
 	if ( !m_pPoint->CollisionProp()->IsPointInBounds( me->GetAbsOrigin() ) )

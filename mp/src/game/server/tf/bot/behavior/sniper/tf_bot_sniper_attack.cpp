@@ -5,6 +5,7 @@
 #include "tf_bot_sniper_attack.h"
 #include "../tf_bot_retreat_to_cover.h"
 #include "weapon_dodsniper.h"
+#include "tf/bot/behavior/tf_bot_melee_attack.h"
 
 ConVar tf_bot_sniper_flee_range( "tf_bot_sniper_flee_range", "400", FCVAR_CHEAT, "If threat is closer than this, retreat" );
 ConVar tf_bot_sniper_melee_range( "tf_bot_sniper_melee_range", "200", FCVAR_CHEAT, "If threat is closer than this, attack with melee weapon" );
@@ -40,6 +41,14 @@ ActionResult<CTFBot> CTFBotSniperAttack::Update( CTFBot *me, float dt )
 	}
 
 	const CKnownEntity *threat = me->GetVisionInterface()->GetPrimaryKnownThreat( false );
+	if (threat != nullptr && threat->GetEntity()->IsAlive() && me->GetIntentionInterface()->ShouldAttack(me, threat))
+	{
+		if (threat->IsVisibleInFOVNow())
+		{
+			if (threat->GetLastKnownPosition().DistToSqr(me->GetAbsOrigin()) < Square(200.0f))
+				return Action<CTFBot>::SuspendFor(new CTFBotMeleeAttack(1.25f * 200.0f), "Melee attacking nearby threat");
+		}
+	}
 	if ( threat == nullptr || !threat->GetEntity()->IsAlive() || !threat->IsVisibleInFOVNow() )
 	{
 		if ( m_lingerDuration.IsElapsed() && !pPrimary->IsZoomed() )

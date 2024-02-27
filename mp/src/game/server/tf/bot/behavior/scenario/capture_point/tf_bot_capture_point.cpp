@@ -4,7 +4,8 @@
 #include "tf/nav_mesh/tf_nav_mesh.h"
 #include "tf_bot_capture_point.h"
 #include "tf_bot_defend_point.h"
-#include "../../tf_bot_seek_and_destroy.h"
+#include "../../tf_bot_seek_and_destroy.h""
+#include "tf/bot/behavior/tf_bot_melee_attack.h"
 
 
 ConVar tf_bot_offense_must_push_time( "tf_bot_offense_must_push_time", "120", FCVAR_CHEAT, "If timer is less than this, bots will push hard to cap" );
@@ -48,7 +49,15 @@ ActionResult<CTFBot> CTFBotCapturePoint::Update( CTFBot *me, float dt )
 
 	const CKnownEntity *threat = me->GetVisionInterface()->GetPrimaryKnownThreat();
 	me->EquipBestWeaponForThreat( threat );
-	
+
+	if (threat != nullptr && threat->GetEntity()->IsAlive() && me->GetIntentionInterface()->ShouldAttack(me, threat))
+	{
+		if (threat->IsVisibleInFOVNow())
+		{
+			if (threat->GetLastKnownPosition().DistToSqr(me->GetAbsOrigin()) < Square(200.0f))
+				return Action<CTFBot>::SuspendFor(new CTFBotMeleeAttack(1.25f * 200.0f), "Melee attacking nearby threat");
+		}
+	}
 	if ( ( !me->IsPointBeingContested( pPoint ) || me->GetTimeSinceWeaponFired() < 2.0f ) &&
 		 !me->IsCapturingPoint() &&
 		 me->GetTimeLeftToCapture() >= tf_bot_offense_must_push_time.GetFloat() &&

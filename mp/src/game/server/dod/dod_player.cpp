@@ -1342,7 +1342,12 @@ void CDODPlayer::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir,
 		{
 		case HITGROUP_HEAD:
 			{
-				flDamage *= 2.5; //regular head shot multiplier
+
+				int iPlayerClass = m_Shared.PlayerClass();
+				const CDODPlayerClassInfo& pClassInfo = pTeam->GetPlayerClassInfo(iPlayerClass);
+				if (GetBodygroup(BODYGROUP_HELMET) == pClassInfo.m_iHairGroup) {
+					flDamage *= 2.5; //regular head shot multiplier
+				}
 
 				if( bTakeDamage )
 				{

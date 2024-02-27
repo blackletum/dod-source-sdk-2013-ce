@@ -1504,14 +1504,6 @@ CBaseEntity *CChangeLevel::FindLandmark( const char *pLandmarkName )
 //-----------------------------------------------------------------------------
 void CChangeLevel::InputChangeLevel( inputdata_t &inputdata )
 {
-	// Ignore changelevel transitions if the player's dead or attempting a challenge
-	if ( gpGlobals->maxClients == 1 )
-	{
-		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-		if ( pPlayer && ( !pPlayer->IsAlive() || pPlayer->GetBonusChallenge() > 0 ) )
-			return;
-	}
-
 	ChangeLevelNow( inputdata.pActivator );
 }
 
@@ -1599,8 +1591,8 @@ void CChangeLevel::ChangeLevelNow( CBaseEntity *pActivator )
 	Assert(!FStrEq(m_szMapName, ""));
 
 	// Don't work in deathmatch
-	if ( g_pGameRules->IsDeathmatch() )
-		return;
+	//if ( g_pGameRules->IsDeathmatch() )
+		//return;
 
 	// Some people are firing these multiple times in a frame, disable
 	if ( m_bTouched )

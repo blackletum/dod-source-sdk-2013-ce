@@ -2013,7 +2013,7 @@ CON_COMMAND_F( tf_bot_add, "Add a bot.", FCVAR_GAMEDLL )
 			else
 				Q_snprintf( szTeam, sizeof szTeam, "auto" );
 
-			bot->HandleCommand_JoinTeam( RandomInt(2,3) );
+			bot->HandleCommand_JoinTeam( DODGameRules()->SelectDefaultTeam() );
 
 			char szClassName[16];
 			if ( args.ArgC() > 3 )
@@ -2103,7 +2103,7 @@ CON_COMMAND_F(tf_bot_add_new, "Add a bot. (currently crashes the game)", FCVAR_G
 			if (pBot == nullptr)
 				break;
 			
-			pBot->HandleCommand_JoinTeam( RandomInt(2,3) );
+			pBot->HandleCommand_JoinTeam(DODGameRules()->SelectDefaultTeam());
 			pBot->m_iSkill = (CTFBot::DifficultyType)nSkill;
 
 			nCount++;

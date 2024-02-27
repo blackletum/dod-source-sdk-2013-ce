@@ -320,7 +320,7 @@ public:
 
 	virtual const char *GetGameDescription( void )
 	{
-		return "Day of Defeat: Source";
+		return "Day of Conquest";
 	}
 
 	void CreateStandardEntities( void );

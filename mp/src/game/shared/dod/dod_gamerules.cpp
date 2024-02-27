@@ -2219,11 +2219,101 @@ static CDODViewVectors g_DODViewVectors(
 
 bool CDODGameRules::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 {
-	if ( collisionGroup0 > collisionGroup1 )
+	// The smaller number is always first
+	if (collisionGroup0 > collisionGroup1)
 	{
 		// swap so that lowest is always first
-		V_swap(collisionGroup0,collisionGroup1);
+		int tmp = collisionGroup0;
+		collisionGroup0 = collisionGroup1;
+		collisionGroup1 = tmp;
 	}
+
+	// Prevent the player movement from colliding with spit globs (caused the player to jump on top of globs while in water)
+	if (collisionGroup0 == COLLISION_GROUP_PLAYER_MOVEMENT && collisionGroup1 == HL2COLLISION_GROUP_SPIT)
+		return false;
+
+	// HL2 treats movement and tracing against players the same, so just remap here
+	if (collisionGroup0 == COLLISION_GROUP_PLAYER_MOVEMENT)
+	{
+		collisionGroup0 = COLLISION_GROUP_PLAYER;
+	}
+
+	if (collisionGroup1 == COLLISION_GROUP_PLAYER_MOVEMENT)
+	{
+		collisionGroup1 = COLLISION_GROUP_PLAYER;
+	}
+
+	//If collisionGroup0 is not a player then NPC_ACTOR behaves just like an NPC.
+	if (collisionGroup1 == COLLISION_GROUP_NPC_ACTOR && collisionGroup0 != COLLISION_GROUP_PLAYER)
+	{
+		collisionGroup1 = COLLISION_GROUP_NPC;
+	}
+
+	if (collisionGroup0 == HL2COLLISION_GROUP_COMBINE_BALL)
+	{
+		if (collisionGroup1 == HL2COLLISION_GROUP_COMBINE_BALL)
+			return false;
+	}
+
+	if (collisionGroup0 == HL2COLLISION_GROUP_COMBINE_BALL && collisionGroup1 == HL2COLLISION_GROUP_COMBINE_BALL_NPC)
+		return false;
+
+	if ((collisionGroup0 == COLLISION_GROUP_WEAPON) ||
+		(collisionGroup0 == COLLISION_GROUP_PLAYER) ||
+		(collisionGroup0 == COLLISION_GROUP_PROJECTILE))
+	{
+		if (collisionGroup1 == HL2COLLISION_GROUP_COMBINE_BALL)
+			return false;
+	}
+
+	if (collisionGroup0 == COLLISION_GROUP_DEBRIS)
+	{
+		if (collisionGroup1 == HL2COLLISION_GROUP_COMBINE_BALL)
+			return true;
+	}
+
+	if (collisionGroup0 == HL2COLLISION_GROUP_HOUNDEYE && collisionGroup1 == HL2COLLISION_GROUP_HOUNDEYE)
+		return false;
+
+	if (collisionGroup0 == HL2COLLISION_GROUP_HOMING_MISSILE && collisionGroup1 == HL2COLLISION_GROUP_HOMING_MISSILE)
+		return false;
+
+	if (collisionGroup1 == HL2COLLISION_GROUP_CROW)
+	{
+		if (collisionGroup0 == COLLISION_GROUP_PLAYER || collisionGroup0 == COLLISION_GROUP_NPC ||
+			collisionGroup0 == HL2COLLISION_GROUP_CROW)
+			return false;
+	}
+
+	if ((collisionGroup0 == HL2COLLISION_GROUP_HEADCRAB) && (collisionGroup1 == HL2COLLISION_GROUP_HEADCRAB))
+		return false;
+
+	// striders don't collide with other striders
+	if (collisionGroup0 == HL2COLLISION_GROUP_STRIDER && collisionGroup1 == HL2COLLISION_GROUP_STRIDER)
+		return false;
+
+	// gunships don't collide with other gunships
+	if (collisionGroup0 == HL2COLLISION_GROUP_GUNSHIP && collisionGroup1 == HL2COLLISION_GROUP_GUNSHIP)
+		return false;
+
+	// weapons and NPCs don't collide
+	if (collisionGroup0 == COLLISION_GROUP_WEAPON && (collisionGroup1 >= HL2COLLISION_GROUP_FIRST_NPC && collisionGroup1 <= HL2COLLISION_GROUP_LAST_NPC))
+		return false;
+
+	//players don't collide against NPC Actors.
+	//I could've done this up where I check if collisionGroup0 is NOT a player but I decided to just
+	//do what the other checks are doing in this function for consistency sake.
+	if (collisionGroup1 == COLLISION_GROUP_NPC_ACTOR && collisionGroup0 == COLLISION_GROUP_PLAYER)
+		return false;
+
+	// In cases where NPCs are playing a script which causes them to interpenetrate while riding on another entity,
+	// such as a train or elevator, you need to disable collisions between the actors so the mover can move them.
+	if (collisionGroup0 == COLLISION_GROUP_NPC_SCRIPTED && collisionGroup1 == COLLISION_GROUP_NPC_SCRIPTED)
+		return false;
+
+	// Spit doesn't touch other spit
+	if (collisionGroup0 == HL2COLLISION_GROUP_SPIT && collisionGroup1 == HL2COLLISION_GROUP_SPIT)
+		return false;
 	
 	//Don't stand on COLLISION_GROUP_WEAPONs
 	if( collisionGroup0 == COLLISION_GROUP_PLAYER_MOVEMENT &&

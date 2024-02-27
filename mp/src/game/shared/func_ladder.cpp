@@ -443,7 +443,7 @@ BEGIN_NETWORK_TABLE( CFuncLadder, DT_FuncLadder )
 #endif
 END_NETWORK_TABLE()
 
-LINK_ENTITY_TO_CLASS( func_useableladder, CFuncLadder );
+LINK_ENTITY_TO_CLASS(func_useableladder, CFuncLadder);
 
 //---------------------------------------------------------
 // Save/Restore

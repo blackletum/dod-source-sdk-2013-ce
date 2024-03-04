@@ -137,6 +137,7 @@ typedef enum
 
 	WEAPON_BAR_SEMIAUTO,
 	WEAPON_MP44_SEMIAUTO,
+	WEAPON_M3,
 		
 	WEAPON_MAX,		// number of weapons weapon index
 

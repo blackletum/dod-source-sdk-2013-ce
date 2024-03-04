@@ -4296,7 +4296,7 @@ void CDODPlayer::PrintLifetimeStats( void )
 
 	//evil, re-map -2 to 6 so it goes on the end of the array
 	if ( playerclass == PLAYERCLASS_RANDOM )
-		playerclass = 6;
+		playerclass = 8;
 
 	/*
 	m_flTimePlayedPerClass[playerclass] += ( gpGlobals->curtime - m_flLastClassChangeTime );

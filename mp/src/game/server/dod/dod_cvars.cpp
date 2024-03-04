@@ -81,6 +81,7 @@ cvar_t  cvar_axisclasses			= {"mp_axisclasses",		"-1"};
 	ConVar	mp_limitAlliesSniper(		"mp_limit_allies_sniper", "-1", FCVAR_REPLICATED, "Class limit for team: Allies class: Sniper" );
 	ConVar	mp_limitAlliesMachinegun(	"mp_limit_allies_mg", "-1", FCVAR_REPLICATED, "Class limit for team: Allies class: Machinegunner" );
 	ConVar	mp_limitAlliesRocket(		"mp_limit_allies_rocket", "-1", FCVAR_REPLICATED, "Class limit for team: Allies class: Rocket" );
+	ConVar	mp_limitAlliesSergeant(		"mp_limit_allies_Sergeant", "-1", FCVAR_REPLICATED, "Class limit for team: Allies class: Sergeant" );
 
 	ConVar	mp_limitAxisRifleman(		"mp_limit_axis_rifleman", "-1", FCVAR_REPLICATED, "Class limit for team: Axis class: Rifleman" );
 	ConVar	mp_limitAxisAssault(		"mp_limit_axis_assault", "-1", FCVAR_REPLICATED, "Class limit for team: Axis class: Assault" );

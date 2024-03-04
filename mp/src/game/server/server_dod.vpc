@@ -533,6 +533,7 @@ $Project "Server (DoD)"
 			$File	"$SRCDIR\game\shared\dod\weapon_spring.cpp"
 			$File	"$SRCDIR\game\shared\dod\weapon_stickgrenade.cpp"
 			$File	"$SRCDIR\game\shared\dod\weapon_thompson.cpp"
+			$File	"$SRCDIR\game\shared\dod\weapon_m3.cpp"
 			$File	"$SRCDIR\game\server\dod\holiday_gift.cpp"
 			$File	"$SRCDIR\game\server\dod\holiday_gift.h"
 		}

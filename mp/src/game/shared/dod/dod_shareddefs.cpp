@@ -153,6 +153,7 @@ const char * s_WeaponAliasInfo[] =
 
 	"bar_semiauto",			//WEAPON_BAR_SEMIAUTO,
 	"mp44_semiauto",		//WEAPON_MP44_SEMIAUTO,
+	"m3",					//WEAPON_M3_Auto,
 	
 	NULL,		// end of list marker
 };
@@ -216,6 +217,7 @@ const char *pszTeamAlliesClasses[] =
 	"us_spring",
 	"us_30cal",
 	"us_bazooka",
+	"us_m3",
 	NULL
 };
 
@@ -227,6 +229,7 @@ const char *pszTeamAxisClasses[] =
 	"axis_k98s",
 	"axis_mg42",
 	"axis_pschreck",
+	"axis_m3",
 	NULL
 };
 

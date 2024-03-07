@@ -3951,65 +3951,24 @@ const CDODViewVectors *CDODGameRules::GetDODViewVectors() const
 
 	void CDODGameRules::CheckLevelInitialized()
 	{
-		if ( !m_bLevelInitialized )
+		if (!m_bLevelInitialized)
 		{
 			// Count the number of spawn points for each team
 			// This determines the maximum number of players allowed on each
 
 			CBaseEntity* ent = NULL;
-			
-			m_iSpawnPointCount_Allies	= 0;
-			m_iSpawnPointCount_Axis		= 0;
 
-			while ( ( ent = gEntList.FindEntityByClassname( ent, "info_player_allies" ) ) != NULL )
-			{
-				if ( IsSpawnPointValid( ent, NULL ) )
-				{
-					m_iSpawnPointCount_Allies++;
+			m_iSpawnPointCount_Allies = 0;
+			m_iSpawnPointCount_Axis = 0;
 
-					// store in a list
-					m_AlliesSpawnPoints.AddToTail( ent );
-				}
-				else
-				{
-					Warning("Invalid allies spawnpoint at (%.1f,%.1f,%.1f)\n",
-						ent->GetAbsOrigin()[0],ent->GetAbsOrigin()[2],ent->GetAbsOrigin()[2] );
-				}
-			}
-			for (int i = 0; i < ITFTeamSpawnAutoList::AutoList().Count(); ++i)
-			{
-				CTFTeamSpawn* pCTFSpawn = static_cast<CTFTeamSpawn*>(ITFTeamSpawnAutoList::AutoList()[i]);;
-				if (IsSpawnPointValid(pCTFSpawn, NULL) && pCTFSpawn->GetTeamNumber() == TEAM_ALLIES)
-				{
-					m_iSpawnPointCount_Allies++;
-
-					// store in a list
-					m_AlliesSpawnPoints.AddToTail(ent);
-				}
-				else if(IsSpawnPointValid(pCTFSpawn, NULL) && pCTFSpawn->GetTeamNumber() == TEAM_AXIS)
-				{
-					m_iSpawnPointCount_Axis++;
-
-					// store in a list
-					m_AxisSpawnPoints.AddToTail(ent);
-				}
-				else
-				{
-					Warning("Invalid spawnpoint at (%.1f,%.1f,%.1f)\n",
-						ent->GetAbsOrigin()[0], ent->GetAbsOrigin()[2], ent->GetAbsOrigin()[2]);
-				}
-			}
-
-			while ((ent = gEntList.FindEntityByClassname(ent, "info_player_start")) != NULL)
+			while ((ent = gEntList.FindEntityByClassname(ent, "info_player_allies")) != NULL)
 			{
 				if (IsSpawnPointValid(ent, NULL))
 				{
 					m_iSpawnPointCount_Allies++;
-					m_iSpawnPointCount_Axis++;
 
 					// store in a list
 					m_AlliesSpawnPoints.AddToTail(ent);
-					m_AxisSpawnPoints.AddToTail(ent);
 				}
 				else
 				{
@@ -4018,19 +3977,19 @@ const CDODViewVectors *CDODGameRules::GetDODViewVectors() const
 				}
 			}
 
-			while ( ( ent = gEntList.FindEntityByClassname( ent, "info_player_axis" ) ) != NULL )
+			while ((ent = gEntList.FindEntityByClassname(ent, "info_player_axis")) != NULL)
 			{
-				if ( IsSpawnPointValid( ent, NULL ) ) 
+				if (IsSpawnPointValid(ent, NULL))
 				{
 					m_iSpawnPointCount_Axis++;
 
 					// store in a list
-					m_AxisSpawnPoints.AddToTail( ent );
+					m_AxisSpawnPoints.AddToTail(ent);
 				}
 				else
 				{
 					Warning("Invalid axis spawnpoint at (%.1f,%.1f,%.1f)\n",
-						ent->GetAbsOrigin()[0],ent->GetAbsOrigin()[2],ent->GetAbsOrigin()[2] );
+						ent->GetAbsOrigin()[0], ent->GetAbsOrigin()[2], ent->GetAbsOrigin()[2]);
 				}
 			}
 
@@ -4038,9 +3997,9 @@ const CDODViewVectors *CDODGameRules::GetDODViewVectors() const
 		}
 	}
 
-	CUtlVector<EHANDLE> *CDODGameRules::GetSpawnPointListForTeam( int iTeam )
+	CUtlVector<EHANDLE>* CDODGameRules::GetSpawnPointListForTeam(int iTeam)
 	{
-		switch ( iTeam )
+		switch (iTeam)
 		{
 		case TEAM_ALLIES:
 			return &m_AlliesSpawnPoints;

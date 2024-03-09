@@ -435,7 +435,7 @@ public:
 #endif
 
 private:
-	bool SelectTeamSpawnSpot( const char *pEntClassName, CBaseEntity* &pSpot );
+	bool SelectSpawnSpot( const char *pEntClassName, CBaseEntity* &pSpot );
 
 	CBaseEntity *SelectSpawnSpot( CUtlVector<EHANDLE> *pSpawnPoints, int &iLastSpawnIndex );
 

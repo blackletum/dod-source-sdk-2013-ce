@@ -3012,12 +3012,24 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 		{
 			CUtlVector<EHANDLE> *pSpawnList = DODGameRules()->GetSpawnPointListForTeam( TEAM_ALLIES );
 			pSpot = SelectSpawnSpot( pSpawnList, g_iLastAlliesSpawnIndex );	
+			if (!pSpot) {
+
+				pSpawnPointName = "info_player_teamspawn";
+				SelectSpawnSpot(pSpawnPointName, pSpot);
+
+			}
 		}
 		break;
 	case TEAM_AXIS:
 		{
 			CUtlVector<EHANDLE> *pSpawnList = DODGameRules()->GetSpawnPointListForTeam( TEAM_AXIS );
 			pSpot = SelectSpawnSpot( pSpawnList, g_iLastAxisSpawnIndex );
+			if (!pSpot) {
+
+				pSpawnPointName = "info_player_teamspawn";
+				SelectSpawnSpot(pSpawnPointName, pSpot);
+
+			}
 		}		
 		break;
 	case TEAM_SPECTATOR:
@@ -3071,7 +3083,7 @@ bool CDODPlayer::SelectSpawnSpot(const char* pEntClassName, CBaseEntity*& pSpot)
 		if (pSpot)
 		{
 			// Check to see if this is a valid team spawn (player is on this team, etc.).
-			if (DODGameRules()->IsTeamSpawnPointValid(pSpot, this, true))
+			if (DODGameRules()->IsSpawnPointValid(pSpot, this))
 			{
 				// Check for a bad spawn entity.
 				if (pSpot->GetAbsOrigin() == vec3_origin)

@@ -329,7 +329,6 @@ public:
 	
 	CBaseEntity *GetPlayerSpawnSpot( CBasePlayer *pPlayer );
 	bool IsSpawnPointValid( CBaseEntity *pSpot, CBasePlayer *pPlayer );
-	bool IsTeamSpawnPointValid(CBaseEntity* pSpot, CBasePlayer* pPlayer, bool bIgnorePlayers);
 	virtual void PlayerSpawn( CBasePlayer *pPlayer );
 
 	int DODPointsForKill( CBasePlayer *pVictim, const CTakeDamageInfo &info );

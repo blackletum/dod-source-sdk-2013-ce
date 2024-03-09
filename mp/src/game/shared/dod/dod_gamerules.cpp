@@ -19,8 +19,7 @@
 	#include "c_dod_player.h"
 
 #else
-
-	#include "team_spawnpoint.h"
+	
 	#include "coordsize.h"
 	#include "dod_player.h"
 	#include "voice_gamemgr.h"
@@ -1808,33 +1807,6 @@ static CDODViewVectors g_DODViewVectors(
 		return UTIL_IsSpaceEmpty( pPlayer, vTestMins, vTestMaxs );
 	}
 
-	//-----------------------------------------------------------------------------
-	// Purpose: Checks to see if the player is on the correct team and whether or
-	//          not the spawn point is available.
-	//-----------------------------------------------------------------------------
-	bool CDODGameRules::IsTeamSpawnPointValid(CBaseEntity* pSpot, CBasePlayer* pPlayer, bool bIgnorePlayers)
-	{
-		// Check the team.
-		if (pSpot->GetTeamNumber() != pPlayer->GetTeamNumber())
-			return false;
-
-		if (!pSpot->IsTriggered(pPlayer))
-			return false;
-
-		Vector mins = GetViewVectors()->m_vHullMin;
-		Vector maxs = GetViewVectors()->m_vHullMax;
-
-		if (!bIgnorePlayers)
-		{
-			Vector vTestMins = pSpot->GetAbsOrigin() + mins;
-			Vector vTestMaxs = pSpot->GetAbsOrigin() + maxs;
-			return UTIL_IsSpaceEmpty(pPlayer, vTestMins, vTestMaxs);
-		}
-
-		trace_t trace;
-		UTIL_TraceHull(pSpot->GetAbsOrigin(), pSpot->GetAbsOrigin(), mins, maxs, MASK_PLAYERSOLID, pPlayer, COLLISION_GROUP_PLAYER_MOVEMENT, &trace);
-		return (trace.fraction == 1 && trace.allsolid != 1 && (trace.startsolid != 1));
-	}
 	void CDODGameRules::PlayerSpawn( CBasePlayer *p )
 	{	
 		CDODPlayer *pPlayer = ToDODPlayer( p );

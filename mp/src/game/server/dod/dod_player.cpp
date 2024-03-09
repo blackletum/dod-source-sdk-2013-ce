@@ -3014,8 +3014,17 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 			pSpot = SelectSpawnSpot( pSpawnList, g_iLastAlliesSpawnIndex );	
 			if (!pSpot) {
 
+				bool bSuccess = false;
 				pSpawnPointName = "info_player_teamspawn";
-				SelectSpawnSpot(pSpawnPointName, pSpot);
+				bSuccess = SelectSpawnSpot(pSpawnPointName, pSpot);
+
+				if (bSuccess)
+				{
+					g_pLastSpawnPoints[GetTeamNumber()] = pSpot;
+				}
+
+				// need to save this for later so we can apply and modifiers to the armor and grenades...after the call to InitClass()
+				m_pSpawnPoint = dynamic_cast<CTeamSpawnPoint*>(pSpot);
 
 			}
 		}
@@ -3026,8 +3035,17 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 			pSpot = SelectSpawnSpot( pSpawnList, g_iLastAxisSpawnIndex );
 			if (!pSpot) {
 
+				bool bSuccess = false;
 				pSpawnPointName = "info_player_teamspawn";
-				SelectSpawnSpot(pSpawnPointName, pSpot);
+				bSuccess = SelectSpawnSpot(pSpawnPointName, pSpot);
+
+				if (bSuccess)
+				{
+					g_pLastSpawnPoints[GetTeamNumber()] = pSpot;
+				}
+
+				// need to save this for later so we can apply and modifiers to the armor and grenades...after the call to InitClass()
+				m_pSpawnPoint = dynamic_cast<CTeamSpawnPoint*>(pSpot);
 
 			}
 		}		
@@ -3052,68 +3070,6 @@ CBaseEntity* CDODPlayer::EntSelectSpawnPoint()
 	return pSpot;
 } 
 
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-bool CDODPlayer::SelectSpawnSpot(const char* pEntClassName, CBaseEntity*& pSpot)
-{
-	// Get an initial spawn point.
-	pSpot = gEntList.FindEntityByClassname(pSpot, pEntClassName);
-	if (!pSpot)
-	{
-		// Sometimes the first spot can be NULL????
-		pSpot = gEntList.FindEntityByClassname(pSpot, pEntClassName);
-	}
-
-	if (!pSpot)
-	{
-		// Still NULL? That means there're no spawn points at all, bail.
-		return false;
-	}
-
-
-	// First we try to find a spawn point that is fully clear. If that fails,
-	// we look for a spawnpoint that's clear except for another players. We
-	// don't collide with our team members, so we should be fine.
-	bool bIgnorePlayers = false;
-
-	CBaseEntity* pFirstSpot = pSpot;
-	do
-	{
-		if (pSpot)
-		{
-			// Check to see if this is a valid team spawn (player is on this team, etc.).
-			if (DODGameRules()->IsSpawnPointValid(pSpot, this))
-			{
-				// Check for a bad spawn entity.
-				if (pSpot->GetAbsOrigin() == vec3_origin)
-				{
-					pSpot = gEntList.FindEntityByClassname(pSpot, pEntClassName);
-					continue;
-				}
-
-				// Found a valid spawn point.
-				return pSpot;
-			}
-		}
-
-		// Get the next spawning point to check.
-		pSpot = gEntList.FindEntityByClassname(pSpot, pEntClassName);
-
-		if (pSpot == pFirstSpot && !bIgnorePlayers)
-		{
-			// Loop through again, ignoring players
-			bIgnorePlayers = true;
-			pSpot = gEntList.FindEntityByClassname(pSpot, pEntClassName);
-		}
-	}
-	// Continue until a valid spawn point is found or we hit the start.
-	while (pSpot != pFirstSpot);
-
-	return false;
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: Put the player in the specified team
 //-----------------------------------------------------------------------------
 void CDODPlayer::ChangeTeam( int iTeamNum )

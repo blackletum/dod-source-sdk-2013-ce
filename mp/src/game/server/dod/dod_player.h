@@ -197,6 +197,11 @@ public:
 	int				GetScore( void ) { return m_iScore; }
 	int				m_iScore;
 
+	CTeamSpawnPoint* GetSpawnPoint(void) { return m_pSpawnPoint; }
+
+	// Spawn Point
+	CTeamSpawnPoint* m_pSpawnPoint;
+
 	// Simulates a single frame of movement for a player
 	void RunPlayerMove( const QAngle& viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, float frametime );
 

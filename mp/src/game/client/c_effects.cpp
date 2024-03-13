@@ -14,7 +14,6 @@
 #include "env_wind_shared.h"
 #include "engine/IEngineTrace.h"
 #include "engine/ivmodelinfo.h"
-#include "precipitation_shared.h"
 #include "fx_water.h"
 #include "c_world.h"
 #include "iviewrender.h"

@@ -1486,21 +1486,23 @@ public:
 	CNetworkVar( PrecipitationType_t, m_nPrecipType );
 };
 
-LINK_ENTITY_TO_CLASS( func_precipitation, CPrecipitation );
+LINK_ENTITY_TO_CLASS(func_precipitation, CPrecipitation);
 
-BEGIN_DATADESC( CPrecipitation )
-	DEFINE_KEYFIELD( m_nPrecipType, FIELD_INTEGER, "preciptype" ),
+BEGIN_DATADESC(CPrecipitation)
+DEFINE_KEYFIELD(m_nPrecipType, FIELD_INTEGER, "preciptype"),
 END_DATADESC()
 
 // Just send the normal entity crap
-IMPLEMENT_SERVERCLASS_ST( CPrecipitation, DT_Precipitation)
-	SendPropInt(SENDINFO(m_spawnflags), 2, SPROP_UNSIGNED),
+IMPLEMENT_SERVERCLASS_ST(CPrecipitation, DT_Precipitation)
+SendPropInt(SENDINFO(m_nPrecipType), Q_log2(NUM_PRECIPITATION_TYPES) + 1, SPROP_UNSIGNED),
+#ifdef DOD_DLL
+SendPropInt(SENDINFO(m_spawnflags), 2, SPROP_UNSIGNED),
+#endif
 END_SEND_TABLE()
-
 
 CPrecipitation::CPrecipitation()
 {
-	m_nPrecipType = PRECIPITATION_TYPE_RAIN; // default to rain.
+	m_nPrecipType = PRECIPITATION_TYPE_PARTICLERAIN; // default to rain.
 }
 
 int CPrecipitation::UpdateTransmitState()
@@ -1537,7 +1539,7 @@ void CPrecipitation::Spawn( void )
 
 	// Default to rain.
 	if ( m_nPrecipType < 0 || m_nPrecipType > NUM_PRECIPITATION_TYPES )
-		m_nPrecipType = PRECIPITATION_TYPE_RAIN;
+		m_nPrecipType = PRECIPITATION_TYPE_PARTICLERAIN;
 
 	m_nRenderMode = kRenderEnvironmental;
 }

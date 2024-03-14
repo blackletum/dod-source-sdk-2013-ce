@@ -25,7 +25,7 @@
 
 using namespace vgui;
 
-#define NUM_CLASSES	6
+#define NUM_CLASSES	8
 
 class CDODClassMenu : public CClassMenu
 {

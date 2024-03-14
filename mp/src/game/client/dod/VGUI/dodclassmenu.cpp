@@ -84,6 +84,8 @@ CDODClassMenu::CDODClassMenu(IViewPort *pViewPort) : CClassMenu(pViewPort)
 	m_pClassNumLabel[3] = new Label( this, "class_4_num", "" );
 	m_pClassNumLabel[4] = new Label( this, "class_5_num", "" );
 	m_pClassNumLabel[5] = new Label( this, "class_6_num", "" );
+	m_pClassNumLabel[6] = new Label( this, "class_7_num", "" );
+	m_pClassNumLabel[7] = new Label( this, "class_8_num", "" );
 
 	m_pClassFullLabel[0] = new Label( this, "class_1_full", "" );
 	m_pClassFullLabel[1] = new Label( this, "class_2_full", "" );
@@ -91,6 +93,8 @@ CDODClassMenu::CDODClassMenu(IViewPort *pViewPort) : CClassMenu(pViewPort)
 	m_pClassFullLabel[3] = new Label( this, "class_4_full", "" );
 	m_pClassFullLabel[4] = new Label( this, "class_5_full", "" );
 	m_pClassFullLabel[5] = new Label( this, "class_6_full", "" );
+	m_pClassFullLabel[6] = new Label( this, "class_7_full", "" );
+	m_pClassFullLabel[7] = new Label( this, "class_8_full", "" );
 
 	m_pSuicideOption = new CheckButton( this, "suicide_option", "Sky is blue?" );
 }

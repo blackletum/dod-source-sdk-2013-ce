@@ -144,7 +144,8 @@ int iWeaponBucketDistances[DOD_NUM_WEAPON_DISTANCE_BUCKETS-1] =
 
 		"bar_semiauto",			//WEAPON_BAR_SEMIAUTO,
 		"mp44_semiauto",		//WEAPON_MP44_SEMIAUTO,
-		"m3",					//WEAPON_M3,
+		"greasegun",					//WEAPON_GREASEGUN,
+		"c96carbine",					//WEAPON_C96CARBINE,
 
 		0,		// end of list marker
 	};

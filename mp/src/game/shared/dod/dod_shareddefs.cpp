@@ -154,7 +154,7 @@ const char * s_WeaponAliasInfo[] =
 	"bar_semiauto",			//WEAPON_BAR_SEMIAUTO,
 	"mp44_semiauto",		//WEAPON_MP44_SEMIAUTO,
 	"greasegun",			//WEAPON_GREASEGUN_AUTO,
-	"c96carbine",	//WEAPON_M1CARBINE,
+	"c96carbine",			//WEAPON_C96CARBINE,
 
 	NULL,		// end of list marker
 };
@@ -219,6 +219,7 @@ const char *pszTeamAlliesClasses[] =
 	"us_30cal",
 	"us_bazooka",
 	"us_m3",
+	"us_medic",
 	NULL
 };
 
@@ -231,6 +232,7 @@ const char *pszTeamAxisClasses[] =
 	"axis_mg42",
 	"axis_pschreck",
 	"axis_m3",
+	"axis_medic",
 	NULL
 };
 

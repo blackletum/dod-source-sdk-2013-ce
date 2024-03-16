@@ -166,7 +166,7 @@ void PrecacheFileWeaponInfoDatabase( IFileSystem *filesystem, const unsigned cha
 		return;
 
 	KeyValues *manifest = new KeyValues( "weaponscripts" );
-	if ( manifest->LoadFromFile( filesystem, "scripts/weapon_manifest.txt", "GAME" ) )
+	if ( manifest->LoadFromFile( filesystem, "scripts/weapons/weapon_manifest.txt", "GAME" ) )
 	{
 		for ( KeyValues *sub = manifest->GetFirstSubKey(); sub != NULL ; sub = sub->GetNextKey() )
 		{

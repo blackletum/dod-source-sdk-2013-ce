@@ -184,7 +184,7 @@ bool ReadPlayerClassDataFromFileForSlot( IFileSystem* filesystem, const char *sz
 		return true;
 
 	char sz[128];
-	Q_snprintf( sz, sizeof( sz ), "scripts/playerclass_%s", szPlayerClassName );
+	Q_snprintf( sz, sizeof( sz ), "scripts/classes/playerclass_%s", szPlayerClassName );
 	KeyValues *pKV = ReadEncryptedKVFile( filesystem, sz, pICEKey );
 	if ( !pKV )
 		return false;

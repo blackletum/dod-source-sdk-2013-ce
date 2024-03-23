@@ -311,10 +311,10 @@ $Project "Client (DOD)"
 			$File	"$SRCDIR\game\shared\weapon_ifmbasecamera.h"
 			$File	"$SRCDIR\game\shared\weapon_ifmsteadycam.cpp"
 		}
-		$Folder "dodplus"
+		$Folder "doc"
 		{
-			$File	"$SRCDIR\game\shared\dodplus\gamemounter.cpp"
-			$File	"$SRCDIR\game\shared\dodplus\gamemounter.h"
+			$File	"$SRCDIR\game\shared\doc\gamemounter.cpp"
+			$File	"$SRCDIR\game\shared\doc\gamemounter.h"
 		}
 	}
 

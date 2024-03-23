@@ -240,7 +240,7 @@ public:
 	// Get the view vectors for this mod.
 	virtual const CViewVectors* GetViewVectors() const;
 	virtual const CDODViewVectors *GetDODViewVectors() const;
-	virtual const unsigned char *GetEncryptionKey( void ) { return (unsigned char *)"Wl0u5B3F"; }
+	virtual const unsigned char *GetEncryptionKey() { return NULL; }
 
 	bool AwaitingReadyRestart( void ) { return m_bAwaitingReadyRestart; }
 	float GetRoundRestartTime( void ) { return m_flRestartRoundTime; }

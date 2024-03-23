@@ -33,7 +33,7 @@ public:
 	virtual			~C_DODTeam();
 
 	CDODPlayerClassInfo const &GetPlayerClassInfo( int iPlayerClass ) const;
-	const unsigned char *GetEncryptionKey( void ) { return g_pGameRules->GetEncryptionKey(); }
+	const unsigned char *GetEncryptionKey( void ) { return null; }
 
 	virtual void AddPlayerClass( const char *pszClassName );
 

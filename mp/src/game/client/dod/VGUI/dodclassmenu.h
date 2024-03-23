@@ -84,7 +84,7 @@ private:
 public:
 	CDODClassMenu_Allies(IViewPort *pViewPort) : BaseClass(pViewPort)
 	{
-		LoadControlSettings( "Resource/UI/ClassMenu_Allies.res" );
+		LoadControlSettings( "Resource/ui/doc/ClassMenu_Allies.res" );
 	}
 	
 	virtual const char *GetName( void )
@@ -112,7 +112,7 @@ private:
 public:
 	CDODClassMenu_Axis(IViewPort *pViewPort) : BaseClass(pViewPort)
 	{
-		LoadControlSettings( "Resource/UI/ClassMenu_Axis.res" );
+		LoadControlSettings( "Resource/ui/doc/ClassMenu_Axis.res" );
 	}
 
 	virtual const char *GetName( void )

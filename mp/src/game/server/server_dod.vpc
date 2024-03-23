@@ -548,10 +548,10 @@ $Project "Server (DoD)"
 			$File	"$SRCDIR\game\shared\weapon_ifmsteadycam.cpp"
 			$File	"$SRCDIR\game\shared\weapon_ifmsteadycam.h"
 		}
-		$Folder "dodplus"
+		$Folder "doc"
 		{
-			$File	"$SRCDIR\game\shared\dodplus\gamemounter.cpp"
-			$File	"$SRCDIR\game\shared\dodplus\gamemounter.h"
+			$File	"$SRCDIR\game\shared\doc\gamemounter.cpp"
+			$File	"$SRCDIR\game\shared\doc\gamemounter.h"
 		}
 	}
 }

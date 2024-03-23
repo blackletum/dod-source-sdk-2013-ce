@@ -151,7 +151,7 @@
 #include "fbxsystem/fbxsystem.h"
 #endif
 
-#include "dodplus/gamemounter.h"
+#include "doc/gamemounter.h"
 
 extern vgui::IInputInternal *g_InputInternal;
 

@@ -130,7 +130,7 @@ extern ConVar tf_mm_servermode;
 #include "replay/ireplaysystem.h"
 #endif
 
-#include "dodplus/gamemounter.h"
+#include "doc/gamemounter.h"
 
 extern IToolFrameworkServer *g_pToolFrameworkServer;
 extern IParticleSystemQuery *g_pParticleSystemQuery;

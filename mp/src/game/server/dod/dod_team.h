@@ -36,7 +36,7 @@ public:
 	virtual void Init( const char *pName, int iNumber );
 
 	CDODPlayerClassInfo const &GetPlayerClassInfo( int iPlayerClass ) const;
-	const unsigned char *GetEncryptionKey( void ) { return g_pGameRules->GetEncryptionKey(); }
+	virtual const unsigned char* GetEncryptionKey() { return NULL; }
 
 	virtual void AddPlayerClass( const char *pszClassName );
 

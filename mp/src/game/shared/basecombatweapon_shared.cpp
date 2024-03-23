@@ -231,15 +231,6 @@ void CBaseCombatWeapon::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: get this game's encryption key for decoding weapon kv files
-// Output : virtual const unsigned char
-//-----------------------------------------------------------------------------
-const unsigned char *CBaseCombatWeapon::GetEncryptionKey( void ) 
-{ 
-	return g_pGameRules->GetEncryptionKey(); 
-}
-
-//-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
 void CBaseCombatWeapon::Precache( void )

@@ -202,7 +202,7 @@ KeyValues* ReadEncryptedKVFile( IFileSystem *filesystem, const char *szFilenameW
 
 	if ( pICEKey == NULL )
 	{
-		pSearchPath = "GAME";
+		pSearchPath = "MOD";
 	}
 
 	// Open the weapon data file, and abort if we can't
@@ -215,7 +215,7 @@ KeyValues* ReadEncryptedKVFile( IFileSystem *filesystem, const char *szFilenameW
 #ifndef _XBOX
 		if ( pICEKey )
 		{
-			Q_snprintf(szFullName,sizeof(szFullName), "%s.ctx", szFilenameWithoutExtension); // fall back to the .ctx file
+			Q_snprintf(szFullName,sizeof(szFullName), "%s.txt", szFilenameWithoutExtension); // fall back to the .ctx file //FUCK FALLING BACK TO THE TXT WE MESSIN THIS SHIT UP 
 
 			FileHandle_t f = filesystem->Open( szFullName, "rb", pSearchPath );
 

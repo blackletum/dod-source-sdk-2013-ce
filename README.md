@@ -7,8 +7,15 @@
 </div>
 
 # What is this? 
-Dod+ (temp name) is a source mod for dod:s built upon SDK 2013 CE. Mor details coming soon 
+Day of Conquest is a (dead) mod that aimed to improve Day of Defeat. 
+However the project died quickly because of lack of devs and support. If enough interest is shown this mod may get picked back up some day. 
 
+# What is new in this mod?
+* Basic implementation of TFBots 
+* Updated Weather effects
+* New weapons and classes (only usable via console and still unfinished)
+* Misc mapbase content ported
+* Misc HL2 content enabled. 
 
 # What's Source SDK 2013 Community Edition?
 Source 2013 CE is a clean fork of Valve's [Source SDK 2013 repo](https://github.com/valveSoftware/source-sdk-2013) 

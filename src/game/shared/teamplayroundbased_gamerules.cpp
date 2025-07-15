@@ -1485,8 +1485,8 @@ void CTeamplayRoundBasedRules::State_Think_STARTGAME()
 	{
 		if ( !IsInTraining() && !IsInItemTestingMode() )
 		{
-			ConVarRef tf_bot_offline_practice( "tf_bot_offline_practice" );
-			if ( mp_waitingforplayers_time.GetFloat() > 0 && tf_bot_offline_practice.GetInt() == 0 )
+			ConVarRef doc_bot_offline_practice( "doc_bot_offline_practice" );
+			if ( mp_waitingforplayers_time.GetFloat() > 0 && doc_bot_offline_practice.GetInt() == 0 )
 			{
 				// go into waitingforplayers, reset at end of it
 				SetInWaitingForPlayers( true );

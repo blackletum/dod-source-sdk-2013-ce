@@ -15,8 +15,8 @@
 #include "scenario/capture_point/tf_bot_defend_point.h"
 
 
-ConVar tf_bot_fetch_lost_flag_time( "tf_bot_fetch_lost_flag_time", "10", FCVAR_CHEAT, "How long busy TFBots will ignore the dropped flag before they give up what they are doing and go after it" );
-ConVar tf_bot_flag_kill_on_touch( "tf_bot_flag_kill_on_touch", "0", FCVAR_CHEAT, "If nonzero, any bot that picks up the flag dies. For testing." );
+ConVar doc_bot_fetch_lost_flag_time( "doc_bot_fetch_lost_flag_time", "10", FCVAR_CHEAT, "How long busy TFBots will ignore the dropped flag before they give up what they are doing and go after it" );
+ConVar doc_bot_flag_kill_on_touch( "doc_bot_flag_kill_on_touch", "0", FCVAR_CHEAT, "If nonzero, any bot that picks up the flag dies. For testing." );
 
 
 const char *CTFBotScenarioMonitor::GetName( void ) const

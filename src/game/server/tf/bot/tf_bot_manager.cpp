@@ -15,15 +15,15 @@
 #include "fmtstr.h"
 
 
-extern ConVar tf_bot_difficulty;
-extern ConVar tf_bot_prefix_name_with_difficulty;
+extern ConVar doc_bot_difficulty;
+extern ConVar doc_bot_prefix_name_with_difficulty;
 
-ConVar tf_bot_quota("tf_bot_quota", "0", FCVAR_NONE, "Determines the total number of TF bots in the game.");
-ConVar tf_bot_quota_mode("tf_bot_quota_mode", "normal", FCVAR_NONE, "Determines the type of quota. Allowed values: 'normal', 'fill', and 'match'. If 'fill', the server will adjust bots to keep N players in the game, where N is bot_quota. If 'match', the server will maintain a 1:N ratio of humans to bots, where N is bot_quota.");
-ConVar tf_bot_join_after_player("tf_bot_join_after_player", "1", FCVAR_NONE, "If nonzero, bots wait until a player joins before entering the game.", true, 0.0f, true, 1.0f);
-ConVar tf_bot_auto_vacate("tf_bot_auto_vacate", "1", FCVAR_NONE, "If nonzero, bots will automatically leave to make room for human players.", true, 0.0f, true, 1.0f);
-ConVar tf_bot_offline_practice("tf_bot_offline_practice", "0", FCVAR_NONE, "Tells the server that it is in offline practice mode.", true, 0.0f, true, 1.0f);
-ConVar tf_bot_melee_only("tf_bot_melee_only", "0", FCVAR_GAMEDLL, "If nonzero, TFBots will only use melee weapons", true, 0.0f, true, 1.0f);
+ConVar doc_bot_quota("doc_bot_quota", "0", FCVAR_NONE, "Determines the total number of TF bots in the game.");
+ConVar doc_bot_quota_mode("doc_bot_quota_mode", "normal", FCVAR_NONE, "Determines the type of quota. Allowed values: 'normal', 'fill', and 'match'. If 'fill', the server will adjust bots to keep N players in the game, where N is bot_quota. If 'match', the server will maintain a 1:N ratio of humans to bots, where N is bot_quota.");
+ConVar doc_bot_join_after_player("doc_bot_join_after_player", "1", FCVAR_NONE, "If nonzero, bots wait until a player joins before entering the game.", true, 0.0f, true, 1.0f);
+ConVar doc_bot_auto_vacate("doc_bot_auto_vacate", "1", FCVAR_NONE, "If nonzero, bots will automatically leave to make room for human players.", true, 0.0f, true, 1.0f);
+ConVar doc_bot_offline_practice("doc_bot_offline_practice", "0", FCVAR_NONE, "Tells the server that it is in offline practice mode.", true, 0.0f, true, 1.0f);
+ConVar doc_bot_melee_only("doc_bot_melee_only", "0", FCVAR_GAMEDLL, "If nonzero, TFBots will only use melee weapons", true, 0.0f, true, 1.0f);
 
 // this whole function seems unnecessary,
 // why not have them in a database that can be changed be the end user,
@@ -217,7 +217,7 @@ void CreateBotName(int iTeamNum, int iClassIdx, int iSkillLevel, char* out, int 
 	char szName[64] = "", szRelationship[64] = "", szDifficulty[32] = "";
 	Q_strncpy(szName, TheTFBots().GetRandomBotName(), sizeof(szName));
 
-	if (tf_bot_prefix_name_with_difficulty.GetBool())
+	if (doc_bot_prefix_name_with_difficulty.GetBool())
 	{
 		Q_strncpy(szDifficulty, DifficultyToName(iSkillLevel), sizeof(szDifficulty));
 	}
@@ -278,39 +278,39 @@ void CTFBotManager::OnLevelShutdown()
 
 bool CTFBotManager::IsInOfflinePractice() const
 {
-	return tf_bot_offline_practice.GetBool();
+	return doc_bot_offline_practice.GetBool();
 }
 
 void CTFBotManager::SetIsInOfflinePractice(bool set)
 {
-	tf_bot_offline_practice.SetValue(set);
+	doc_bot_offline_practice.SetValue(set);
 }
 
 void CTFBotManager::RevertOfflinePracticeConvars()
 {
-	tf_bot_quota.Revert();
-	tf_bot_quota_mode.Revert();
-	tf_bot_auto_vacate.Revert();
-	tf_bot_difficulty.Revert();
-	tf_bot_offline_practice.Revert();
+	doc_bot_quota.Revert();
+	doc_bot_quota_mode.Revert();
+	doc_bot_auto_vacate.Revert();
+	doc_bot_difficulty.Revert();
+	doc_bot_offline_practice.Revert();
 }
 
 
 void CTFBotManager::OnForceAddedBots(int count)
 {
-	tf_bot_quota.SetValue(Min(gpGlobals->maxClients, count + tf_bot_quota.GetInt()));
+	doc_bot_quota.SetValue(Min(gpGlobals->maxClients, count + doc_bot_quota.GetInt()));
 	m_flQuotaChangeTime = gpGlobals->curtime + 1.0f;
 }
 
 void CTFBotManager::OnForceKickedBots(int count)
 {
-	tf_bot_quota.SetValue(Max(0, tf_bot_quota.GetInt() - count));
+	doc_bot_quota.SetValue(Max(0, doc_bot_quota.GetInt() - count));
 	m_flQuotaChangeTime = gpGlobals->curtime + 2.0f;
 }
 
 bool CTFBotManager::IsMeleeOnly() const
 {
-	return tf_bot_melee_only.GetBool();
+	return doc_bot_melee_only.GetBool();
 }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -407,21 +407,21 @@ void CTFBotManager::MaintainBotQuota()
 		nConnectedClients++;
 	}
 
-	int desiredBotCount = tf_bot_quota.GetInt();
+	int desiredBotCount = doc_bot_quota.GetInt();
 	int nTotalNonTFBots = nConnectedClients - nTFBots;
 
-	if (FStrEq(tf_bot_quota_mode.GetString(), "fill"))
+	if (FStrEq(doc_bot_quota_mode.GetString(), "fill"))
 	{
 		desiredBotCount = MAX(0, desiredBotCount - nNonTFBotsOnGameTeams);
 	}
-	else if (FStrEq(tf_bot_quota_mode.GetString(), "match"))
+	else if (FStrEq(doc_bot_quota_mode.GetString(), "match"))
 	{
 		// If bot_quota_mode is 'match', we want the number of bots to be bot_quota * total humans
-		desiredBotCount = (int)MAX(0, tf_bot_quota.GetFloat() * nNonTFBotsOnGameTeams);
+		desiredBotCount = (int)MAX(0, doc_bot_quota.GetFloat() * nNonTFBotsOnGameTeams);
 	}
 
 	// wait for a player to join, if necessary
-	if (tf_bot_join_after_player.GetBool())
+	if (doc_bot_join_after_player.GetBool())
 	{
 		if ((nNonTFBotsOnGameTeams == 0) && (nSpectators == 0))
 		{
@@ -430,7 +430,7 @@ void CTFBotManager::MaintainBotQuota()
 	}
 
 	// if bots will auto-vacate, we need to keep one slot open to allow players to join
-	if (tf_bot_auto_vacate.GetBool())
+	if (doc_bot_auto_vacate.GetBool())
 	{
 		desiredBotCount = MIN(desiredBotCount, gpGlobals->maxClients - nTotalNonTFBots - 1);
 	}
@@ -570,4 +570,4 @@ void CC_ReloadBotNames(const CCommand& args)
 	TheTFBots().ReloadBotNames();
 }
 
-ConCommand tf_bot_names_reload("tf_bot_names_reload", CC_ReloadBotNames, "Reload all names for TFBots.", FCVAR_CHEAT);
+ConCommand doc_bot_names_reload("doc_bot_names_reload", CC_ReloadBotNames, "Reload all names for TFBots.", FCVAR_CHEAT);

@@ -69,7 +69,7 @@ public:
 };
 
 
-#define TF_BOT_TYPE		1337
+#define doc_bot_TYPE		1337
 
 class CTFBot : public NextBotPlayer<CDODPlayer>, public CGameEventListener
 {
@@ -112,15 +112,15 @@ public:
 				return false;
 			}
 
-			extern ConVar tf_bot_suspect_spy_forget_cooldown;
-			return ( (float)this->m_times.Head() > ( gpGlobals->curtime - tf_bot_suspect_spy_forget_cooldown.GetFloat() ) );
+			extern ConVar doc_bot_suspect_spy_forget_cooldown;
+			return ( (float)this->m_times.Head() > ( gpGlobals->curtime - doc_bot_suspect_spy_forget_cooldown.GetFloat() ) );
 		}
 
 		bool TestForRealizing()
 		{
-			extern ConVar tf_bot_suspect_spy_touch_interval;
+			extern ConVar doc_bot_suspect_spy_touch_interval;
 			int nCurTime = (int)floor( gpGlobals->curtime );
-			int nMinTime = nCurTime - tf_bot_suspect_spy_touch_interval.GetInt();
+			int nMinTime = nCurTime - doc_bot_suspect_spy_touch_interval.GetInt();
 
 			for ( int i=m_times.Count()-1; i >= 0; --i )
 			{
@@ -132,7 +132,7 @@ public:
 
 			CUtlVector<bool> checks;
 
-			checks.SetCount( tf_bot_suspect_spy_touch_interval.GetInt() );
+			checks.SetCount( doc_bot_suspect_spy_touch_interval.GetInt() );
 			for ( int i=0; i < checks.Count(); ++i )
 				checks[ i ] = false;
 
@@ -163,7 +163,7 @@ public:
 	virtual void	Event_Killed( const CTakeDamageInfo &info );
 	virtual void	UpdateOnRemove( void ) override;
 	virtual void	FireGameEvent( IGameEvent *event );
-	virtual int		GetBotType() const { return TF_BOT_TYPE; }
+	virtual int		GetBotType() const { return doc_bot_TYPE; }
 	virtual int		DrawDebugTextOverlays( void );
 	virtual void	PhysicsSimulate( void );
 	virtual void	Touch( CBaseEntity *other );
@@ -403,7 +403,7 @@ inline CTFBot *ToTFBot( CBaseEntity *ent )
 	if ( player == nullptr )
 		return NULL;
 
-	if ( !player->IsBotOfType( TF_BOT_TYPE ) )
+	if ( !player->IsBotOfType( doc_bot_TYPE ) )
 		return NULL;
 
 	Assert( dynamic_cast<CTFBot *>( ent ) );

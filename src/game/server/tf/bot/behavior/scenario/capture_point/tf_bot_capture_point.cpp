@@ -8,9 +8,9 @@
 #include "tf/bot/behavior/tf_bot_melee_attack.h"
 
 
-ConVar tf_bot_offense_must_push_time( "tf_bot_offense_must_push_time", "120", FCVAR_CHEAT, "If timer is less than this, bots will push hard to cap" );
-ConVar tf_bot_capture_seek_and_destroy_min_duration( "tf_bot_capture_seek_and_destroy_min_duration", "15", FCVAR_CHEAT, "If a capturing bot decides to go hunting, this is the min duration he will hunt for before reconsidering" );
-ConVar tf_bot_capture_seek_and_destroy_max_duration( "tf_bot_capture_seek_and_destroy_max_duration", "30", FCVAR_CHEAT, "If a capturing bot decides to go hunting, this is the max duration he will hunt for before reconsidering" );
+ConVar doc_bot_offense_must_push_time( "doc_bot_offense_must_push_time", "120", FCVAR_CHEAT, "If timer is less than this, bots will push hard to cap" );
+ConVar doc_bot_capture_seek_and_destroy_min_duration( "doc_bot_capture_seek_and_destroy_min_duration", "15", FCVAR_CHEAT, "If a capturing bot decides to go hunting, this is the min duration he will hunt for before reconsidering" );
+ConVar doc_bot_capture_seek_and_destroy_max_duration( "doc_bot_capture_seek_and_destroy_max_duration", "30", FCVAR_CHEAT, "If a capturing bot decides to go hunting, this is the max duration he will hunt for before reconsidering" );
 
 
 CTFBotCapturePoint::CTFBotCapturePoint()
@@ -60,12 +60,12 @@ ActionResult<CTFBot> CTFBotCapturePoint::Update( CTFBot *me, float dt )
 	}
 	if ( ( !me->IsPointBeingContested( pPoint ) || me->GetTimeSinceWeaponFired() < 2.0f ) &&
 		 !me->IsCapturingPoint() &&
-		 me->GetTimeLeftToCapture() >= tf_bot_offense_must_push_time.GetFloat() &&
+		 me->GetTimeLeftToCapture() >= doc_bot_offense_must_push_time.GetFloat() &&
 		 !me->IsNearPoint( pPoint ) &&
 		 threat && threat->IsVisibleRecently() )
 	{
-		float duration = RandomFloat( tf_bot_capture_seek_and_destroy_min_duration.GetFloat(),
-									  tf_bot_capture_seek_and_destroy_max_duration.GetFloat() );
+		float duration = RandomFloat( doc_bot_capture_seek_and_destroy_min_duration.GetFloat(),
+									  doc_bot_capture_seek_and_destroy_max_duration.GetFloat() );
 
 		return Action<CTFBot>::SuspendFor( new CTFBotSeekAndDestroy( duration ), "Too early to capture - hunting" );
 	}
@@ -170,7 +170,7 @@ QueryResultType CTFBotCapturePoint::ShouldHurry( const INextBot *me ) const
 {
 	CTFBot *actor = static_cast<CTFBot *>( me->GetEntity() );
 
-	if ( actor->GetTimeLeftToCapture() < tf_bot_offense_must_push_time.GetFloat() )
+	if ( actor->GetTimeLeftToCapture() < doc_bot_offense_must_push_time.GetFloat() )
 	{
 		return ANSWER_YES;
 	}
@@ -182,7 +182,7 @@ QueryResultType CTFBotCapturePoint::ShouldRetreat( const INextBot *me ) const
 {
 	CTFBot *actor = static_cast<CTFBot *>( me->GetEntity() );
 
-	if ( actor->GetTimeLeftToCapture() < tf_bot_offense_must_push_time.GetFloat() )
+	if ( actor->GetTimeLeftToCapture() < doc_bot_offense_must_push_time.GetFloat() )
 	{
 		return ANSWER_NO;
 	}

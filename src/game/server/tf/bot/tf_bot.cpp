@@ -46,22 +46,24 @@ bool IsTeamName(const char* str)
 	return Q_strcasecmp(str, "spectate") == 0;
 }
 
-ConVar tf_bot_difficulty( "tf_bot_difficulty", "1", FCVAR_NONE, "Defines the skill of bots joining the game.  Values are: 0=easy, 1=normal, 2=hard, 3=expert.", &DifficultyChanged );
-ConVar tf_bot_force_class( "tf_bot_force_class", "", FCVAR_NONE, "If set to a class name, all TFBots will respawn as that class" );
-ConVar tf_bot_keep_class_after_death( "tf_bot_keep_class_after_death", "0" );
-ConVar tf_bot_prefix_name_with_difficulty( "tf_bot_prefix_name_with_difficulty", "0", FCVAR_NONE, "Append the skill level of the bot to the bot's name", &PrefixNameChanged );
-ConVar tf_bot_path_lookahead_range( "tf_bot_path_lookahead_range", "300", FCVAR_NONE, "", true, 0.0f, true, 1500.0f );
-ConVar tf_bot_near_point_travel_distance( "tf_bot_near_point_travel_distance", "750", FCVAR_CHEAT );
-ConVar tf_bot_pyro_shove_away_range( "tf_bot_pyro_shove_away_range", "250", FCVAR_CHEAT, "If a Pyro bot's target is closer than this, compression blast them away" );
-ConVar tf_bot_pyro_deflect_tolerance( "tf_bot_pyro_deflect_tolerance", "0.5", FCVAR_CHEAT );
-ConVar tf_bot_sniper_spot_min_range( "tf_bot_sniper_spot_min_range", "1000", FCVAR_CHEAT );
-ConVar tf_bot_sniper_spot_max_count( "tf_bot_sniper_spot_max_count", "10", FCVAR_CHEAT, "Stop searching for sniper spots when each side has found this many" );
-ConVar tf_bot_sniper_spot_search_count( "tf_bot_sniper_spot_search_count", "10", FCVAR_CHEAT, "Search this many times per behavior update frame" );
-ConVar tf_bot_sniper_spot_point_tolerance( "tf_bot_sniper_spot_point_tolerance", "750", FCVAR_CHEAT );
-ConVar tf_bot_sniper_spot_epsilon( "tf_bot_sniper_spot_epsilon", "100", FCVAR_CHEAT );
-ConVar tf_bot_sniper_goal_entity_move_tolerance( "tf_bot_sniper_goal_entity_move_tolerance", "500", FCVAR_CHEAT );
-ConVar tf_bot_suspect_spy_touch_interval( "tf_bot_suspect_spy_touch_interval", "5", FCVAR_CHEAT, "How many seconds back to look for touches against suspicious spies", true, 0.0f, false, 0.0f );
-ConVar tf_bot_suspect_spy_forget_cooldown( "tf_bot_suspect_spy_forced_cooldown", "5", FCVAR_CHEAT, "How long to consider a suspicious spy as suspicious", true, 0.0f, false, 0.0f );
+ConVar doc_bot_difficulty( "doc_bot_difficulty", "1", FCVAR_NONE, "Defines the skill of bots joining the game.  Values are: 0=easy, 1=normal, 2=hard, 3=expert.", &DifficultyChanged );
+ConVar doc_bot_force_class( "doc_bot_force_class", "", FCVAR_NONE, "If set to a class name, all TFBots will respawn as that class" );
+ConVar doc_bot_keep_class_after_death( "doc_bot_keep_class_after_death", "0" );
+ConVar doc_bot_prefix_name_with_difficulty( "doc_bot_prefix_name_with_difficulty", "0", FCVAR_NONE, "Append the skill level of the bot to the bot's name", &PrefixNameChanged );
+ConVar doc_bot_path_lookahead_range( "doc_bot_path_lookahead_range", "300", FCVAR_NONE, "", true, 0.0f, true, 1500.0f );
+ConVar doc_bot_near_point_travel_distance( "doc_bot_near_point_travel_distance", "750", FCVAR_CHEAT );
+ConVar doc_bot_pyro_shove_away_range( "doc_bot_pyro_shove_away_range", "250", FCVAR_CHEAT, "If a Pyro bot's target is closer than this, compression blast them away" );
+ConVar doc_bot_pyro_deflect_tolerance( "doc_bot_pyro_deflect_tolerance", "0.5", FCVAR_CHEAT );
+ConVar doc_bot_sniper_spot_min_range( "doc_bot_sniper_spot_min_range", "1000", FCVAR_CHEAT );
+ConVar doc_bot_sniper_spot_max_count( "doc_bot_sniper_spot_max_count", "10", FCVAR_CHEAT, "Stop searching for sniper spots when each side has found this many" );
+ConVar doc_bot_sniper_spot_search_count( "doc_bot_sniper_spot_search_count", "10", FCVAR_CHEAT, "Search this many times per behavior update frame" );
+ConVar doc_bot_sniper_spot_point_tolerance( "doc_bot_sniper_spot_point_tolerance", "750", FCVAR_CHEAT );
+ConVar doc_bot_sniper_spot_epsilon( "doc_bot_sniper_spot_epsilon", "100", FCVAR_CHEAT );
+ConVar doc_bot_sniper_goal_entity_move_tolerance( "doc_bot_sniper_goal_entity_move_tolerance", "500", FCVAR_CHEAT );
+ConVar doc_bot_suspect_spy_touch_interval( "doc_bot_suspect_spy_touch_interval", "5", FCVAR_CHEAT, "How many seconds back to look for touches against suspicious spies", true, 0.0f, false, 0.0f );
+ConVar doc_bot_suspect_spy_forget_cooldown( "doc_bot_suspect_spy_forced_cooldown", "5", FCVAR_CHEAT, "How long to consider a suspicious spy as suspicious", true, 0.0f, false, 0.0f );
+
+ConVar doc_bot_recoil("doc_bot_recoil", "1", FCVAR_CHEAT | FCVAR_REPLICATED | FCVAR_NOTIFY, "enable recoil for bots");
 
 LINK_ENTITY_TO_CLASS( tf_bot, CTFBot )
 
@@ -218,7 +220,7 @@ void CTFBot::Spawn( void )
 {
 	BaseClass::Spawn();
 
-	m_iSkill = (DifficultyType)tf_bot_difficulty.GetInt();
+	m_iSkill = (DifficultyType)doc_bot_difficulty.GetInt();
 	m_nBotAttrs = AttributeType::NONE;
 
 	m_useWeaponAbilityTimer.Start( 5.0f );
@@ -244,7 +246,7 @@ void CTFBot::Event_Killed( const CTakeDamageInfo &info )
 	LeaveSquad();
 
 	//TODO: maybe cut this out
-	if ( !tf_bot_keep_class_after_death.GetBool() )
+	if ( !doc_bot_keep_class_after_death.GetBool() )
 	{
 		m_bWantsToChangeClass = true;
 	}
@@ -736,7 +738,7 @@ bool CTFBot::IsNearPoint( CControlPoint *point ) const
 		if ( !cpArea )
 			return false;
 
-		return abs( myArea->GetIncursionDistance( GetTeamNumber() ) - cpArea->GetIncursionDistance( GetTeamNumber() ) ) < tf_bot_near_point_travel_distance.GetFloat();
+		return abs( myArea->GetIncursionDistance( GetTeamNumber() ) - cpArea->GetIncursionDistance( GetTeamNumber() ) ) < doc_bot_near_point_travel_distance.GetFloat();
 	}
 
 	return false;
@@ -1245,7 +1247,7 @@ float CTFBot::GetDesiredAttackRange( void ) const
 //-----------------------------------------------------------------------------
 float CTFBot::GetDesiredPathLookAheadRange( void ) const
 {
-	return GetModelScale() * tf_bot_path_lookahead_range.GetFloat();
+	return GetModelScale() * doc_bot_path_lookahead_range.GetFloat();
 }
 
 //-----------------------------------------------------------------------------
@@ -1665,7 +1667,7 @@ void CTFBot::AccumulateSniperSpots( void )
 		return;
 	}
 
-	for ( int i=0; i<tf_bot_sniper_spot_search_count.GetInt(); ++i )
+	for ( int i=0; i<doc_bot_sniper_spot_search_count.GetInt(); ++i )
 	{
 		SniperSpotInfo newInfo{};
 		newInfo.m_pHomeArea = m_sniperStandAreas.Random();
@@ -1675,7 +1677,7 @@ void CTFBot::AccumulateSniperSpots( void )
 
 		newInfo.m_flRange = ( newInfo.m_vecHome - newInfo.m_vecForward ).Length();
 
-		if ( newInfo.m_flRange < tf_bot_sniper_spot_min_range.GetFloat() )
+		if ( newInfo.m_flRange < doc_bot_sniper_spot_min_range.GetFloat() )
 			continue;
 
 		if ( !IsLineOfFireClear( newInfo.m_vecHome + Vector( 0, 0, 60.0f ), newInfo.m_vecForward + Vector( 0, 0, 60.0f ) ) )
@@ -1686,7 +1688,7 @@ void CTFBot::AccumulateSniperSpots( void )
 
 		newInfo.m_flIncursionDiff = flIncursion1 - flIncursion2;
 
-		if ( m_sniperSpots.Count() < tf_bot_sniper_spot_max_count.GetInt() )
+		if ( m_sniperSpots.Count() < doc_bot_sniper_spot_max_count.GetInt() )
 			m_sniperSpots.AddToTail( newInfo );
 
 		for ( int j=0; j<m_sniperSpots.Count(); ++j )
@@ -1727,7 +1729,7 @@ void CTFBot::SetupSniperSpotAccumulation( void )
 		return;
 	}
 
-	if ( pObjective == m_sniperGoalEnt && Square( tf_bot_sniper_goal_entity_move_tolerance.GetFloat() ) > ( pObjective->WorldSpaceCenter() - m_sniperGoal ).LengthSqr() )
+	if ( pObjective == m_sniperGoalEnt && Square( doc_bot_sniper_goal_entity_move_tolerance.GetFloat() ) > ( pObjective->WorldSpaceCenter() - m_sniperGoal ).LengthSqr() )
 		return;
 
 	ClearSniperSpots();
@@ -1766,12 +1768,12 @@ void CTFBot::SetupSniperSpotAccumulation( void )
 
 		if ( bCheckForward )
 		{
-			if ( pObjectiveArea->GetIncursionDistance( iMyTeam ) + tf_bot_sniper_spot_point_tolerance.GetFloat() >= flMyIncursion )
+			if ( pObjectiveArea->GetIncursionDistance( iMyTeam ) + doc_bot_sniper_spot_point_tolerance.GetFloat() >= flMyIncursion )
 				m_sniperStandAreas.AddToTail( area );
 		}
 		else
 		{
-			if ( pObjectiveArea->GetIncursionDistance( iMyTeam ) - tf_bot_sniper_spot_point_tolerance.GetFloat() >= flMyIncursion )
+			if ( pObjectiveArea->GetIncursionDistance( iMyTeam ) - doc_bot_sniper_spot_point_tolerance.GetFloat() >= flMyIncursion )
 				m_sniperStandAreas.AddToTail( area );
 		}
 	}
@@ -1967,7 +1969,7 @@ float CTFBotPathCost::operator()( CNavArea *area, CNavArea *fromArea, const CNav
 
 void DifficultyChanged( IConVar *var, const char *pOldValue, float flOldValue )
 {
-	if ( tf_bot_difficulty.GetInt() >= CTFBot::EASY && tf_bot_difficulty.GetInt() <= CTFBot::EXPERT )
+	if (doc_bot_difficulty.GetInt() >= CTFBot::EASY && doc_bot_difficulty.GetInt() <= CTFBot::EXPERT )
 	{
 		CUtlVector<INextBot *> bots;
 		TheNextBots().CollectAllBots( &bots );
@@ -1977,11 +1979,11 @@ void DifficultyChanged( IConVar *var, const char *pOldValue, float flOldValue )
 			if ( pBot == nullptr )
 				continue;
 
-			pBot->m_iSkill = (CTFBot::DifficultyType)tf_bot_difficulty.GetInt();
+			pBot->m_iSkill = (CTFBot::DifficultyType)doc_bot_difficulty.GetInt();
 		}
 	}
 	else
-		Warning( "tf_bot_difficulty value out of range [0,4]: %d", tf_bot_difficulty.GetInt() );
+		Warning( "doc_bot_difficulty value out of range [0,4]: %d", doc_bot_difficulty.GetInt() );
 }
 
 void PrefixNameChanged( IConVar *var, const char *pOldValue, float flOldValue )
@@ -1994,7 +1996,7 @@ void PrefixNameChanged( IConVar *var, const char *pOldValue, float flOldValue )
 		if ( pBot == nullptr )
 			continue;
 
-		if ( tf_bot_prefix_name_with_difficulty.GetBool() )
+		if (doc_bot_prefix_name_with_difficulty.GetBool() )
 		{
 			const char *szSkillName = DifficultyToName( pBot->m_iSkill );
 			const char *szCurrentName = pBot->GetPlayerName();
@@ -2012,7 +2014,7 @@ void PrefixNameChanged( IConVar *var, const char *pOldValue, float flOldValue )
 }
 
 
-CON_COMMAND_F( tf_bot_add, "Add a bot.", FCVAR_GAMEDLL )
+CON_COMMAND_F( doc_bot_add, "Add a bot.", FCVAR_GAMEDLL )
 {
 	if ( UTIL_IsCommandIssuedByServerAdmin() )
 	{
@@ -2066,7 +2068,7 @@ CON_COMMAND_F( tf_bot_add, "Add a bot.", FCVAR_GAMEDLL )
 	}
 }
 
-CON_COMMAND_F(tf_bot_add_new, "Add a bot. (currently crashes the game)", FCVAR_GAMEDLL)
+CON_COMMAND_F(doc_bot_add_new, "Add a bot. (currently crashes the game)", FCVAR_GAMEDLL)
 {
 	if (UTIL_IsCommandIssuedByServerAdmin())
 	{
@@ -2075,7 +2077,7 @@ CON_COMMAND_F(tf_bot_add_new, "Add a bot. (currently crashes the game)", FCVAR_G
 		char const* pszClassName = "random";
 		int nNumBots = 1;
 		bool bNoQuota = false;
-		int nSkill = tf_bot_difficulty.GetInt();
+		int nSkill = doc_bot_difficulty.GetInt();
 
 		for (int i = 0; i < args.ArgC(); ++i)
 		{
@@ -2112,7 +2114,7 @@ CON_COMMAND_F(tf_bot_add_new, "Add a bot. (currently crashes the game)", FCVAR_G
 			}
 		}
 
-		pszClassName = FStrEq(tf_bot_force_class.GetString(), "") ? pszClassName : tf_bot_force_class.GetString();
+		pszClassName = FStrEq(doc_bot_force_class.GetString(), "") ? pszClassName : doc_bot_force_class.GetString();
 
 		int iTeam = TEAM_UNASSIGNED;
 		if (FStrEq(pszTeamName, "axis"))
@@ -2171,7 +2173,7 @@ private:
 	int m_team;
 };
 
-CON_COMMAND_F( tf_bot_kick, "Remove a TFBot by name, or all bots (\"all\").", FCVAR_GAMEDLL )
+CON_COMMAND_F( doc_bot_kick, "Remove a TFBot by name, or all bots (\"all\").", FCVAR_GAMEDLL )
 {
 	if ( UTIL_IsCommandIssuedByServerAdmin() )
 	{
@@ -2206,7 +2208,87 @@ CON_COMMAND_F( tf_bot_kick, "Remove a TFBot by name, or all bots (\"all\").", FC
 		}
 	}
 }
+CON_COMMAND_F( doc_bot_kill, "Kill a TFBot by name, or all bots (\"all\").", FCVAR_GAMEDLL )
+{
+	// Listenserver host or rcon access only!
+	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+		return;
 
+	if ( args.ArgC() < 2 )
+	{
+		DevMsg( "%s <bot name>, \"red\", \"blue\", or \"all\"> <optional: \"moveToSpectatorTeam\"> \n", args.Arg(0) );
+		return;
+	}
+
+	int iTeam = TEAM_UNASSIGNED;
+	int i;
+	const char *pPlayerName = "";
+	for( i=1; i<args.ArgC(); ++i )
+	{
+		// each argument could be a classname, a team, or a count
+		if ( FStrEq( args.Arg(i), "allies" ) )
+		{
+			iTeam = TEAM_ALLIES;
+		}
+		else if ( FStrEq( args.Arg(i), "axis" ) )
+		{
+			iTeam = TEAM_AXIS;
+		}
+		else if ( FStrEq( args.Arg(i), "all" ) )
+		{
+			iTeam = TEAM_ANY;
+		}
+		else if ( FStrEq( args.Arg(i), "moveToSpectatorTeam" ) )
+		{
+			// bMoveToSpectatorTeam = true;
+		}
+		else 
+		{
+			pPlayerName = args.Arg(i);
+		}
+	}
+
+	for( int i=1; i<=gpGlobals->maxClients; ++i )
+	{
+		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
+
+		if ( !player )
+			continue;
+
+		if ( FNullEnt( player->edict() ) )
+			continue;
+
+		if ( player->MyNextBotPointer() )
+		{
+			if ( iTeam == TEAM_ANY ||
+				FStrEq( pPlayerName, player->GetPlayerName() ) ||
+				( player->GetTeamNumber() == iTeam ) ||
+				( player->GetTeamNumber() == iTeam ) )
+			{
+				CTakeDamageInfo info( player, player, 9999999.9f, DMG_ENERGYBEAM, DMG_DISSOLVE );
+				player->TakeDamage( info );
+			}
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------------
+void CMD_BotWarpTeamToMe( void )
+{
+	CBasePlayer *player = UTIL_GetListenServerHost();
+	if ( !player )
+		return;
+
+	CTeam *myTeam = player->GetTeam();
+	for( int i=0; i<myTeam->GetNumPlayers(); ++i )
+	{
+		if ( !myTeam->GetPlayer(i)->IsAlive() )
+			continue;
+
+		myTeam->GetPlayer(i)->SetAbsOrigin( player->GetAbsOrigin() );
+	}
+}
+static ConCommand doc_bot_warp_team_to_me( "doc_bot_warp_team_to_me", CMD_BotWarpTeamToMe, "", FCVAR_GAMEDLL | FCVAR_CHEAT );
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

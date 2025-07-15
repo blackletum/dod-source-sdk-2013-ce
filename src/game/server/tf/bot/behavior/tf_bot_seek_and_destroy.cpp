@@ -7,7 +7,7 @@
 #include "tf_bot_melee_attack.h"
 
 
-ConVar tf_bot_debug_seek_and_destroy( "tf_bot_debug_seek_and_destroy", "0", FCVAR_CHEAT, "", true, 0.0f, true, 1.0f );
+ConVar doc_bot_debug_seek_and_destroy( "doc_bot_debug_seek_and_destroy", "0", FCVAR_CHEAT, "", true, 0.0f, true, 1.0f );
 
 
 CTFBotSeekAndDestroy::CTFBotSeekAndDestroy( float duration )
@@ -47,9 +47,9 @@ ActionResult<CTFBot> CTFBotSeekAndDestroy::Update( CTFBot *me, float dt )
 	if ( me->IsCapturingPoint() )
 		return Action<CTFBot>::Done( "Keep capturing point I happened to stumble upon" );
 
-	/*extern ConVar tf_bot_offense_must_push_time;
+	/*extern ConVar doc_bot_offense_must_push_time;
 	if ( TFGameRules()->State_Get() != GR_STATE_TEAM_WIN &&
-		 me->GetTimeLeftToCapture() < tf_bot_offense_must_push_time.GetFloat() )
+		 me->GetTimeLeftToCapture() < doc_bot_offense_must_push_time.GetFloat() )
 	{
 		return Action<CTFBot>::Done( "Time to push for the objective" );
 	}*/
@@ -165,7 +165,7 @@ CNavArea *CTFBotSeekAndDestroy::ChooseGoalArea( CTFBot *actor )
 
 	}
 
-	if (tf_bot_debug_seek_and_destroy.GetBool() || !point)
+	if (doc_bot_debug_seek_and_destroy.GetBool() || !point)
 	{
 		for (int i = 0; i < goalVector.Count(); ++i)
 		{

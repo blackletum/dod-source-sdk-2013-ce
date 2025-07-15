@@ -4,10 +4,10 @@
 #include "tf/nav_mesh/tf_nav_area.h"
 
 
-ConVar tf_bot_retreat_to_cover_range( "tf_bot_retreat_to_cover_range", "1000", FCVAR_CHEAT );
-ConVar tf_bot_debug_retreat_to_cover( "tf_bot_debug_retreat_to_cover", "0", FCVAR_CHEAT );
-ConVar tf_bot_wait_in_cover_min_time( "tf_bot_wait_in_cover_min_time", "1", FCVAR_CHEAT );
-ConVar tf_bot_wait_in_cover_max_time( "tf_bot_wait_in_cover_max_time", "2", FCVAR_CHEAT );
+ConVar doc_bot_retreat_to_cover_range( "doc_bot_retreat_to_cover_range", "1000", FCVAR_CHEAT );
+ConVar doc_bot_debug_retreat_to_cover( "doc_bot_debug_retreat_to_cover", "0", FCVAR_CHEAT );
+ConVar doc_bot_wait_in_cover_min_time( "doc_bot_wait_in_cover_min_time", "1", FCVAR_CHEAT );
+ConVar doc_bot_wait_in_cover_max_time( "doc_bot_wait_in_cover_max_time", "2", FCVAR_CHEAT );
 
 
 CTFBotRetreatToCover::CTFBotRetreatToCover( Action<CTFBot> *done_action )
@@ -43,8 +43,8 @@ ActionResult<CTFBot> CTFBotRetreatToCover::OnStart( CTFBot *me, Action<CTFBot> *
 
 	if ( m_flDuration < 0.0f )
 	{
-		m_flDuration = RandomFloat( tf_bot_wait_in_cover_min_time.GetFloat(),
-									tf_bot_wait_in_cover_max_time.GetFloat() );
+		m_flDuration = RandomFloat( doc_bot_wait_in_cover_min_time.GetFloat(),
+			 doc_bot_wait_in_cover_max_time.GetFloat() );
 	}
 	me->m_Shared.StartSprinting();
 	m_actionDuration.Start( m_flDuration );
@@ -141,7 +141,7 @@ public:
 
 	virtual bool ShouldSearch( CNavArea *adjArea, CNavArea *currentArea, float travelDistanceSoFar ) override
 	{
-		if ( travelDistanceSoFar > tf_bot_retreat_to_cover_range.GetFloat() )
+		if ( travelDistanceSoFar > doc_bot_retreat_to_cover_range.GetFloat() )
 		{
 			return false;
 		}
@@ -151,7 +151,7 @@ public:
 
 	virtual void PostSearch() override
 	{
-		if ( tf_bot_debug_retreat_to_cover.GetBool() )
+		if (doc_bot_debug_retreat_to_cover.GetBool() )
 		{
 			FOR_EACH_VEC( m_areas, i )
 			{
@@ -170,7 +170,7 @@ CTFNavArea *CTFBotRetreatToCover::FindCoverArea( CTFBot *actor )
 
 	CSearchForCover functor( actor );
 
-	if ( tf_bot_debug_retreat_to_cover.GetBool() )
+	if ( doc_bot_debug_retreat_to_cover.GetBool() )
 		TheNavMesh->ClearSelectedSet();
 
 	SearchSurroundingAreas( actor->GetLastKnownArea(), functor );

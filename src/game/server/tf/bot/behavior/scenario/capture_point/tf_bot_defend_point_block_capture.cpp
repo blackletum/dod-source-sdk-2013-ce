@@ -9,7 +9,7 @@
 #include "tf/bot/behavior/tf_bot_melee_attack.h"
 
 
-ConVar tf_bot_defend_owned_point_percent( "tf_bot_defend_owned_point_percent", "0.5", FCVAR_CHEAT, "Stay on the contested point we own until enemy cap percent falls below this" );
+ConVar doc_bot_defend_owned_point_percent( "doc_bot_defend_owned_point_percent", "0.5", FCVAR_CHEAT, "Stay on the contested point we own until enemy cap percent falls below this" );
 
 
 CTFBotDefendPointBlockCapture::CTFBotDefendPointBlockCapture()
@@ -179,7 +179,7 @@ bool CTFBotDefendPointBlockCapture::IsPointSafe( CTFBot *actor )
 {
 	if ( !actor->m_cpChangedTimer.HasStarted() || actor->m_cpChangedTimer.IsElapsed() ) 
 	{
-		if ( m_pPoint && m_pPoint->GetTeamCapPercentage( actor->GetTeamNumber() ) >= tf_bot_defend_owned_point_percent.GetFloat() &&
+		if ( m_pPoint && m_pPoint->GetTeamCapPercentage( actor->GetTeamNumber() ) >= doc_bot_defend_owned_point_percent.GetFloat() &&
 			( !(m_pPoint->LastContestedAt() > 0.0f) || gpGlobals->curtime - m_pPoint->LastContestedAt() >= 5.0f ) )
 		{
 			const CKnownEntity *threat = actor->GetVisionInterface()->GetPrimaryKnownThreat();

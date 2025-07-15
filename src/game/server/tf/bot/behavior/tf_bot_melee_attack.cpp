@@ -2,14 +2,14 @@
 #include "../tf_bot.h"
 #include "tf_bot_melee_attack.h"
 
-ConVar tf_bot_melee_attack_abandon_range( "tf_bot_melee_attack_abandon_range", "500", FCVAR_CHEAT, "If threat is farther away than this, bot will switch back to its primary weapon and attack" );
+ConVar doc_bot_melee_attack_abandon_range( "doc_bot_melee_attack_abandon_range", "500", FCVAR_CHEAT, "If threat is farther away than this, bot will switch back to its primary weapon and attack" );
 
 
 CTFBotMeleeAttack::CTFBotMeleeAttack( float flAbandonRange )
 {
 	if ( flAbandonRange < 0.0f )
 	{
-		this->m_flAbandonRange = tf_bot_melee_attack_abandon_range.GetFloat();
+		this->m_flAbandonRange = doc_bot_melee_attack_abandon_range.GetFloat();
 	}
 	else
 	{

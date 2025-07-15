@@ -18,7 +18,7 @@
 	#include "util.h"
 	#include "ndebugoverlay.h"
 #endif
-
+extern ConVar doc_bot_recoil;
 #ifndef CLIENT_DLL
 //-----------------------------------------------------------------------------
 // Purpose: Only send to local player if this weapon is the active weapon
@@ -203,6 +203,41 @@ bool CWeaponDODBaseGun::DODBaseGunFire()
 		p->DoRecoil( GetWeaponID(), GetRecoil() );
 #endif
 
+#ifndef CLIENT_DLL
+	if (pPlayer->IsBot() && doc_bot_recoil.GetBool())
+	{
+		float flPitchRecoil = GetRecoil();
+		float flYawRecoil = flPitchRecoil / 4.0f;
+
+		if (GetWeaponID() == WEAPON_BAR)
+			flYawRecoil = MIN(flYawRecoil, 1.3f);
+
+		if (pPlayer->m_Shared.IsInMGDeploy())
+		{
+			flPitchRecoil = 0.0f;
+			flYawRecoil = 0.0f;
+		}
+		else if (pPlayer->m_Shared.IsProne() &&
+			GetWeaponID() != WEAPON_30CAL &&
+			GetWeaponID() != WEAPON_MG42)
+		{
+			flPitchRecoil /= 4.0f;
+			flYawRecoil /= 4.0f;
+		}
+		else if (pPlayer->m_Shared.IsDucking())
+		{
+			flPitchRecoil /= 2.0f;
+			flYawRecoil /= 2.0f;
+		}
+
+		QAngle ang = pPlayer->EyeAngles();
+		ang.x -= flPitchRecoil;
+		ang.y += RandomFloat(-flYawRecoil, flYawRecoil);
+
+		pPlayer->pl.v_angle = ang;        // Set view direction
+		pPlayer->SnapEyeAngles(ang);    // Sync to engine
+	}
+#endif
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetFireDelay();
 
 	m_flTimeWeaponIdle = gpGlobals->curtime + m_pWeaponInfo->m_flTimeToIdleAfterFire;

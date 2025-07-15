@@ -12,9 +12,9 @@
 #include "tf/bot/behavior/tf_bot_melee_attack.h"
 
 
-ConVar tf_bot_defense_must_defend_time( "tf_bot_defense_must_defend_time", "300", FCVAR_CHEAT, "If timer is less than this, bots will stay near point and guard" );
-ConVar tf_bot_max_point_defend_range( "tf_bot_max_point_defend_range", "1250", FCVAR_CHEAT, "How far (in travel distance) from the point defending bots will take up positions" );
-ConVar tf_bot_defense_debug( "tf_bot_defense_debug", "0", FCVAR_CHEAT );
+ConVar doc_bot_defense_must_defend_time( "doc_bot_defense_must_defend_time", "300", FCVAR_CHEAT, "If timer is less than this, bots will stay near point and guard" );
+ConVar doc_bot_max_point_defend_range( "doc_bot_max_point_defend_range", "1250", FCVAR_CHEAT, "How far (in travel distance) from the point defending bots will take up positions" );
+ConVar doc_bot_defense_debug( "doc_bot_defense_debug", "0", FCVAR_CHEAT );
 
 
 CTFBotDefendPoint::CTFBotDefendPoint()
@@ -76,7 +76,7 @@ ActionResult<CTFBot> CTFBotDefendPoint::Update( CTFBot *me, float dt )
 	if ( this->IsPointThreatened( me ) && this->WillBlockCapture( me ) )
 		return Action<CTFBot>::SuspendFor( new CTFBotDefendPointBlockCapture, "Moving to block point capture!" );
 
-	if ( m_bShouldRoam && me->GetTimeLeftToCapture() > tf_bot_defense_must_defend_time.GetFloat() )
+	if ( m_bShouldRoam && me->GetTimeLeftToCapture() > doc_bot_defense_must_defend_time.GetFloat() )
 		return Action<CTFBot>::SuspendFor( new CTFBotSeekAndDestroy( 15.0f ), "Seek and destroy - we have lots of time" );
 
 	const CKnownEntity *threat = me->GetVisionInterface()->GetPrimaryKnownThreat();
@@ -242,7 +242,7 @@ public:
 	{
 		int team = m_iTeam;
 
-		if ( adjArea->IsBlocked( team ) || travelDistanceSoFar > tf_bot_max_point_defend_range.GetFloat() )
+		if ( adjArea->IsBlocked( team ) || travelDistanceSoFar > doc_bot_max_point_defend_range.GetFloat() )
 			return false;
 
 		if ( fabs( currentArea->ComputeAdjacentConnectionHeightChange( adjArea ) ) < 65.0f )
@@ -278,7 +278,7 @@ CTFNavArea *CTFBotDefendPoint::SelectAreaToDefendFrom( CTFBot *actor )
 		{
 			m_reselectDefenseAreaTimer.Start( RandomFloat( 10.0f, 20.0f ) );
 
-			if ( tf_bot_defense_debug.GetBool() )
+			if (doc_bot_defense_debug.GetBool() )
 			{
 				for ( int i=0; i<candidates.Count(); ++i )
 					candidates[i]->DrawFilled( 0, 200, 200, 255 );

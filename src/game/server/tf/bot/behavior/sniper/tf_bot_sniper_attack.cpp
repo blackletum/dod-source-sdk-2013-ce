@@ -7,9 +7,9 @@
 #include "weapon_dodsniper.h"
 #include "tf/bot/behavior/tf_bot_melee_attack.h"
 
-ConVar tf_bot_sniper_flee_range( "tf_bot_sniper_flee_range", "400", FCVAR_CHEAT, "If threat is closer than this, retreat" );
-ConVar tf_bot_sniper_melee_range( "tf_bot_sniper_melee_range", "200", FCVAR_CHEAT, "If threat is closer than this, attack with melee weapon" );
-ConVar tf_bot_sniper_linger_time( "tf_bot_sniper_linger_time", "5", FCVAR_CHEAT, "How long Sniper will wait around after losing his target before giving up" );
+ConVar doc_bot_sniper_flee_range( "doc_bot_sniper_flee_range", "400", FCVAR_CHEAT, "If threat is closer than this, retreat" );
+ConVar doc_bot_sniper_melee_range( "doc_bot_sniper_melee_range", "200", FCVAR_CHEAT, "If threat is closer than this, attack with melee weapon" );
+ConVar doc_bot_sniper_linger_time( "doc_bot_sniper_linger_time", "5", FCVAR_CHEAT, "How long Sniper will wait around after losing his target before giving up" );
 
 
 CTFBotSniperAttack::CTFBotSniperAttack()
@@ -59,7 +59,7 @@ ActionResult<CTFBot> CTFBotSniperAttack::Update( CTFBot *me, float dt )
 
 	me->EquipBestWeaponForThreat( threat );
 
-	if ( ( me->GetAbsOrigin() - threat->GetLastKnownPosition() ).LengthSqr() < Square( tf_bot_sniper_flee_range.GetFloat() ) )
+	if ( ( me->GetAbsOrigin() - threat->GetLastKnownPosition() ).LengthSqr() < Square( doc_bot_sniper_flee_range.GetFloat() ) )
 	{
 		return Action<CTFBot>::SuspendFor( new CTFBotRetreatToCover, "Retreating from nearby enemy" );
 	}
@@ -69,7 +69,7 @@ ActionResult<CTFBot> CTFBotSniperAttack::Update( CTFBot *me, float dt )
 		return Action<CTFBot>::SuspendFor( new CTFBotRetreatToCover, "Retreating due to injury" );
 	}
 
-	m_lingerDuration.Start( RandomFloat( 0.75f, 1.25f ) * tf_bot_sniper_linger_time.GetFloat() );
+	m_lingerDuration.Start( RandomFloat( 0.75f, 1.25f ) * doc_bot_sniper_linger_time.GetFloat() );
 
 	if (!pPrimary->IsZoomed())
 	{

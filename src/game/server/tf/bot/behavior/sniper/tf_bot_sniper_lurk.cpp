@@ -7,11 +7,11 @@
 #include "tf/bot/behavior/tf_bot_melee_attack.h"
 #include "dod/weapon_dodsniper.h"
 
-ConVar tf_bot_debug_sniper( "tf_bot_debug_sniper", "0", FCVAR_CHEAT );
-ConVar tf_bot_sniper_patience_duration( "tf_bot_sniper_patience_duration", "10", FCVAR_CHEAT, "How long a Sniper bot will wait without seeing an enemy before picking a new spot" );
-ConVar tf_bot_sniper_target_linger_duration( "tf_bot_sniper_target_linger_duration", "2", FCVAR_CHEAT, "How long a Sniper bot will keep toward at a target it just lost sight of" );
-ConVar tf_bot_sniper_allow_opportunistic( "tf_bot_sniper_allow_opportunistic", "1", FCVAR_NONE, "If set, Snipers will stop on their way to their preferred lurking spot to snipe at opportunistic targets" );
-extern ConVar tf_bot_sniper_melee_range;
+ConVar doc_bot_debug_sniper( "doc_bot_debug_sniper", "0", FCVAR_CHEAT );
+ConVar doc_bot_sniper_patience_duration( "doc_bot_sniper_patience_duration", "10", FCVAR_CHEAT, "How long a Sniper bot will wait without seeing an enemy before picking a new spot" );
+ConVar doc_bot_sniper_target_linger_duration( "doc_bot_sniper_target_linger_duration", "2", FCVAR_CHEAT, "How long a Sniper bot will keep toward at a target it just lost sight of" );
+ConVar doc_bot_sniper_allow_opportunistic( "doc_bot_sniper_allow_opportunistic", "1", FCVAR_NONE, "If set, Snipers will stop on their way to their preferred lurking spot to snipe at opportunistic targets" );
+extern ConVar doc_bot_sniper_melee_range;
 
 
 CTFBotSniperLurk::CTFBotSniperLurk()
@@ -31,13 +31,13 @@ const char *CTFBotSniperLurk::GetName() const
 
 ActionResult<CTFBot> CTFBotSniperLurk::OnStart( CTFBot *me, Action<CTFBot> *priorAction )
 {
-	m_patienceDuration.Start( RandomFloat( 0.9f, 1.1f ) * tf_bot_sniper_patience_duration.GetFloat() );
+	m_patienceDuration.Start( RandomFloat( 0.9f, 1.1f ) * doc_bot_sniper_patience_duration.GetFloat() );
 
 	m_vecHome = me->GetAbsOrigin();
 	m_bHasHome = false;
 	m_bNearHome = false;
 	unused = 0;
-	m_bOpportunistic = tf_bot_sniper_allow_opportunistic.GetBool();
+	m_bOpportunistic = doc_bot_sniper_allow_opportunistic.GetBool();
 
 	CBaseEntity *pEntity = nullptr;
 	while ( ( pEntity = gEntList.FindEntityByClassname( pEntity, "func_tfbot_hint" ) ) != nullptr )
@@ -74,11 +74,11 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 		{
 			unused = 0;
 
-			if ( threat->GetLastKnownPosition().DistToSqr( me->GetAbsOrigin() ) < Square( tf_bot_sniper_melee_range.GetFloat() ) )
-				return Action<CTFBot>::SuspendFor( new CTFBotMeleeAttack( 1.25f * tf_bot_sniper_melee_range.GetFloat() ), "Melee attacking nearby threat" );
+			if ( threat->GetLastKnownPosition().DistToSqr( me->GetAbsOrigin() ) < Square( doc_bot_sniper_melee_range.GetFloat() ) )
+				return Action<CTFBot>::SuspendFor( new CTFBotMeleeAttack( 1.25f * doc_bot_sniper_melee_range.GetFloat() ), "Melee attacking nearby threat" );
 		}
 
-		if ( threat->GetTimeSinceLastSeen() < tf_bot_sniper_target_linger_duration.GetFloat() && me->IsLineOfFireClear( threat->GetEntity() ) )
+		if ( threat->GetTimeSinceLastSeen() < doc_bot_sniper_target_linger_duration.GetFloat() && me->IsLineOfFireClear( threat->GetEntity() ) )
 		{
 			if ( m_bOpportunistic )
 			{
@@ -96,7 +96,7 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 				{
 					m_vecHome = me->GetAbsOrigin();
 
-					m_patienceDuration.Start( RandomFloat( 0.9f, 1.1f ) * tf_bot_sniper_patience_duration.GetFloat() );
+					m_patienceDuration.Start( RandomFloat( 0.9f, 1.1f ) * doc_bot_sniper_patience_duration.GetFloat() );
 				}
 			}
 			else
@@ -116,7 +116,7 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 	if ( m_bNearHome )
 	{
 		bWantsToZoom = true;
-		m_bOpportunistic = tf_bot_sniper_allow_opportunistic.GetBool();
+		m_bOpportunistic = doc_bot_sniper_allow_opportunistic.GetBool();
 
 		if ( m_patienceDuration.IsElapsed() )
 		{
@@ -126,7 +126,7 @@ ActionResult<CTFBot> CTFBotSniperLurk::Update( CTFBot *me, float dt )
 			{
 				me->VoiceCommand(17);
 
-				m_patienceDuration.Start( RandomFloat( 0.9f, 1.1f ) * tf_bot_sniper_patience_duration.GetFloat() );
+				m_patienceDuration.Start( RandomFloat( 0.9f, 1.1f ) * doc_bot_sniper_patience_duration.GetFloat() );
 			}
 			else
 			{
@@ -190,7 +190,7 @@ void CTFBotSniperLurk::OnEnd( CTFBot *me, Action<CTFBot> *newAction )
 	{
 		m_hHint->SetOwnerEntity( nullptr );
 
-		if ( tf_bot_debug_sniper.GetBool() )
+		if (doc_bot_debug_sniper.GetBool() )
 		{
 			DevMsg( "%3.2f: %s: Releasing hint.\n", gpGlobals->curtime, me->GetPlayerName() );
 		}
@@ -210,7 +210,7 @@ ActionResult<CTFBot> CTFBotSniperLurk::OnSuspend( CTFBot *me, Action<CTFBot> *ne
 	{
 		m_hHint->SetOwnerEntity( nullptr );
 
-		if ( tf_bot_debug_sniper.GetBool() )
+		if (doc_bot_debug_sniper.GetBool() )
 		{
 			DevMsg( "%3.2f: %s: Releasing hint.\n", gpGlobals->curtime, me->GetPlayerName() );
 		}
@@ -255,7 +255,7 @@ bool CTFBotSniperLurk::FindHint( CTFBot *actor )
 	if ( m_hHint )
 	{
 		m_hHint->SetOwnerEntity( NULL );
-		if ( tf_bot_debug_sniper.GetBool() )
+		if (doc_bot_debug_sniper.GetBool() )
 			DevMsg( "%3.2f: %s: Releasing hint.", gpGlobals->curtime, actor->GetPlayerName() );
 	}
 
@@ -300,7 +300,7 @@ bool CTFBotSniperLurk::FindHint( CTFBot *actor )
 			{
 				pSelected = hints.Random();
 
-				if ( tf_bot_debug_sniper.GetBool() )
+				if (doc_bot_debug_sniper.GetBool() )
 					DevMsg( "%3.2f: %s: No un-owned hints available! Doubling up.\n", gpGlobals->curtime, actor->GetPlayerName() );
 			}
 		}

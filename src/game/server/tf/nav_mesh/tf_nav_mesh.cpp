@@ -24,8 +24,8 @@ ConVar tf_show_incursion_flow( "tf_show_incursion_flow", "0", FCVAR_CHEAT, "", t
 ConVar tf_show_incursion_flow_range( "tf_show_incursion_flow_range", "150", FCVAR_CHEAT, "" );
 ConVar tf_show_incursion_flow_gradient( "tf_show_incursion_flow_gradient", "0", FCVAR_CHEAT, "1 = red, 2 = blue", true, 0.0f, true, 2.0f );
 
-ConVar tf_bot_min_setup_gate_defend_range( "tf_bot_min_setup_gate_defend_range", "750", FCVAR_CHEAT, "How close from the setup gate(s) defending bots can take up positions. Areas closer than this will be in cover to ambush." );
-ConVar tf_bot_max_setup_gate_defend_range( "tf_bot_max_setup_gate_defend_range", "2000", FCVAR_CHEAT, "How far from the setup gate(s) defending bots can take up positions" );
+ConVar doc_bot_min_setup_gate_defend_range( "doc_bot_min_setup_gate_defend_range", "750", FCVAR_CHEAT, "How close from the setup gate(s) defending bots can take up positions. Areas closer than this will be in cover to ambush." );
+ConVar doc_bot_max_setup_gate_defend_range( "doc_bot_max_setup_gate_defend_range", "2000", FCVAR_CHEAT, "How far from the setup gate(s) defending bots can take up positions" );
 
 ConVar tf_select_ambush_areas_radius( "tf_select_ambush_areas_radius", "750", FCVAR_CHEAT );
 ConVar tf_select_ambush_areas_close_range( "tf_select_ambush_areas_close_range", "300", FCVAR_CHEAT );

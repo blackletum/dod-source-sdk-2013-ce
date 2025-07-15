@@ -16,7 +16,7 @@
 #include "tf_bot_use_teleporter.h"
 
 
-ConVar tf_bot_force_jump( "tf_bot_force_jump", "0", FCVAR_CHEAT, "Force bots to continuously jump", true, 0.0f, true, 1.0f );
+ConVar doc_bot_force_jump( "doc_bot_force_jump", "0", FCVAR_CHEAT, "Force bots to continuously jump", true, 0.0f, true, 1.0f );
 
 class DetonatePipebombsReply : public INextBotReply
 {
@@ -44,7 +44,7 @@ ActionResult<CTFBot> CTFBotTacticalMonitor::OnStart( CTFBot *me, Action<CTFBot> 
 
 ActionResult<CTFBot> CTFBotTacticalMonitor::Update( CTFBot *me, float dt )
 {
-	if ( tf_bot_force_jump.GetBool() && !me->GetLocomotionInterface()->IsClimbingOrJumping() )
+	if (doc_bot_force_jump.GetBool() && !me->GetLocomotionInterface()->IsClimbingOrJumping() )
 		me->GetLocomotionInterface()->Jump();
 
 	QueryResultType retreat = me->GetIntentionInterface()->ShouldRetreat( me );

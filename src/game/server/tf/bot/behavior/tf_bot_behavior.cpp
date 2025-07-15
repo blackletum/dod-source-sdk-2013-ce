@@ -17,18 +17,18 @@
 #include "../tf_bot_manager.h"
 
 
-ConVar tf_bot_sniper_aim_error( "tf_bot_sniper_aim_error", "0.01", FCVAR_CHEAT );
-ConVar tf_bot_sniper_aim_steady_rate( "tf_bot_sniper_aim_steady_rate", "10", FCVAR_CHEAT );
-ConVar tf_bot_fire_weapon_min_time( "tf_bot_fire_weapon_min_time", "1", FCVAR_CHEAT );
-ConVar tf_bot_taunt_victim_chance( "tf_bot_taunt_victim_chance", "20", FCVAR_NONE );
-ConVar tf_bot_notice_backstab_chance( "tf_bot_notice_backstab_chance", "25", FCVAR_CHEAT );
-ConVar tf_bot_notice_backstab_min_chance( "tf_bot_notice_backstab_min_chance", "100", FCVAR_CHEAT );
-ConVar tf_bot_notice_backstab_max_chance( "tf_bot_notice_backstab_max_chance", "750", FCVAR_CHEAT );
-ConVar tf_bot_arrow_elevation_rate( "tf_bot_arrow_elevation_rate", "0.0001", FCVAR_CHEAT, "When firing arrows at far away targets, this is the degree/range slope to raise our aim" );
-ConVar tf_bot_ballistic_elevation_rate( "tf_bot_ballistic_elevation_rate", "0.01", FCVAR_CHEAT, "When lobbing grenades at far away targets, this is the degree/range slope to raise our aim" );
-ConVar tf_bot_hitscan_range_limit( "tf_bot_hitscan_range_limit", "1800", FCVAR_CHEAT );
-ConVar tf_bot_always_full_reload( "tf_bot_always_full_reload", "0", FCVAR_CHEAT );
-ConVar tf_bot_fire_weapon_allowed( "tf_bot_fire_weapon_allowed", "1", FCVAR_CHEAT, "If zero, TFBots will not pull the trigger of their weapons (but will act like they did)", true, 0.0, true, 1.0 );
+ConVar doc_bot_sniper_aim_error( "doc_bot_sniper_aim_error", "0.01", FCVAR_CHEAT );
+ConVar doc_bot_sniper_aim_steady_rate( "doc_bot_sniper_aim_steady_rate", "10", FCVAR_CHEAT );
+ConVar doc_bot_fire_weapon_min_time( "doc_bot_fire_weapon_min_time", "1", FCVAR_CHEAT );
+ConVar doc_bot_taunt_victim_chance( "doc_bot_taunt_victim_chance", "20", FCVAR_NONE );
+ConVar doc_bot_notice_backstab_chance( "doc_bot_notice_backstab_chance", "25", FCVAR_CHEAT );
+ConVar doc_bot_notice_backstab_min_chance( "doc_bot_notice_backstab_min_chance", "100", FCVAR_CHEAT );
+ConVar doc_bot_notice_backstab_max_chance( "doc_bot_notice_backstab_max_chance", "750", FCVAR_CHEAT );
+ConVar doc_bot_arrow_elevation_rate( "doc_bot_arrow_elevation_rate", "0.0001", FCVAR_CHEAT, "When firing arrows at far away targets, this is the degree/range slope to raise our aim" );
+ConVar doc_bot_ballistic_elevation_rate( "doc_bot_ballistic_elevation_rate", "0.01", FCVAR_CHEAT, "When lobbing grenades at far away targets, this is the degree/range slope to raise our aim" );
+ConVar doc_bot_hitscan_range_limit( "doc_bot_hitscan_range_limit", "1800", FCVAR_CHEAT );
+ConVar doc_bot_always_full_reload( "doc_bot_always_full_reload", "0", FCVAR_CHEAT );
+ConVar doc_bot_fire_weapon_allowed( "doc_bot_fire_weapon_allowed", "1", FCVAR_CHEAT, "If zero, TFBots will not pull the trigger of their weapons (but will act like they did)", true, 0.0, true, 1.0 );
 
 
 const char *CTFBotMainAction::GetName( void ) const
@@ -67,7 +67,7 @@ ActionResult<CTFBot> CTFBotMainAction::Update( CTFBot *me, float dt )
 	m_flYawDelta = me->EyeAngles()[ YAW ] - ( m_flPreviousYaw * dt + FLT_EPSILON );
 	m_flPreviousYaw = me->EyeAngles()[ YAW ];
 
-	if ( tf_bot_sniper_aim_steady_rate.GetFloat() <= m_flYawDelta )
+	if ( doc_bot_sniper_aim_steady_rate.GetFloat() <= m_flYawDelta )
 		m_sniperSteadyInterval.Invalidate();
 	else if ( !m_sniperSteadyInterval.HasStarted() )
 		m_sniperSteadyInterval.Start();
@@ -119,7 +119,7 @@ EventDesiredResult<CTFBot> CTFBotMainAction::OnInjured( CTFBot *me, const CTakeD
 			// I get the DMG_CRITICAL, but DMG_BURN?
 			if ( info.GetDamageType() & ( DMG_BURN ) )
 			{
-				if ( me->IsRangeLessThan( info.GetAttacker(), tf_bot_notice_backstab_max_chance.GetFloat() ) )
+				if ( me->IsRangeLessThan( info.GetAttacker(), doc_bot_notice_backstab_max_chance.GetFloat() ) )
 					me->DelayedThreatNotice( info.GetAttacker(), 0.5 );
 			}
 	}
@@ -284,14 +284,14 @@ void CTFBotMainAction::FireWeaponAtEnemy( CTFBot *actor )
 	if ( ( actor->m_nBotAttrs & (CTFBot::AttributeType::SUPPRESSFIRE|CTFBot::AttributeType::IGNOREENEMIES) ) != 0 )
 		return;
 
-	if ( !tf_bot_fire_weapon_allowed.GetBool() )
+	if ( !doc_bot_fire_weapon_allowed.GetBool() )
 		return;
 
 	CWeaponDODBase *pWeapon = actor->GetActiveDODWeapon();
 	if ( pWeapon == nullptr )
 		return;
 
-	if ( actor->IsBarrageAndReloadWeapon() && tf_bot_always_full_reload.GetBool() )
+	if ( actor->IsBarrageAndReloadWeapon() && doc_bot_always_full_reload.GetBool() )
 	{
 		if ( pWeapon->Clip1() <= 0 )
 		{
@@ -350,7 +350,7 @@ void CTFBotMainAction::FireWeaponAtEnemy( CTFBot *actor )
 
 	if ( actor->IsContinuousFireWeapon() )
 	{
-		actor->PressFireButton( tf_bot_fire_weapon_min_time.GetFloat() );
+		actor->PressFireButton(doc_bot_fire_weapon_min_time.GetFloat() );
 		return;
 	}
 

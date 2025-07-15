@@ -97,7 +97,7 @@ $Project "Server (DoD)"
 					$File "tf\bot\behavior\sniper\tf_bot_sniper_attack.cpp"
 					$File "tf\bot\behavior\sniper\tf_bot_sniper_attack.h"
 					$File "tf\bot\behavior\sniper\tf_bot_sniper_lurk.cpp"
-					$File "tf\bot\behavior\sniper\tf_bot_sniper_lurk.h"
+					$File "tf\bot\behavior\sniper\tf_bot_sniper_lurk.h"  
 				}
 
 				$File "tf\bot\tf_bot.cpp"

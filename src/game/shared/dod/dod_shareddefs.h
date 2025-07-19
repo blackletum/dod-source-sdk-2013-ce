@@ -21,15 +21,10 @@
 #define TEAM_MAXCOUNT		4	// update this if we ever add teams (unlikely)
 
 
-enum HalloweenBossType
-{
-	HALLOWEEN_BOSS_INVALID = 0,
-	HALLOWEEN_BOSS_HHH = 1,
-	HALLOWEEN_BOSS_MONOCULUS = 2,
-	HALLOWEEN_BOSS_MERASMUS = 3,
-};
+// Medikit
+#define WEAP_MEDIKIT_OVERHEAL 25 // Amount of superhealth over max_health the medikit will dispense
+#define WEAP_MEDIKIT_HEAL	25  // Amount medikit heals per hit
 
-#define TF_TEAM_HALLOWEEN	TEAM_UNASSIGNED
 
 enum SubTeam
 {

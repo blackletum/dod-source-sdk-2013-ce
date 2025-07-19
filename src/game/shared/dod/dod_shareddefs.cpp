@@ -111,6 +111,7 @@ const char * s_WeaponAliasInfo[] =
 
 	//SMG
 	"thompson",		//WEAPON_THOMPSON,
+	"greasegun",		//WEAPON_GREASEGUN,
 	"mp40",			//WEAPON_MP40,
 	"mp44",			//WEAPON_MP44,
 	"bar",			//WEAPON_BAR,
@@ -141,6 +142,7 @@ const char * s_WeaponAliasInfo[] =
 
 	// not actually separate weapons, but defines used in stats recording
 	"thompson_punch",		//WEAPON_THOMPSON_PUNCH
+	"greasegun_punch",		//WEAPON_GREASEGUN_PUNCH
 	"mp40_punch",			//WEAPON_MP40_PUNCH
 	"garand_zoomed",		//WEAPON_GARAND_ZOOMED,	
 

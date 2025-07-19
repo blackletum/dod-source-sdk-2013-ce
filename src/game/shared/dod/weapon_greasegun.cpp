@@ -25,7 +25,7 @@ public:
 	CWeaponGreaseGun()  {}
 
 	virtual DODWeaponID GetWeaponID( void ) const		{ return WEAPON_GREASEGUN; }
-	virtual DODWeaponID GetAltWeaponID(void) const		{ return WEAPON_THOMPSON_PUNCH; }
+	virtual DODWeaponID GetAltWeaponID(void) const		{ return WEAPON_GREASEGUN_PUNCH; }
 	// Giggle
 
 	virtual float GetRecoil(void) { return 1.5f; }

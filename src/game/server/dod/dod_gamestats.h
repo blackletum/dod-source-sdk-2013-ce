@@ -38,6 +38,7 @@
 
 		//SMG
 		WEAPON_THOMPSON,
+		WEAPON_GREASEGUN,
 		WEAPON_MP40,
 		WEAPON_MP44,
 		WEAPON_BAR,
@@ -69,6 +70,7 @@
 		// not actually separate weapons, but defines used in stats recording
 		// find a better way to do this without polluting the list of actual weapons.
 		WEAPON_THOMPSON_PUNCH,
+		WEAPON_GREASEGUN_PUNCH,
 		WEAPON_MP40_PUNCH,
 
 		WEAPON_GARAND_ZOOMED,	
@@ -90,8 +92,8 @@
 
 #define DOD_STATS_BLOB_VERSION 2		// changed to 2 for the orange box beta
 
-#define DOD_NUM_DISTANCE_STAT_WEAPONS	22
-#define DOD_NUM_NODIST_STAT_WEAPONS	14
+#define DOD_NUM_DISTANCE_STAT_WEAPONS	23
+#define DOD_NUM_NODIST_STAT_WEAPONS	15
 #define DOD_NUM_WEAPON_DISTANCE_BUCKETS	10
 
 extern int iDistanceStatWeapons[DOD_NUM_DISTANCE_STAT_WEAPONS];

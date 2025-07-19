@@ -33,6 +33,7 @@ int iDistanceStatWeapons[DOD_NUM_DISTANCE_STAT_WEAPONS] =
 	WEAPON_K98_SCOPED,
 	WEAPON_K98_SCOPED_ZOOMED,
 	WEAPON_THOMPSON,
+	WEAPON_GREASEGUN,
 	WEAPON_MP40,
 	WEAPON_MP44,
 	WEAPON_MP44_SEMIAUTO,
@@ -60,6 +61,7 @@ int iNoDistStatWeapons[DOD_NUM_NODIST_STAT_WEAPONS] =
 	WEAPON_RIFLEGREN_US_LIVE,
 	WEAPON_RIFLEGREN_GER_LIVE,
 	WEAPON_THOMPSON_PUNCH,
+	WEAPON_GREASEGUN_PUNCH,
 	WEAPON_MP40_PUNCH,
 };
 
@@ -102,6 +104,7 @@ int iWeaponBucketDistances[DOD_NUM_WEAPON_DISTANCE_BUCKETS-1] =
 
 		//SMG
 		"thompson",		//WEAPON_THOMPSON,
+		"greasegun",		//WEAPON_THOMPSON,
 		"mp40",			//WEAPON_MP40,
 		"mp44",			//WEAPON_MP44,
 		"bar",			//WEAPON_BAR,
@@ -132,6 +135,7 @@ int iWeaponBucketDistances[DOD_NUM_WEAPON_DISTANCE_BUCKETS-1] =
 
 		// not actually separate weapons, but defines used in stats recording
 		"thompson_punch",		//WEAPON_THOMPSON_PUNCH
+		"greasegun_punch",		//WEAPON_GREASEGUN_PUNCH
 		"mp40_punch",			//WEAPON_MP40_PUNCH
 		"garand_zoomed",		//WEAPON_GARAND_ZOOMED,	
 

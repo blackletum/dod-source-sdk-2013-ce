@@ -291,7 +291,7 @@ bool ReadWeaponDataFromFileForSlot( IFileSystem* pFilesystem, const char *szWeap
 		return true;
 
 	char sz[128];
-	Q_snprintf( sz, sizeof( sz ), "scripts/weapons/%s", szWeaponName );
+	Q_snprintf( sz, sizeof( sz ), "scripts/%s", szWeaponName );
 	KeyValues *pKV = ReadEncryptedKVFile( pFilesystem, sz, pICEKey, false );
 
 	if ( !pKV )
@@ -332,7 +332,8 @@ bool ReadCustomWeaponDataFromFileForSlot( IFileSystem* filesystem, const char *s
 
 	KeyValues *pKV = ReadEncryptedKVFile( filesystem, sz, pICEKey,
 #if defined( DOD_DLL )
-		true			// Only read .ctx files!
+		false			// Only read .ctx files!.
+	                    // nO DON'T 
 #else
 		false
 #endif

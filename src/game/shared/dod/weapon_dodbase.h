@@ -94,6 +94,7 @@ typedef enum
 
 	//SMG
 	WEAPON_THOMPSON,
+	WEAPON_GREASEGUN,
 	WEAPON_MP40,
 	WEAPON_MP44,
 	WEAPON_BAR,
@@ -125,6 +126,7 @@ typedef enum
 	// not actually separate weapons, but defines used in stats recording
 	// find a better way to do this without polluting the list of actual weapons.
 	WEAPON_THOMPSON_PUNCH,
+	WEAPON_GREASEGUN_PUNCH,
 	WEAPON_MP40_PUNCH,
 
 	WEAPON_GARAND_ZOOMED,	
@@ -137,7 +139,6 @@ typedef enum
 
 	WEAPON_BAR_SEMIAUTO,
 	WEAPON_MP44_SEMIAUTO,
-	WEAPON_GREASEGUN,
 	WEAPON_C96CARBINE,
 		
 	WEAPON_MAX,		// number of weapons weapon index

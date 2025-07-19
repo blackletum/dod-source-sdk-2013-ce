@@ -261,7 +261,7 @@ enum CastVote
 #elif defined( TF_DLL ) || defined ( TF_CLIENT_DLL ) || defined( HL2MP )
 	#define MAX_PLAYERS				101
 #else
-	#define MAX_PLAYERS				33  // Absolute max players supported
+	#define MAX_PLAYERS				129 // Absolute max players supported. 128 for fun 
 #endif
 
 // Josh: Accounts for code that may index this array by an entindex
